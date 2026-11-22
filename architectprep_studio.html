@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArchitectPrep Studio | Senior Architect & Consultant Prep</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#0284c7',
+                            600: '#0265d6',
+                            900: '#0f172a',
+                            gold: '#f59e0b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts & FontAwesome Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        pre, code {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(100, 116, 139, 0.4);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(148, 163, 184, 0.6);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col transition-colors duration-200">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur border-b border-slate-800 px-4 lg:px-8 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-amber-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-500/20">
+                <i class="fa-solid fa-compass-drafting"></i>
+            </div>
+            <div>
+                <h1 class="font-extrabold text-lg tracking-tight text-white flex items-center gap-2">
+                    ArchitectPrep <span class="text-xs font-semibold px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">Studio 10+ Yr</span>
+                </h1>
+                <p class="text-xs text-slate-400 hidden sm:block">Senior Technical Lead • GenAI Solution Architect • Freelance Advisory</p>
+            </div>
+        </div>
+
+        <!-- Mode Switcher Buttons -->
+        <div class="flex items-center gap-1 bg-slate-800/80 p-1 rounded-xl border border-slate-700/60">
+            <button onclick="switchMode('study')" id="nav-mode-study" class="px-3 py-1.5 text-xs font-medium rounded-lg transition-all flex items-center gap-1.5 bg-indigo-600 text-white shadow">
+                <i class="fa-solid fa-book-open text-xs"></i> <span class="hidden md:inline">Guided</span> Study
+            </button>
+            <button onclick="switchMode('flashcard')" id="nav-mode-flashcard" class="px-3 py-1.5 text-xs font-medium rounded-lg transition-all flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-slate-700/50">
+                <i class="fa-solid fa-layer-group text-xs"></i> Flashcards
+            </button>
+            <button onclick="switchMode('pitch')" id="nav-mode-pitch" class="px-3 py-1.5 text-xs font-medium rounded-lg transition-all flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-slate-700/50">
+                <i class="fa-solid fa-microphone-lines text-xs"></i> Pitch Trainer
+            </button>
+        </div>
+
+        <!-- Right Side Utility Controls -->
+        <div class="flex items-center space-x-2">
+            <button onclick="exportStudyGuide()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5 transition">
+                <i class="fa-solid fa-download"></i> <span class="hidden sm:inline">Export Guide</span>
+            </button>
+            <button onclick="toggleTheme()" class="w-9 h-9 rounded-lg bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition" title="Toggle Theme">
+                <i class="fa-solid fa-moon text-amber-400" id="theme-icon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- DASHBOARD SUMMARY BANNER -->
+    <section class="bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border-b border-slate-800 py-6 px-4 lg:px-8">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-4">
+            
+            <!-- Overall Mastery Card -->
+            <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex items-center justify-between">
+                <div>
+                    <span class="text-xs uppercase tracking-wider font-semibold text-slate-400">Readiness Score</span>
+                    <div class="text-2xl font-bold text-white mt-1 flex items-baseline gap-2">
+                        <span id="stat-readiness">0%</span>
+                        <span class="text-xs font-normal text-slate-400" id="stat-mastered-count">0/0 Mastered</span>
+                    </div>
+                </div>
+                <div class="relative w-12 h-12 flex items-center justify-center">
+                    <svg class="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
+                        <path class="text-slate-800" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path id="progress-circle" class="text-indigo-500 stroke-current transition-all duration-500" stroke-width="3.5" stroke-dasharray="0, 100" stroke-linecap="round" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- 5 Star Must-Know Stats -->
+            <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex items-center justify-between">
+                <div>
+                    <span class="text-xs uppercase tracking-wider font-semibold text-amber-400/90 flex items-center gap-1">
+                        <i class="fa-solid fa-star text-amber-400"></i> 5★ Must-Know Mastery
+                    </span>
+                    <div class="text-2xl font-bold text-white mt-1" id="stat-five-star-count">
+                        0 / 0
+                    </div>
+                    <span class="text-xs text-slate-400">Extremely high question frequency</span>
+                </div>
+                <div class="text-amber-400/20 text-3xl">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+            </div>
+
+            <!-- Context Distribution -->
+            <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex items-center justify-between">
+                <div>
+                    <span class="text-xs uppercase tracking-wider font-semibold text-slate-400">Track Focus</span>
+                    <div class="text-sm font-semibold text-slate-200 mt-1 flex flex-wrap gap-1">
+                        <span class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 text-xs border border-blue-500/20">Enterprise: <b id="cnt-architect">0</b></span>
+                        <span class="px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 text-xs border border-purple-500/20">Discovery: <b id="cnt-freelance">0</b></span>
+                    </div>
+                </div>
+                <div class="text-indigo-400/20 text-3xl">
+                    <i class="fa-solid fa-diagram-project"></i>
+                </div>
+            </div>
+
+            <!-- Notes Counter & Actions -->
+            <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 flex items-center justify-between">
+                <div>
+                    <span class="text-xs uppercase tracking-wider font-semibold text-slate-400">Personal Insights</span>
+                    <div class="text-2xl font-bold text-slate-200 mt-1" id="stat-notes-count">
+                        0 Notes Saved
+                    </div>
+                </div>
+                <button onclick="resetProgress()" class="text-xs text-slate-500 hover:text-rose-400 underline transition" title="Reset all interactive checks and notes">
+                    Reset Progress
+                </button>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- MAIN INTERACTIVE WORKSPACE -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 lg:px-8 py-6">
+
+        <!-- GUIDED STUDY MODE CONTROLS & FILTERING -->
+        <div id="view-study-controls" class="mb-6 space-y-4">
+            
+            <!-- Domain Track Switcher Tabs -->
+            <div class="flex overflow-x-auto pb-2 gap-2 scrollbar-none border-b border-slate-800" id="track-tabs">
+                <!-- JS will populate track tabs dynamically -->
+            </div>
+
+            <!-- Secondary Filters & Search -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <!-- Search Input -->
+                <div class="md:col-span-4 relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                    <input type="text" id="search-input" onkeyup="filterQuestions()" placeholder="Search questions, tools, keywords (e.g. MCP, DDD, LangGraph)..." class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+                </div>
+
+                <!-- Star Rating Filter -->
+                <div class="md:col-span-3">
+                    <select id="filter-rating" onchange="filterQuestions()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                        <option value="all">⭐ All Star Ratings</option>
+                        <option value="5">★★★★★ 5.0★ (Must-Know / ~90%+ Frequency)</option>
+                        <option value="4.5">★★★★☆ 4.5★+ High Frequency</option>
+                        <option value="4">★★★★☆ 4.0★+ Core Deep-Dive</option>
+                    </select>
+                </div>
+
+                <!-- Mastery Status Filter -->
+                <div class="md:col-span-3">
+                    <select id="filter-mastery" onchange="filterQuestions()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                        <option value="all">🎯 All Mastery Statuses</option>
+                        <option value="Needs Review">🔴 Needs Review</option>
+                        <option value="Practiced">🟡 Practiced</option>
+                        <option value="Mastered">🟢 Mastered</option>
+                    </select>
+                </div>
+
+                <!-- Sort Filter -->
+                <div class="md:col-span-2">
+                    <select id="sort-order" onchange="filterQuestions()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                        <option value="stars-desc">Sort: Stars (High to Low)</option>
+                        <option value="id-asc">Sort: Track & Sequence</option>
+                        <option value="title-asc">Sort: Title A-Z</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODE 1: GUIDED STUDY QUESTION CARDS LIST -->
+        <div id="mode-study-view" class="space-y-4">
+            <div id="questions-container" class="space-y-4">
+                <!-- Question Cards populated dynamically -->
+            </div>
+        </div>
+
+        <!-- MODE 2: FLASHCARD INTERACTIVE VIEW -->
+        <div id="mode-flashcard-view" class="hidden max-w-3xl mx-auto space-y-6 py-4">
+            <div class="flex items-center justify-between text-sm text-slate-400">
+                <span id="fc-progress">Card 1 of 28</span>
+                <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-400 text-xs font-semibold" id="fc-track-badge">Track 1</span>
+            </div>
+
+            <!-- Flashcard Box -->
+            <div class="relative bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-10 shadow-2xl min-h-[380px] flex flex-col justify-between" id="flashcard-box">
+                <div>
+                    <!-- Meta Header -->
+                    <div class="flex items-center justify-between mb-4">
+                        <span id="fc-rating-stars" class="text-amber-400 font-medium text-sm">★★★★★ 5.0/5</span>
+                        <span id="fc-context-tag" class="px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-300">Both Contexts</span>
+                    </div>
+
+                    <!-- Question -->
+                    <h2 class="text-xl md:text-2xl font-bold text-white mb-4" id="fc-question-title">
+                        Loading question...
+                    </h2>
+
+                    <!-- Think First Cues (Always Visible on Front) -->
+                    <div id="fc-cues" class="bg-slate-950/60 rounded-xl p-4 border border-slate-800/80 mb-4">
+                        <span class="text-xs font-bold uppercase tracking-wider text-indigo-400 block mb-2">Think First / Key Talking Points Checklist:</span>
+                        <ul class="text-sm text-slate-300 space-y-1.5 list-disc pl-5" id="fc-cues-list">
+                            <!-- Bullet points -->
+                        </ul>
+                    </div>
+
+                    <!-- Answer Reveal Area (Hidden initially) -->
+                    <div id="fc-answer-area" class="hidden mt-6 pt-6 border-t border-slate-800 space-y-4">
+                        <div class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-2">
+                            <i class="fa-solid fa-check-circle"></i> Senior Architect Sample Answer & Trade-offs:
+                        </div>
+                        <div class="text-sm text-slate-300 leading-relaxed space-y-3 prose prose-invert max-w-none" id="fc-answer-text">
+                            <!-- Answer text -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Action Bar -->
+                <div class="pt-6 border-t border-slate-800/60 flex items-center justify-between">
+                    <button onclick="revealFlashcardAnswer()" id="fc-reveal-btn" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm transition flex items-center gap-2 shadow-lg shadow-indigo-600/30">
+                        <i class="fa-solid fa-eye"></i> Reveal Sample Answer
+                    </button>
+
+                    <div class="flex items-center space-x-2">
+                        <button onclick="prevFlashcard()" class="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center transition">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <button onclick="nextFlashcard()" class="w-10 h-10 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center transition">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODE 3: MOCK PITCH & ELEVATOR DEFENSE TRAINER -->
+        <div id="mode-pitch-view" class="hidden max-w-4xl mx-auto space-y-6 py-4">
+            <div class="bg-gradient-to-r from-indigo-950/40 via-slate-900 to-slate-900 border border-indigo-500/30 rounded-2xl p-6">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-9 h-9 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-stopwatch"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold text-white">Mock Client Discovery & Architecture Defense Simulator</h2>
+                        <p class="text-xs text-slate-400">Practice delivering crisp 2-minute executive architectural pitches with timer & rubric self-evaluation.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Pitch Workbench -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- Left: Question Selector & Timer -->
+                <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
+                    <div>
+                        <label class="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-2">Select Scenario / Prompt</label>
+                        <select id="pitch-question-select" onchange="loadPitchQuestion()" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+                            <!-- JS options -->
+                        </select>
+                    </div>
+
+                    <!-- Timer Widget -->
+                    <div class="bg-slate-950 border border-slate-800/80 rounded-xl p-4 text-center">
+                        <span class="text-xs uppercase tracking-wider font-semibold text-slate-400 block mb-1">Target Timer (2:00)</span>
+                        <div class="text-4xl font-mono font-bold text-indigo-400 my-2" id="pitch-timer-display">02:00</div>
+                        <div class="flex items-center justify-center gap-2">
+                            <button onclick="togglePitchTimer()" id="pitch-timer-btn" class="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition">
+                                Start Timer
+                            </button>
+                            <button onclick="resetPitchTimer()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition">
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Evaluation Rubric Checklist -->
+                    <div class="space-y-2">
+                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block">Executive Pitch Rubric</span>
+                        <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                            <input type="checkbox" class="rounded bg-slate-950 border-slate-700 text-indigo-600 focus:ring-0"> Framed business value & trade-offs first
+                        </label>
+                        <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                            <input type="checkbox" class="rounded bg-slate-950 border-slate-700 text-indigo-600 focus:ring-0"> Cited concrete metrics (e.g., SLA, latency, cost)
+                        </label>
+                        <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                            <input type="checkbox" class="rounded bg-slate-950 border-slate-700 text-indigo-600 focus:ring-0"> Addressed failure modes & security
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Right: Active Question & Notes Area -->
+                <div class="md:col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-4 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span id="pitch-track-tag" class="px-2 py-0.5 rounded text-xs font-semibold bg-indigo-500/20 text-indigo-400">Track</span>
+                            <span id="pitch-stars" class="text-amber-400 text-xs font-bold">★★★★★ 5.0/5</span>
+                        </div>
+                        <h3 id="pitch-title" class="text-lg font-bold text-white mb-4">Prompt Title</h3>
+                        
+                        <div class="bg-slate-950 rounded-xl p-4 border border-slate-800 mb-4">
+                            <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider block mb-2">Key Talking Points to Include:</span>
+                            <ul id="pitch-talking-points" class="text-xs text-slate-300 space-y-1.5 list-disc pl-4">
+                                <!-- Points -->
+                            </ul>
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-1">Your Live Pitch Draft / Talking Notes</label>
+                            <textarea id="pitch-user-notes" rows="6" placeholder="Type key bullet points or transcript of your elevator response here..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500 font-mono"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-800 flex justify-between items-center">
+                        <button onclick="savePitchNotes()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">
+                            <i class="fa-solid fa-floppy-disk"></i> Save Pitch Notes
+                        </button>
+                        <button onclick="togglePitchAnswer()" class="text-xs text-indigo-400 hover:underline">
+                            Toggle Benchmark Answer
+                        </button>
+                    </div>
+
+                    <div id="pitch-benchmark-answer" class="hidden mt-4 pt-4 border-t border-slate-800 text-xs text-slate-300 bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <span class="font-bold text-amber-400 uppercase tracking-wider block mb-2">Benchmark Senior Answer:</span>
+                        <div id="pitch-benchmark-text" class="space-y-2 prose prose-invert text-xs max-w-none"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800/80 bg-slate-900 py-6 px-4 lg:px-8 mt-auto text-xs text-slate-400">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-shield-halved text-indigo-500"></i>
+                <span><b>ArchitectPrep Studio</b> • Designed for 10+ Yr Staff Architects & Freelance Advisory</span>
+            </div>
+            <div class="flex gap-4 text-slate-400">
+                <span>28 Core Scenarios</span>
+                <span>•</span>
+                <span>Verified Documentation References</span>
+                <span>•</span>
+                <span>Local Storage Persistence</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPT APPLICATION LOGIC & QUESTION BANK -->
+    <script>
+        // QUESTION BANK DATA STRUCTURE (28+ Deep Questions Across 5 Tracks)
+        const questionBank = [
+            // TRACK 1: AI, GenAI, RAG, Multi-Agent & MCP
+            {
+                id: "q1",
+                trackId: 1,
+                trackName: "GenAI, Multi-Agent & MCP",
+                title: "Model Context Protocol (MCP) Architecture & Enterprise Tool Integration",
+                stars: 5.0,
+                frequencyBadge: "Must-Know / Extremely Frequent",
+                frequencyPercent: 96,
+                targetContext: "Both",
+                cues: [
+                    "Explain client-host-server separation in MCP spec.",
+                    "Detail JSON-RPC 2.0 transport options (Stdio vs SSE).",
+                    "Compare MCP standard tools/prompts/resources vs traditional REST APIs.",
+                    "Address security, auth scoping, dynamic capability discovery, and enterprise guardrails."
+                ],
+                answer: `<p><strong>Core Concept & Architecture:</strong> Anthropic's Model Context Protocol (MCP) standardizes how LLM clients (Hosts like Claude Desktop, IDEs, or custom agent runners) connect securely to external context sources and tools via server adapters.</p>
+                <p class="my-2"><strong>Key Components:</strong></p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>MCP Client / Host:</strong> Maintains the conversation session, manages model calls, enforces permission prompts, and delegates tool calls.</li>
+                    <li><strong>MCP Server:</strong> Lightweight process providing 3 core primitives: <em>Tools</em> (executable functions with JSON schema), <em>Resources</em> (read-only context URIs), and <em>Prompts</em> (pre-engineered template snippets).</li>
+                    <li><strong>Transport Layer:</strong> Uses JSON-RPC 2.0 protocol over either <code>Stdio</code> (for local subprocesses) or <code>HTTP with Server-Sent Events (SSE)</code> (for remote cloud microservices).</li>
+                </ul>
+                <p class="my-2"><strong>Enterprise Architectural Trade-offs & Production Design:</strong></p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>Security & Sandboxing:</strong> Remote SSE servers require OAuth2 / JWT authorization header propagation. Run local Stdio servers inside lightweight containers (Docker/gVisor) to prevent arbitrary prompt injection from triggering filesystem access.</li>
+                    <li><strong>Latency & Connection Pooling:</strong> SSE connections can suffer from cold starts. Use persistent WebSocket/SSE connection pools behind an API Gateway with dynamic discovery.</li>
+                </ul>`,
+                references: [
+                    { name: "Model Context Protocol Official Specification", url: "https://modelcontextprotocol.io" },
+                    { name: "Anthropic MCP Github Repositories", url: "https://github.com/modelcontextprotocol" }
+                ]
+            },
+            {
+                id: "q2",
+                trackId: 1,
+                trackName: "GenAI, Multi-Agent & MCP",
+                title: "Multi-Agent Systems Design: LangGraph Cyclic Graphs vs Autonomous Swarms",
+                stars: 5.0,
+                frequencyBadge: "Must-Know / Extremely Frequent",
+                frequencyPercent: 94,
+                targetContext: "Full-Time Architect",
+                cues: [
+                    "State management (StateGraph, channels, persistent checkpointers).",
+                    "Handling cyclic workflows, human-in-the-loop (HITL), and break-points.",
+                    "Determining deterministic state graphs vs unstructured autonomous swarms.",
+                    "Failure handling, recursion limits, and cost guardrails."
+                ],
+                answer: `<p><strong>Architectural Paradigm:</strong> LangGraph models multi-agent orchestration as deterministic or semi-deterministic finite state machines (FSM) with cyclic state loops, unlike naive reactive chains or unpredictable autonomous swarms AutoGen/BabyAGI style.</p>
+                <p class="my-2"><strong>Core Architecture & State Persistence:</strong></p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>StateGraph & TypedDict:</strong> Agents update a centralized immutable graph state via reducer functions. Each node represents an agent node function; edges represent condition-based router functions.</li>
+                    <li><strong>Persistence Checkpointers (PostgreSQL / Redis):</strong> Saves state snapshot at every graph step. Enables <em>Time-Travel</em> (replay execution from step N) and <em>Human-in-the-Loop (HITL)</em> interrupt signals before critical tool executions (e.g. wire transfer approval).</li>
+                </ul>
+                <p class="my-2"><strong>Production Comparison Matrix:</strong></p>
+                <div class="overflow-x-auto my-2"><table class="w-full text-xs border border-slate-700"><thead><tr class="bg-slate-800"><th class="p-2 border border-slate-700">Dimension</th><th class="p-2 border border-slate-700">LangGraph Cyclic Graph</th><th class="p-2 border border-slate-700">Autonomous Swarm</th></tr></thead><tbody><tr><td class="p-2 border border-slate-700">Predictability & Reliability</td><td class="p-2 border border-slate-700">High (Guaranteed state transitions & paths)</td><td class="p-2 border border-slate-700">Low (Dynamic agent delegation loop)</td></tr><tr><td class="p-2 border border-slate-700">Auditability & Governance</td><td class="p-2 border border-slate-700">Full step-by-step trace logging</td><td class="p-2 border border-slate-700">Difficult to trace infinite reasoning loops</td></tr><tr><td class="p-2 border border-slate-700">Enterprise Fit</td><td class="p-2 border border-slate-700">Ideal for complex business workflows</td><td class="p-2 border border-slate-700">Ideal for open-ended creative tasks</td></tr></tbody></table></div>`,
+                references: [
+                    { name: "LangGraph Architecture Docs", url: "https://python.langchain.com/docs/langgraph/" },
+                    { name: "Building Effective Agents - Anthropic Research", url: "https://www.anthropic.com/research/building-effective-agents" }
+                ]
+            },
+            {
+                id: "q3",
+                trackId: 1,
+                trackName: "GenAI, Multi-Agent & MCP",
+                title: "Advanced Production RAG Architecture: Hybrid Search, Re-Ranking & Context Compression",
+                stars: 4.8,
+                frequencyBadge: "High Frequency",
+                frequencyPercent: 89,
+                targetContext: "Both",
+                cues: [
+                    "Combine BM25 / Sparse vectors with Dense Vector Embeddings (pgvector/Pinecone).",
+                    "Reciprocal Rank Fusion (RRF) & Cross-Encoder Re-ranking (Cohere / BGE-Reranker).",
+                    "Context chunking strategies (Semantic chunking, parent-document retrieval).",
+                    "Handling domain hallucination & evaluation metrics (Ragas: Faithfulness, Answer Relevance)."
+                ],
+                answer: `<p><strong>Enterprise RAG Architecture:</strong> Standard naive vector search (cosine similarity on chunk embeddings) fails in production due to lost keyword precision, domain acronyms, and lost context. A robust 10+ year architect designs 2-stage Hybrid Retrieval with Re-ranking.</p>
+                <p class="my-2"><strong>Pipeline Architecture:</strong></p>
+                <ol class="list-decimal pl-5 space-y-1">
+                    <li><strong>Hybrid Retrieval (Top-50):</strong> Execute parallel query on (a) Dense Vector Index (HNSW embedding distance) AND (b) BM25 Full-Text Sparse Index (PostgreSQL tsvector or Elasticsearch).</li>
+                    <li><strong>Reciprocal Rank Fusion (RRF):</strong> Merge both rank lists using formula <code>Score = 1 / (60 + rank_dense) + 1 / (60 + rank_sparse)</code>.</li>
+                    <li><strong>Cross-Encoder Re-Ranking (Top-5):</strong> Pass query + merged candidates through a Cross-Encoder transformer (e.g. Cohere Rerank) to score exact semantic context relevance.</li>
+                    <li><strong>Context Compression / Summarization:</strong> Strip non-essential tokens to save context window and suppress distractors.</li>
+                </ol>`,
+                references: [
+                    { name: "Pinecone Hybrid Search Guide", url: "https://docs.pinecone.io/guides/data/understanding-hybrid-search" },
+                    { name: "Ragas Framework RAG Evaluation", url: "https://docs.ragas.io/" }
+                ]
+            },
+            {
+                id: "q4",
+                trackId: 1,
+                trackName: "GenAI, Multi-Agent & MCP",
+                title: "AI Guardrails, LLM Security & Hallucination Mitigation in Enterprise Workflows",
+                stars: 4.5,
+                frequencyBadge: "High Frequency",
+                frequencyPercent: 84,
+                targetContext: "Both",
+                cues: [
+                    "Input Guardrails: Prompt injection detection, PII redactor (Presidio), topical boundary filters.",
+                    "Output Guardrails: Schema enforcement (Pydantic/Instructor), toxic output detection, fact-checkers.",
+                    "NeMo Guardrails & Llama Guard deployment patterns.",
+                    "Zero-trust prompt engineering & system instructions isolation."
+                ],
+                answer: `<p><strong>Defense-in-Depth AI Guardrails Framework:</strong> Enterprise GenAI applications require inline firewalls at both prompt entry and generation output points.</p>
+                <p class="my-2"><strong>Architecture Components:</strong></p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>Pre-Execution Gateway (Input):</strong> Intercept user inputs. Pass through Microsoft Presidio for automated regex/NER PII scrubbing (Social security, emails, credit cards). Run lightweight classifier (Llama-Guard-3 or NeMo) to detect prompt injection attempts, system prompt extraction, or prohibited domain topics.</li>
+                    <li><strong>In-Execution Constraints:</strong> Enforce JSON schema output strictly via model native function calling or Structured Outputs API (using dynamic Pydantic/Zod validators).</li>
+                    <li><strong>Post-Execution Gateway (Output):</strong> Validate generated answers against grounded source documents using string-similarity / natural language inference (NLI) models to catch hallucinations before sending response to UI.</li>
+                </ul>`,
+                references: [
+                    { name: "NVIDIA NeMo Guardrails Documentation", url: "https://docs.nvidia.com/nemo/guardrails/" },
+                    { name: "OWASP Top 10 for Large Language Model Applications", url: "https://owasp.org/www-project-top-10-for-large-language-model-applications/" }
+                ]
+            },
+            {
+                id: "q5",
+                trackId: 1,
+                trackName: "GenAI, Multi-Agent & MCP",
+                title: "LLM Evaluation, Latency Budgeting & Semantic Caching for Scale",
+                stars: 4.5,
+                frequencyBadge: "Core Deep-Dive",
+                frequencyPercent: 82,
+                targetContext: "Full-Time Architect",
+                cues: [
+                    "Semantic Caching with Redis / GPTCache (similarity threshold ~0.92).",
+                    "Streaming response TTFT (Time to First Token) optimization.",
+                    "Model Tiering: Small Language Models (SLMs - Llama 3.2 3B/Phi-3) vs Frontier Models (Claude 3.5 Sonnet / GPT-4o).",
+                    "LLM-as-a-Judge vs synthetic test suites for continuous regression testing."
+                ],
+                answer: `<p><strong>Cost & Latency Architecture Strategy:</strong> Frontier LLMs introduce high latency (~1-3s TTFT) and exponential API costs. Architects employ tiering and caching strategies to maintain &lt;500ms P95 user experience.</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>Semantic Cache Layer (Redis VL):</strong> Before hitting the LLM API, embed incoming prompt and query a Redis HNSW vector index. If cosine distance is within threshold (&gt;0.92 similarity), return stored response instantly in &lt;15ms. Saves 70%+ token cost on common enterprise queries.</li>
+                    <li><strong>Model Routing Architecture:</strong> Route simple intent classification or extraction prompts to lightweight SLMs (e.g., Llama-3.2 3B via vLLM hosting). Reserve Claude 3.5 Sonnet / GPT-4o for multi-step reasoning or complex synthesis.</li>
+                </ul>`,
+                references: [
+                    { name: "Redis Vector Library & Semantic Caching", url: "https://redis.io/solutions/vector-search/" },
+                    { name: "vLLM High-Throughput LLM Serving Engine", url: "https://docs.vllm.ai/" }
+                ]
+            },
+            {
+                id: "q6",
+                trackId: 1,
+                trackName: "GenAI, Multi-Agent & MCP",
+                title: "Distributed Agentic Execution & State Persistence in Production",
+                stars: 4.2,
+                frequencyBadge: "Core Deep-Dive",
+                frequencyPercent: 78,
+                targetContext: "Full-Time Architect",
+                cues: [
+                    "Asynchronous worker queues (Celery/Temporal/Kafka) for multi-step agents.",
+                    "Durable execution frameworks (Temporal.io) vs custom polling.",
+                    "Handling API rate limits, backoff retry strategies, and idempotency keys.",
+                    "Session context pruning & sliding window token management."
+                ],
+                answer: `<p><strong>Durable Execution for Long-Running Agents:</strong> Complex AI agents executing workflows taking 2 to 10+ minutes (e.g., auditing 500-page PDF contracts) cannot execute inside standard synchronous HTTP request loops.</p>
+                <p class="my-2"><strong>Architectural Pattern with Temporal.io:</strong></p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>Temporal Workflows:</strong> Define agent control loop inside a Temporal Workflow. Workflows are deterministic, event-sourced, and resilient against server restarts or network partitions.</li>
+                    <li><strong>Temporal Activities:</strong> Wrap non-deterministic operations (calling LLM API, calling external DBs) inside Activities. Temporal automatically handles exponential backoff retries, rate limits, and heartbeat monitoring.</li>
+                </ul>`,
+                references: [
+                    { name: "Temporal.io Architecture Guide", url: "https://docs.temporal.io/concepts/what-is-temporal" }
+                ]
+            },
+
+            // TRACK 2: ENTERPRISE, CLOUD-NATIVE & MICROSERVICES
+            {
+                id: "q7",
+                trackId: 2,
+                trackName: "Enterprise & Cloud Architecture",
+                title: "Event-Driven Architecture & Eventual Consistency Across Microservices",
+                stars: 5.0,
+                frequencyBadge: "Must-Know / Extremely Frequent",
+                frequencyPercent: 96,
+                targetContext: "Both",
+                cues: [
+                    "Transactional Outbox Pattern & Change Data Capture (CDC with Debezium).",
+                    "Idempotent Consumer pattern & deduplication logic.",
+                    "At-least-once vs Exactly-once delivery semantics in Apache Kafka.",
+                    "Handling Dead Letter Queues (DLQ) and replayability."
+                ],
+                answer: `<p><strong>Core Problem:</strong> Updating a DB table and publishing an event to Kafka in a microservice without distributed transactions (2PC) leads to dual-write failure vulnerabilities (DB succeeds but Kafka crashes, or vice versa).</p>
+                <p class="my-2"><strong>Architectural Solution: Transactional Outbox Pattern + CDC:</strong></p>
+                <ol class="list-decimal pl-5 space-y-1">
+                    <li><strong>Local Transaction:</strong> Service writes aggregate business data into DB table AND writes event JSON payload into an <code>outbox</code> DB table within the SAME local ACID database transaction.</li>
+                    <li><strong>CDC Log Tailing (Debezium):</strong> Debezium connector tails database WAL (Write-Ahead Log) and streams Outbox table records directly into Kafka topic reliably without missing any events.</li>
+                    <li><strong>Idempotent Consumer:</strong> Receiving service checks incoming event ID against an <code>processed_events</code> table inside a unique constraint check before processing business logic.</li>
+                </ol>`,
+                references: [
+                    { name: "Microservices.io Transactional Outbox Pattern", url: "https://microservices.io/patterns/data/transactional-outbox.html" },
+                    { name: "Debezium Architecture Documentation", url: "https://debezium.io/documentation/reference/stable/architecture.html" }
+                ]
+            },
+            {
+                id: "q8",
+                trackId: 2,
+                trackName: "Enterprise & Cloud Architecture",
+                title: "Domain-Driven Design (DDD): Bounded Contexts, Aggregates & Legacy Migration",
+                stars: 5.0,
+                frequencyBadge: "Must-Know / Extremely Frequent",
+                frequencyPercent: 94,
+                targetContext: "Both",
+                cues: [
+                    "Strategic DDD: Ubiquitous Language, Bounded Context mapping, Context Maps.",
+                    "Tactical DDD: Entities, Value Objects, Aggregates, Domain Events, Repositories.",
+                    "Strangler Fig Migration Pattern from Monolith to Microservices.",
+                    "Anti-Corruption Layer (ACL) for insulating new domain models from legacy data."
+                ],
+                answer: `<p><strong>Domain-Driven Design Strategy:</strong> Senior Architects use DDD to partition large complex enterprise systems along natural business domain boundaries rather than arbitrary technical layers.</p>
+                <p class="my-2"><strong>Legacy Migration Pattern (Strangler Fig + ACL):</strong></p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>Bounded Context Definition:</strong> Map high-cohesion subdomains (e.g., Order Processing vs Billing Context). Ensure each Context owns its data model exclusively.</li>
+                    <li><strong>Anti-Corruption Layer (ACL):</strong> Interpose an API translation layer between modern microservices and legacy monolithic databases to transform legacy structures into clean domain entities without leaking legacy technical debt.</li>
+                    <li><strong>Strangler Fig Routing:</strong> Route traffic gradually via API Gateway from legacy endpoints to new microservices until legacy monolithic routes reach zero traffic.</li>
+                </ul>`,
+                references: [
+                    { name: "Martin Fowler - Strangler Fig Pattern", url: "https://martinfowler.com/bliki/StranglerFigApplication.html" },
+                    { name: "Domain-Driven Design Reference by Eric Evans", url: "https://domainlanguage.com/ddd/reference/" }
+                ]
+            },
+            {
+                id: "q9",
+                trackId: 2,
+                trackName: "Enterprise & Cloud Architecture",
+                title: "API Gateway vs Service Mesh (Istio / Envoy) Architectural Trade-Offs",
+                stars: 4.8,
+                frequencyBadge: "High Frequency",
+                frequencyPercent: 88,
+                targetContext: "Full-Time Architect",
+                cues: [
+                    "North-South Traffic (API Gateway) vs East-West Traffic (Service Mesh sidecar).",
+                    "Functions of API Gateway: Authentication, rate limiting, request transformation, public billing.",
+                    "Functions of Service Mesh: mTLS, service-to-service auth, traffic splitting, distributed tracing headers.",
+                    "Operational complexity, CPU sidecar overhead, and control plane management."
+                ],
+                answer: `<p><strong>Architectural Distinction:</strong> API Gateways manage <em>North-South</em> edge traffic entering from external users/clients, whereas Service Mesh manages internal <em>East-West</em> communication between microservices within Kubernetes clusters.</p>
+                <div class="overflow-x-auto my-3"><table class="w-full text-xs border border-slate-700"><thead><tr class="bg-slate-800"><th class="p-2 border border-slate-700">Feature</th><th class="p-2 border border-slate-700">API Gateway (e.g. Kong, AWS APIGW)</th><th class="p-2 border border-slate-700">Service Mesh (Istio / Envoy)</th></tr></thead><tbody><tr><td class="p-2 border border-slate-700">Traffic Direction</td><td class="p-2 border border-slate-700">North-South (Ingress edge)</td><td class="p-2 border border-slate-700">East-West (Service-to-service internal)</td></tr><tr><td class="p-2 border border-slate-700">Deployment Pattern</td><td class="p-2 border border-slate-700">Centralized cluster / edge nodes</td><td class="p-2 border border-slate-700">Sidecar containers per pod or ambient proxy</td></tr><tr><td class="p-2 border border-slate-700">Primary Responsibilities</td><td class="p-2 border border-slate-700">API monetization, JWT validation, SSL termination</td><td class="p-2 border border-slate-700">Automatic mTLS, fine-grained canary, Jaeger tracing</td></tr></tbody></table></div>`,
+                references: [
+                    { name: "Istio Service Mesh Architectural Docs", url: "https://istio.io/latest/docs/ops/deployment/architecture/" },
+                    { name: "Kong API Gateway Architecture", url: "https://docs.konghq.com/" }
+                ]
+            },
+            {
+                id: "q10",
+                trackId: 2,
+                trackName: "Enterprise & Cloud Architecture",
+                title: "Platform Engineering & Internal Developer Portals (Backstage) at Scale",
+                stars: 4.5,
+                frequencyBadge: "Core Deep-Dive",
+                frequencyPercent: 83,
+                targetContext: "Full-Time Architect",
+                cues: [
+                    "Developer Self-Service vs Ops Bottlenecks (Golden Paths / Paved Roads).",
+                    "Spotify Backstage software catalog, templates, and plugin ecosystem.",
+                    "Infrastructure abstraction using Kubernetes Operators & Crossplane.",
+                    "Measuring DORA Metrics (Deployment Frequency, Lead Time for Changes, MTTR, Change Failure Rate)."
+                ],
+                answer: `<p><strong>Platform Engineering Strategy:</strong> Rather than forcing every backend developer to become an expert in Kubernetes YAML, Terraform, and Istio networking, Platform Engineers build Internal Developer Platforms (IDP) offering "Golden Paths".</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>Service Catalog & Software Templates (Backstage):</strong> Standardized project scaffolding templates (Spring Boot 3 + PostgreSQL + Helm chart + CI/CD pipeline) deployed in 2 clicks.</li>
+                    <li><strong>Infrastructure as Code Abstraction (Crossplane):</strong> Developers declare cloud infrastructure requirements directly via custom Kubernetes CRDs, enabling GitOps workflow without direct cloud provider access.</li>
+                </ul>`,
+                references: [
+                    { name: "CNCF Platform Engineering Definition", url: "https://tag-app-delivery.cncf.io/whitepapers/platforms/" },
+                    { name: "Backstage.io Official Portal Docs", url: "https://backstage.io/docs/overview/what-is-backstage" }
+                ]
+            },
+            {
+                id: "q11",
+                trackId: 2,
+                trackName: "Enterprise & Cloud Architecture",
+                title: "Resilience Engineering: Circuit Breakers, Bulkheads & Saga Pattern vs 2PC",
+                stars: 4.8,
+                frequencyBadge: "High Frequency",
+                frequencyPercent: 91,
+                targetContext: "Both",
+                cues: [
+                    "Resilience4j implementation of Circuit Breakers (CLOSED, OPEN, HALF-OPEN states).",
+                    "Bulkhead isolation pattern for resource segregation.",
+                    "Distributed Saga Pattern: Orchestration vs Choreography.",
+                    "Compensating Transactions for rolling back distributed state."
+                ],
+                answer: `<p><strong>Distributed Resilience & Transactions:</strong> Two-Phase Commit (2PC) does not scale in cloud microservices due to locking latency and single-point-of-failure sync dependencies. Distributed Sagas replace 2PC.</p>
+                <p class="my-2"><strong>Saga Pattern Mechanics:</strong></p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>Choreography:</strong> Services exchange domain events asynchronously. Service B reacts to Event A. If Service C fails, it emits a failure event, triggering backward compensating transactions in B and A.</li>
+                    <li><strong>Orchestration:</strong> A central Saga Orchestrator state machine sends explicit command messages to services and coordinates rollback execution upon failure. Recommended for complex workflows with &gt;4 steps.</li>
+                </ul>`,
+                references: [
+                    { name: "Resilience4j Circuit Breaker Specs", url: "https://resilience4j.readme.io/docs/circuitbreaker" },
+                    { name: "AWS Saga Pattern Design", url: "https://docs.aws.amazon.com/prescriptive-guidance/latest/modernization-data-persistence/saga-pattern.html" }
+                ]
+            },
+            {
+                id: "q12",
+                trackId: 2,
+                trackName: "Enterprise & Cloud Architecture",
+                title: "Multi-Region Cloud Deployment & Active-Active Data Replication Architecture",
+                stars: 4.5,
+                frequencyBadge: "Core Deep-Dive",
+                frequencyPercent: 85,
+                targetContext: "Full-Time Architect",
+                cues: [
+                    "Active-Passive vs Active-Active multi-region strategies.",
+                    "Global Traffic Routing (AWS Route53 Latency / Geolocation routing, Cloudflare Anycast).",
+                    "Database Replication Challenge: Write conflict resolution (LWW - Last Write Wins vs CRDTs).",
+                    "RPO (Recovery Point Objective) and RTO (Recovery Time Objective) targets."
+                ],
+                answer: `<p><strong>Active-Active Architecture Design:</strong> Operating multi-region active-active requires solving synchronous global database consensus and write conflict challenges.</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>Global Database Strategies:</strong> Use globally distributed databases designed for multi-master replication like AWS Aurora Global Database, CockroachDB (Raft consensus), or Couchbase Cross-Data Center Replication (XDCR).</li>
+                    <li><strong>Partitioning / Regional Affinity:</strong> Route user sessions to their geographical home region using Anycast DNS or Geo-IP routing to ensure 95%+ of read/write transactions stay localized in a single region.</li>
+                </ul>`,
+                references: [
+                    { name: "AWS Multi-Region Application Architecture", url: "https://aws.amazon.com/architecture/well-architected/" },
+                    { name: "CockroachDB Multi-Region Architecture", url: "https://www.cockroachlabs.com/docs/stable/multiregion-overview" }
+                ]
+            },
+
+            // TRACK 3: BACKEND, JVM & DATA MODELING
+            {
+                id: "q13",
+                trackId: 3,
+                trackName: "Backend, JVM & Data Modeling",
+                title: "Polyglot Persistence: PostgreSQL vs Couchbase vs Redis vs MongoDB",
+                stars: 5.0,
+                frequencyBadge: "Must-Know / Extremely Frequent",
+                frequencyPercent: 95,
+                targetContext: "Both",
+                cues: [
+                    "CAP Theorem trade-offs & data access pattern analysis.",
+                    "PostgreSQL: Relational ACID, JSONB, pgvector extensions.",
+                    "Couchbase: Memory-first architecture, N1QL/SQL++ query engine, XDCR.",
+                    "Redis: In-memory cache, pub/sub, data structures, persistent storage.",
+                    "MongoDB: Document store, aggregation pipeline, sharding clusters."
+                ],
+                answer: `<p><strong>Polyglot Persistence Selection Matrix:</strong> Senior Architects select database technology based strictly on data access patterns, ACID transactional bounds, and write/read scale profiles.</p>
+                <div class="overflow-x-auto my-3"><table class="w-full text-xs border border-slate-700"><thead><tr class="bg-slate-800"><th class="p-2 border border-slate-700">Database Engine</th><th class="p-2 border border-slate-700">Primary Strength</th><th class="p-2 border border-slate-700">Optimal Use Case</th><th class="p-2 border border-slate-700">CAP Trade-Off</th></tr></thead><tbody><tr><td class="p-2 border border-slate-700">PostgreSQL</td><td class="p-2 border border-slate-700">ACID Relational, Rich Extensions (pgvector)</td><td class="p-2 border border-slate-700">Core Financial & Transactional Ledger</td><td class="p-2 border border-slate-700">CA (Strong Consistency)</td></tr><tr><td class="p-2 border border-slate-700">Couchbase</td><td class="p-2 border border-slate-700">Memory-First KV + Sub-millisecond JSON</td><td class="p-2 border border-slate-700">High-Throughput User Profile & Catalog</td><td class="p-2 border border-slate-700">CP / AP configurable</td></tr><tr><td class="p-2 border border-slate-700">Redis</td><td class="p-2 border border-slate-700">In-memory speed, native data structures</td><td class="p-2 border border-slate-700">Session cache, rate limiting, leaderboards</td><td class="p-2 border border-slate-700">In-memory Performance Focus</td></tr><tr><td class="p-2 border border-slate-700">MongoDB</td><td class="p-2 border border-slate-700">Flexible JSON documents, horizontal sharding</td><td class="p-2 border border-slate-700">Content Management & Variable Schemas</td><td class="p-2 border border-slate-700">CP (Consistent primary)</td></tr></tbody></table></div>`,
+                references: [
+                    { name: "PostgreSQL Official Documentation", url: "https://www.postgresql.org/docs/" },
+                    { name: "Couchbase Developer Docs", url: "https://docs.couchbase.com/home/index.html" }
+                ]
+            },
+            {
+                id: "q14",
+                trackId: 3,
+                trackName: "Backend, JVM & Data Modeling",
+                title: "Java Virtual Threads (Project Loom) vs Reactive Spring WebFlux",
+                stars: 4.8,
+                frequencyBadge: "High Frequency",
+                frequencyPercent: 90,
+                targetContext: "Full-Time Architect",
+                cues: [
+                    "Platform Threads (1:1 OS thread mapping) vs Virtual Threads (M:N carrier thread scheduling).",
+                    "Reactive programming overhead (Mono/Flux, callback hell, complex stack traces).",
+                    "Thread pinning risks (synchronized blocks, native code) in Java 21+.",
+                    "Spring Boot 3 integration: Tomcat Virtual Threads vs WebFlux Netty server."
+                ],
+                answer: `<p><strong>Architectural Paradigm Shift:</strong> Java 21 Virtual Threads (Project Loom) revolutionize high-concurrency JVM services by allowing imperative block-on-I/O code style while achieving throughput equivalent to reactive code (Spring WebFlux / Netty).</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>Virtual Thread Architecture:</strong> Virtual threads are cheap lightweight instances managed by the JVM runtime (bytes of memory vs 1MB per OS thread). When a Virtual Thread blocks on network/database I/O, the JVM unmounts it from its underlying OS Carrier Thread.</li>
+                    <li><strong>Pinning Pitfall:</strong> Avoid <code>synchronized</code> blocks around I/O in Java 21; use <code>ReentrantLock</code> instead to prevent pinning carrier threads.</li>
+                    <li><strong>Decision Guide:</strong> Prefer imperative Spring MVC + Virtual Threads for clean maintainability across standard CRUD microservices. Use WebFlux when dealing with native streaming (Server-Sent Events / WebSockets).</li>
+                </ul>`,
+                references: [
+                    { name: "JEP 444: Virtual Threads Specification", url: "https://openjdk.org/jeps/444" },
+                    { name: "Spring Framework Virtual Threads Integration Guide", url: "https://spring.io/blog/2023/09/09/virtual-threads-in-spring-boot-3-2" }
+                ]
+            },
+            {
+                id: "q15",
+                trackId: 3,
+                trackName: "Backend, JVM & Data Modeling",
+                title: "High-Throughput Database Indexing, Partitioning & Connection Pooling",
+                stars: 4.8,
+                frequencyBadge: "High Frequency",
+                frequencyPercent: 89,
+                targetContext: "Both",
+                cues: [
+                    "B-Tree vs Hash vs GIN / GiST indexes.",
+                    "Database Partitioning: Range, Hash, and List partitioning strategies.",
+                    "HikariCP connection pool tuning (formula: connections = (core_count * 2) + effective_spindle_count).",
+                    "Managing DB connection exhaustion in serverless or auto-scaled Kubernetes workloads (PgBouncer)."
+                ],
+                answer: `<p><strong>Database Performance & Connection Scalability:</strong> Scaling database workloads requires optimizing index coverage and preventing connection exhaustion from auto-scaled application pods.</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>HikariCP Pool Sizing Myth:</strong> Creating 100 DB connections per pod degrades throughput due to OS context switching. Set pool size using formula: <code>Connections = (CPU Cores * 2) + Disk Spindles</code>.</li>
+                    <li><strong>PgBouncer Connection Middleware:</strong> In Kubernetes environments scaling to hundreds of app replicas, place PgBouncer in transaction pooling mode between app pods and PostgreSQL to maintain max 50-100 real connections to DB engine.</li>
+                </ul>`,
+                references: [
+                    { name: "HikariCP About Sizing Rules", url: "https://github.com/brettwooldridge/HikariCP/wiki/About-Pool-Sizing" },
+                    { name: "PgBouncer Architectural Overview", url: "https://www.pgbouncer.org/" }
+                ]
+            },
+            {
+                id: "q16",
+                trackId: 3,
+                trackName: "Backend, JVM & Data Modeling",
+                title: "JVM Garbage Collection Tuning & Memory Management (G1GC vs ZGC)",
+                stars: 4.5,
+                frequencyBadge: "Core Deep-Dive",
+                frequencyPercent: 82,
+                targetContext: "Full-Time Architect",
+                cues: [
+                    "Generational Hypothesis & Java Memory Regions (Eden, Survivor, Tenured, Metaspace).",
+                    "G1GC: Region-based, pause-time targeted GC.",
+                    "Generational ZGC: Ultra-low latency GC (<1ms max pause times, multi-terabyte heaps).",
+                    "Diagnosing OutOfMemoryError (OOM) and GC log analysis."
+                ],
+                answer: `<p><strong>Modern JVM GC Selection:</strong> Java 17+ and 21 offer ultra-low latency garbage collectors that eliminate multi-second Stop-The-World (STW) pauses.</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>G1GC (Garbage-First):</strong> Default GC target for balance of throughput and predictable pause times (&lt;200ms). Suitable for general enterprise Spring Boot apps.</li>
+                    <li><strong>Generational ZGC (Java 21):</strong> Uses colored pointers and load barriers to perform concurrent mark and compact steps. Max pause times strictly &lt;1ms even on 16GB-1TB heaps with negligible throughput penalty. Recommended for latency-sensitive financial or real-time trading services.</li>
+                </ul>`,
+                references: [
+                    { name: "OpenJDK ZGC Architectural Documentation", url: "https://wiki.openjdk.org/display/zgc" }
+                ]
+            },
+            {
+                id: "q17",
+                trackId: 3,
+                trackName: "Backend, JVM & Data Modeling",
+                title: "Distributed Caching Strategies: Write-Through, Write-Behind & Cache Stampede",
+                stars: 4.5,
+                frequencyBadge: "High Frequency",
+                frequencyPercent: 84,
+                targetContext: "Both",
+                cues: [
+                    "Cache Patterns: Cache-Aside (Lazy loading), Write-Through, Write-Behind (Write-Back).",
+                    "Cache Stampede (Thundering Herd) mitigation: Probabilistic Early Expiration (XFetch algorithm) / Distributed Mutex Locks.",
+                    "Eviction Policies: LRU, LFU, TTL management.",
+                    "Cache Invalidation consistency challenges."
+                ],
+                answer: `<p><strong>High-Scale Caching Architecture:</strong> Caching mitigates database read load, but poor cache management introduces cache stampedes and stale data sync bugs.</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>Cache Stampede Mitigation:</strong> When a hot key expires, 10,000 concurrent requests miss the cache simultaneously and overwhelm the underlying DB. Resolve via <em>Distributed Mutex (Redlock)</em> so only 1 worker rebuilds the cache while others wait, OR use <em>Probabilistic Early Expiration (XFetch)</em> to compute cache refresh before official TTL expiration.</li>
+                    <li><strong>Cache-Aside Pattern:</strong> Standard enterprise pattern. App queries Redis first; if miss, queries DB, populates Redis with TTL, and returns payload.</li>
+                </ul>`,
+                references: [
+                    { name: "Redis Caching Best Practices", url: "https://redis.io/docs/manual/patterns/" }
+                ]
+            },
+            {
+                id: "q18",
+                trackId: 3,
+                trackName: "Backend, JVM & Data Modeling",
+                title: "Zero-Downtime Data Migration Architecture (CDC + Dual Writes)",
+                stars: 4.2,
+                frequencyBadge: "Core Deep-Dive",
+                frequencyPercent: 79,
+                targetContext: "Both",
+                cues: [
+                    "Phased Migration: Expand & Contract Pattern (Parallel Run).",
+                    "Dual Writes vs CDC-driven replication (Debezium + Kafka).",
+                    "Data Reconciliation scripts & checksum verification.",
+                    "Cutover procedures and rollback safety flags."
+                ],
+                answer: `<p><strong>Zero-Downtime Database Migration:</strong> Migrating live production tables with billions of rows (e.g. splitting a monolith DB or migrating MySQL to PostgreSQL) requires a 4-phase Expand and Contract strategy.</p>
+                <ol class="list-decimal pl-5 space-y-1">
+                    <li><strong>Phase 1 (Expand):</strong> Deploy application updates capable of reading from Old DB and fallback, while asynchronously writing to both.</li>
+                    <li><strong>Phase 2 (Historical Backfill & CDC Replication):</strong> Run backfill jobs for historical data while Debezium streams real-time CDC updates to catch up target DB.</li>
+                    <li><strong>Phase 3 (Reconciliation & Read Cutover):</strong> Run continuous reconciliation scripts comparing row hashes. Flip feature flag to switch read traffic to New DB.</li>
+                    <li><strong>Phase 4 (Contract):</strong> Decommission Old DB and remove legacy fallback code.</li>
+                </ol>`,
+                references: [
+                    { name: "Refactoring Databases: Evolutionary Database Design", url: "https://databaserefactoring.com/" }
+                ]
+            },
+
+            // TRACK 4: OBSERVABILITY, DEVOPS & PRODUCTION SUPPORT
+            {
+                id: "q19",
+                trackId: 4,
+                trackName: "Observability & DevOps",
+                title: "Enterprise Observability Stack: Distributed Tracing with OpenTelemetry, Jaeger & Datadog",
+                stars: 5.0,
+                frequencyBadge: "Must-Know / Extremely Frequent",
+                frequencyPercent: 94,
+                targetContext: "Both",
+                cues: [
+                    "3 Pillars of Observability: Metrics, Logs, Traces (and Baggage/Context propagation).",
+                    "OpenTelemetry (OTel) Collector architecture: Receivers, Processors, Exporters.",
+                    "W3C Trace Context headers (traceparent, tracestate) propagation across HTTP/gRPC/Kafka.",
+                    "Sampling Strategies: Head-based vs Tail-based sampling to reduce storage costs."
+                ],
+                answer: `<p><strong>Vendor-Neutral Observability Standard:</strong> Senior Architects mandate OpenTelemetry (OTel) auto-instrumentation across microservices to avoid vendor lock-in to Datadog, Dynatrace, or New Relic.</p>
+                <p class="my-2"><strong>Architecture Components:</strong></p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>OTel Collector Pipeline:</strong> App agents push traces via OTLP (gRPC) to OTel Collector gateway pods. Collector runs <em>batch processors</em>, applies <em>tail-based sampling</em> (retaining 100% of errors and P99 latency traces while sampling 5% of 200 OKs), and exports to backend storage (Jaeger / Datadog).</li>
+                    <li><strong>Context Propagation:</strong> Ensure W3C <code>traceparent</code> headers are injected into outgoing REST headers, gRPC metadata, and Kafka message headers to stitch distributed spans into unified flame graphs.</li>
+                </ul>`,
+                references: [
+                    { name: "OpenTelemetry Official Architecture Spec", url: "https://opentelemetry.io/docs/concepts/architecture/" },
+                    { name: "W3C Trace Context Specification", url: "https://www.w3.org/TR/trace-context/" }
+                ]
+            },
+            {
+                id: "q20",
+                trackId: 4,
+                trackName: "Observability & DevOps",
+                title: "L3 Support & Incident Command for High-Severity Outages (P0/P1)",
+                stars: 4.8,
+                frequencyBadge: "High Frequency",
+                frequencyPercent: 91,
+                targetContext: "Full-Time Architect",
+                cues: [
+                    "Incident Commander role, Scribe, Operations Lead.",
+                    "Mean Time to Detect (MTTD) & Mean Time to Resolve (MTTR) optimization.",
+                    "Triage Flow: Mitigate first (rollback/circuit breaker/traffic shed), diagnose second.",
+                    "Blameless Post-Mortem & RCA (Root Cause Analysis) documentation framework."
+                ],
+                answer: `<p><strong>L3 Incident Leadership Protocol:</strong> During a P0 system blackout, an Architect acts as technical advisor or Incident Commander. The sole objective is rapid business service restoration—NOT debugging code on live calls.</p>
+                <p class="my-2"><strong>Incident Protocol Execution:</strong></p>
+                <ol class="list-decimal pl-5 space-y-1">
+                    <li><strong>Immediate Mitigation (T-0 to T-15m):</strong> Execute automatic rollback to last stable deployment, toggle feature flags to disable heavy endpoints, or shed load via API Gateway rate limiters.</li>
+                    <li><strong>Communication Channel:</strong> Establish dedicated Incident Command Slack channel / bridge. Assign Scribe to document timeline notes.</li>
+                    <li><strong>Blameless Root Cause Analysis (RCA):</strong> Conduct RCA within 48 hours. Identify systemic design flaws (e.g., missing retry timeout) and create Jira tickets with strict SLA deadlines.</li>
+                </ol>`,
+                references: [
+                    { name: "Google Site Reliability Engineering (SRE) Book", url: "https://sre.google/sre-book/incident-response/" }
+                ]
+            },
+            {
+                id: "q21",
+                trackId: 4,
+                trackName: "Observability & DevOps",
+                title: "Zero-Downtime Deployment Strategies: Canary, Blue/Green & Feature Flags",
+                stars: 4.8,
+                frequencyBadge: "High Frequency",
+                frequencyPercent: 88,
+                targetContext: "Both",
+                cues: [
+                    "Blue/Green Deployment with instant traffic router switch.",
+                    "Canary Deployment using Argo Rollouts / Flagger (progressive 5% -> 25% -> 100% metrics analysis).",
+                    "Feature Flag Management (LaunchDarkly / Unleash) for decoupling deployment from release.",
+                    "Backward-compatible database schema migrations (Liquibase / Flyway)."
+                ],
+                answer: `<p><strong>Continuous Delivery & Canary Automation:</strong> Senior Architects eliminate deployment risk through automated progressive delivery using Argo Rollouts on Kubernetes.</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>Argo Rollouts Canary Flow:</strong> Route 5% of real traffic to Canary pods. Prometheus automatically queries metrics every 60 seconds (checking error rate &lt; 0.1% and HTTP latency P95 &lt; 200ms). If threshold breaches, Argo automatically triggers instant rollback without human intervention.</li>
+                    <li><strong>Feature Flags:</strong> Merge code to main behind boolean flags (Unleash/LaunchDarkly) to allow dark launches in production long before public customer enablement.</li>
+                </ul>`,
+                references: [
+                    { name: "Argo Rollouts Canary Architecture", url: "https://argoproj.github.io/argo-rollouts/" },
+                    { name: "Unleash Feature Management Documentation", url: "https://docs.getunleash.io/" }
+                ]
+            },
+            {
+                id: "q22",
+                trackId: 4,
+                trackName: "Observability & DevOps",
+                title: "Infrastructure as Code (IaC) Architecture & Drift Management (Terraform/OpenTofu)",
+                stars: 4.5,
+                frequencyBadge: "Core Deep-Dive",
+                frequencyPercent: 83,
+                targetContext: "Both",
+                cues: [
+                    "Terraform Module Design: Reusable, opinionated enterprise modules.",
+                    "Remote State Backend locking (S3 + DynamoDB) and security.",
+                    "Drift Detection pipelines & GitOps state synchronization (Atlantis / Terraform Cloud).",
+                    "Policy as Code (OPA - Open Policy Agent / Sentinel) for compliance enforcement."
+                ],
+                answer: `<p><strong>Enterprise IaC Governance:</strong> Managing cloud infrastructure at scale requires immutable GitOps workflows, automated state locking, and proactive policy checks.</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>Drift Management:</strong> Run automated daily Atlantis / OpenTofu pipelines executing <code>plan</code> against cloud environments to alert Slack on manual console drift.</li>
+                    <li><strong>Policy as Code (OPA / Conftest):</strong> Block pull requests automatically if Terraform code attempts to provision unencrypted S3 buckets, open security groups (0.0.0.0/0), or non-approved cloud regions.</li>
+                </ul>`,
+                references: [
+                    { name: "OpenTofu Architecture Docs", url: "https://opentofu.org/docs/" },
+                    { name: "Open Policy Agent (OPA) Integration", url: "https://www.openpolicyagent.org/" }
+                ]
+            },
+            {
+                id: "q23",
+                trackId: 4,
+                trackName: "Observability & DevOps",
+                title: "Automated Testing Strategy for Microservices: Consumer-Driven Contract Testing",
+                stars: 4.2,
+                frequencyBadge: "Core Deep-Dive",
+                frequencyPercent: 77,
+                targetContext: "Full-Time Architect",
+                cues: [
+                    "Test Pyramid for Microservices (Unit -> Contract -> Integration -> End-to-End).",
+                    "Consumer-Driven Contract Testing with Pact.io framework.",
+                    "Replacing slow, brittle staging end-to-end environments with contract validation.",
+                    "Pact Broker CI/CD gate checks (<code>can-i-deploy</code>)."
+                ],
+                answer: `<p><strong>Contract Testing vs Brittle E2E Staging:</strong> Testing 30 microservices in a shared staging environment leads to constant test flakiness and environment downtime. Architects solve this with Consumer-Driven Contract Testing (Pact.io).</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>Pact Workflow:</strong> API Consumer writes tests defining expected JSON requests and response schemas. Pact generates a contract file published to a central Pact Broker.</li>
+                    <li><strong>Provider Verification:</strong> API Provider service automatically verifies contracts in pipeline execution without spinning up real consumer services. CI/CD runs <code>can-i-deploy</code> check before pushing updates to production.</li>
+                </ul>`,
+                references: [
+                    { name: "Pact.io Contract Testing Framework", url: "https://docs.pact.io/" }
+                ]
+            },
+
+            // TRACK 5: FREELANCE DISCOVERY, AUDITS & ADVISORY
+            {
+                id: "q24",
+                trackId: 5,
+                trackName: "Freelance Discovery & Audits",
+                title: "Freelance Discovery Call & MVP Architecture Scoping for Non-Technical Founders",
+                stars: 5.0,
+                frequencyBadge: "Must-Know / Extremely Frequent",
+                frequencyPercent: 97,
+                targetContext: "Freelance Discovery",
+                cues: [
+                    "Discovery Call Structure: Business outcome clarification before technology selection.",
+                    "De-risking technical assumptions & building vs buying decision framework.",
+                    "Scoping Phase-1 MVP budget, milestones, and architecture roadmap.",
+                    "Translating complex architecture trade-offs into plain executive risk ROI."
+                ],
+                answer: `<p><strong>Consultant Discovery Playbook:</strong> Non-technical clients rarely know their true technical requirements. They often request "an AI app with microservices." A $150+/hr advisory architect guides them back to business metrics.</p>
+                <p class="my-2"><strong>Discovery Meeting Framework:</strong></p>
+                <ol class="list-decimal pl-5 space-y-1">
+                    <li><strong>Business Goal Extraction:</strong> Ask "What core business metric must this system hit in 90 days?" (e.g. process 10,000 active users, automate support tickets by 40%).</li>
+                    <li><strong>Build vs Buy Evaluation:</strong> Propose managed SaaS / serverless solutions (Supabase, Firebase, Auth0, managed LLM APIs) for MVP to minimize initial capital expenditure instead of over-engineering custom Kubernetes clusters.</li>
+                    <li><strong>Fixed-Scope Paid Architecture Discovery Phase:</strong> Propose a 1-2 week paid Discovery Engagement ($3k-$7k) to produce the System Architecture Diagram, Schema, and Tech Stack Roadmap prior to executing full development contracts.</li>
+                </ol>`,
+                references: [
+                    { name: "AWS Working Backwards Innovation Mechanism", url: "https://aws.amazon.com/blogs/enterprise-strategy/working-backwards/" }
+                ]
+            },
+            {
+                id: "q25",
+                trackId: 5,
+                trackName: "Freelance Discovery & Audits",
+                title: "Conducting a Comprehensive Architecture & Security Audit for Enterprise Clients",
+                stars: 5.0,
+                frequencyBadge: "Must-Know / Extremely Frequent",
+                frequencyPercent: 95,
+                targetContext: "Freelance Discovery",
+                cues: [
+                    "Audit Methodology: Code quality, cloud cost leaks, security vulnerabilities, single points of failure.",
+                    "Tools for Automated Audit: SonarQube, Trivy, AWS Trusted Advisor, k6 load tests.",
+                    "Structuring the Deliverable: Executive Summary + RAG (Red/Amber/Green) Risk Scorecard + Remediation Plan.",
+                    "Pricing & Pitching the Audit Package ($5k - $15k flat fee)."
+                ],
+                answer: `<p><strong>System Audit Deliverable Strategy:</strong> Enterprise clients hire freelance advisory architects to audit legacy platforms struggling with crashes or high cloud bills.</p>
+                <p class="my-2"><strong>4-Pillar Audit Framework:</strong></p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>1. Security & Compliance:</strong> Inspect IAM roles, hardcoded secrets, open firewall ports, and unencrypted databases using automated scanners (Trivy, Checkov).</li>
+                    <li><strong>2. Scalability & Single Points of Failure:</strong> Review database query indexes, un-cached endpoints, single-node DB setups, and bottleneck services.</li>
+                    <li><strong>3. Infrastructure Cost Optimization:</strong> Audit cloud billing dashboards to identify over-provisioned idle EC2 instances or unattached EBS volumes.</li>
+                    <li><strong>4. Deliverable Report:</strong> Present an executive dashboard with Red/Amber/Green risk badges, prioritized by business impact vs effort matrix.</li>
+                </ul>`,
+                references: [
+                    { name: "AWS Well-Architected Review Framework", url: "https://aws.amazon.com/architecture/well-architected/" }
+                ]
+            },
+            {
+                id: "q26",
+                trackId: 5,
+                trackName: "Freelance Discovery & Audits",
+                title: "Retainer SLAs, Scope Creep Defense & Tiered Architectural Advisory",
+                stars: 4.8,
+                frequencyBadge: "High Frequency",
+                frequencyPercent: 90,
+                targetContext: "Freelance Discovery",
+                cues: [
+                    "Structuring Monthly Fractional Architect Retainers ($3k-$10k/month for 10-20 hrs).",
+                    "Managing Scope Creep: Change Order Requests (COR) vs SOW boundaries.",
+                    "SLA expectations for advisory communication (Async vs emergency incident calls).",
+                    "Protecting IP and liability boundaries in consulting contracts."
+                ],
+                answer: `<p><strong>Consulting Retainer Architecture:</strong> Transitioning from hourly billing to high-margin recurring advisory retainers requires strict boundaries and value framing.</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>Fractional CTO / Architect Retainer Tiers:</strong> Offer advisory packages (e.g., Tier 1: $3,500/mo for weekly architecture review + Slack advisory; Tier 2: $7,500/mo including code reviews and monthly vendor evaluations).</li>
+                    <li><strong>Scope Creep Shield:</strong> Define strict Statement of Work (SOW) terms. When a client requests direct hands-on keyboard feature development outside architectural guidance, issue a formal <em>Change Order Request (COR)</em> with revised budget.</li>
+                </ul>`,
+                references: [
+                    { name: "Consulting Contracts & SOW Best Practices", url: "https://www.pmi.org/learning/library/statement-work-project-success-6887" }
+                ]
+            },
+            {
+                id: "q27",
+                trackId: 5,
+                trackName: "Freelance Discovery & Audits",
+                title: "Designing & Delivering High-Impact Corporate AI/Architecture Workshops",
+                stars: 4.5,
+                frequencyBadge: "High Frequency",
+                frequencyPercent: 86,
+                targetContext: "Freelance Discovery",
+                cues: [
+                    "Workshop Curriculum Design: 1-Day Executive GenAI Briefing vs 3-Day Technical Masterclass.",
+                    "Hands-On Lab Setup: Pre-configured cloud sandboxes & GitHub template repos.",
+                    "Pricing Corporate Workshops ($5,000 - $15,000 per day).",
+                    "Post-Workshop Conversion to Long-Term Retainers."
+                ],
+                answer: `<p><strong>Corporate Training Engagement Design:</strong> Enterprise tech leads hire senior architects to upskill their internal teams on GenAI, RAG, and microservices.</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>Curriculum Blueprint (3-Day Workshop):</strong> Day 1: Advanced Microservices & DDD. Day 2: GenAI Architecture, MCP, & RAG Pipelines. Day 3: Hands-on Lab constructing a production LangGraph agent system.</li>
+                    <li><strong>Zero-Friction Lab Sandbox:</strong> Provide GitHub Codespaces or Gitpod environments with pre-installed dependencies so enterprise engineers spend zero time troubleshooting local environment installations.</li>
+                </ul>`,
+                references: [
+                    { name: "GitHub Codespaces Sandbox Setup", url: "https://docs.github.com/en/codespaces" }
+                ]
+            },
+            {
+                id: "q28",
+                trackId: 5,
+                trackName: "Freelance Discovery & Audits",
+                title: "Defending a High-Ticket Architecture Proposal Against Offshoring & Lower Bids",
+                stars: 4.8,
+                frequencyBadge: "High Frequency",
+                frequencyPercent: 92,
+                targetContext: "Freelance Discovery",
+                cues: [
+                    "Value-Based Pricing vs Rate Competition.",
+                    "Framing the Cost of Poor Architecture (Security breaches, cloud waste, rewritten MVPs).",
+                    "Positioning 10+ Year Expertise: Strategic ROI, faster time-to-market, clean code longevity.",
+                    "Closing the Deal: Social proof, case studies, risk-free initial audit."
+                ],
+                answer: `<p><strong>Proposal Defense Strategy:</strong> When an enterprise client objects: <em>"We received a proposal from an agency offering to build this for 50% less,"</em> the Senior Architect frames the pitch around risk mitigation and total cost of ownership (TCO).</p>
+                <p class="my-2"><strong>Executive Counter-Positioning:</strong></p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>Reframe Price to Risk & Remediation:</strong> <em>"In software architecture, you rarely pay for code generation—you pay to avoid fatal system redesigns. 70% of low-bid projects require complete architectural rewrites after 6 months due to scalability or security dead-ends."</em></li>
+                    <li><strong>Demonstrate TCO Savings:</strong> Highlight how an optimized serverless/Kubernetes architecture saves $50,000/year in cloud billing and prevents multi-day outages.</li>
+                </ul>`,
+                references: [
+                    { name: "Value-Based Fees by Alan Weiss", url: "https://alanweiss.com/" }
+                ]
+            }
+        ];
+
+        // TRACK DEFINITIONS
+        const tracks = [
+            { id: "all", name: "All Tracks", icon: "fa-list" },
+            { id: 1, name: "1. GenAI, Multi-Agent & MCP", icon: "fa-robot" },
+            { id: 2, name: "2. Enterprise & Cloud Arch", icon: "fa-cloud" },
+            { id: 3, name: "3. Backend, JVM & Data", icon: "fa-database" },
+            { id: 4, name: "4. Observability & DevOps", icon: "fa-chart-line" },
+            { id: 5, name: "5. Freelance Discovery & Audits", icon: "fa-briefcase" }
+        ];
+
+        // LOCAL STORAGE STATE MANAGEMENT
+        let currentMode = 'study'; // 'study', 'flashcard', 'pitch'
+        let activeTrackId = 'all';
+        let userProgress = JSON.parse(localStorage.getItem('archprep_progress') || '{}');
+        // Structure of userProgress: { q1: { status: 'Mastered', notes: '...' }, q2: ... }
+        let currentFlashcardIndex = 0;
+        let pitchTimerInterval = null;
+        let pitchSecondsLeft = 120;
+
+        // INITIALIZATION ON LOAD
+        window.onload = function() {
+            renderTrackTabs();
+            updateDashboardStats();
+            filterQuestions();
+            initPitchTrainerSelect();
+        };
+
+        // RENDER TRACK TABS
+        function renderTrackTabs() {
+            const container = document.getElementById('track-tabs');
+            container.innerHTML = tracks.map(t => `
+                <button onclick="selectTrack('${t.id}')" class="track-tab px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition flex items-center gap-2 ${activeTrackId == t.id ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : 'bg-slate-900 text-slate-400 hover:text-slate-200 border border-slate-800'}" id="tab-${t.id}">
+                    <i class="fa-solid ${t.icon}"></i> ${t.name}
+                </button>
+            `).join('');
+        }
+
+        function selectTrack(trackId) {
+            activeTrackId = trackId;
+            renderTrackTabs();
+            filterQuestions();
+        }
+
+        // FILTER & SORT QUESTIONS
+        function getFilteredQuestions() {
+            const search = document.getElementById('search-input').value.toLowerCase();
+            const minRating = document.getElementById('filter-rating').value;
+            const mastery = document.getElementById('filter-mastery').value;
+            const sort = document.getElementById('sort-order').value;
+
+            let list = questionBank.filter(q => {
+                // Track filter
+                if (activeTrackId !== 'all' && q.trackId != activeTrackId) return false;
+                
+                // Rating filter
+                if (minRating !== 'all') {
+                    if (parseFloat(minRating) === 5 && q.stars < 5.0) return false;
+                    if (parseFloat(minRating) === 4.5 && q.stars < 4.5) return false;
+                    if (parseFloat(minRating) === 4 && q.stars < 4.0) return false;
+                }
+
+                // Mastery filter
+                const status = (userProgress[q.id] && userProgress[q.id].status) || 'Needs Review';
+                if (mastery !== 'all' && status !== mastery) return false;
+
+                // Search text
+                if (search) {
+                    const matchTitle = q.title.toLowerCase().includes(search);
+                    const matchAnswer = q.answer.toLowerCase().includes(search);
+                    const matchCues = q.cues.some(c => c.toLowerCase().includes(search));
+                    if (!matchTitle && !matchAnswer && !matchCues) return false;
+                }
+
+                return true;
+            });
+
+            // Sorting
+            if (sort === 'stars-desc') {
+                list.sort((a, b) => b.stars - a.stars);
+            } else if (sort === 'id-asc') {
+                list.sort((a, b) => a.id.localeCompare(b.id, undefined, {numeric: true}));
+            } else if (sort === 'title-asc') {
+                list.sort((a, b) => a.title.localeCompare(b.title));
+            }
+
+            return list;
+        }
+
+        function filterQuestions() {
+            const list = getFilteredQuestions();
+            if (currentMode === 'study') {
+                renderStudyList(list);
+            } else if (currentMode === 'flashcard') {
+                currentFlashcardIndex = 0;
+                renderFlashcard();
+            }
+        }
+
+        // MODE SWITCHING
+        function switchMode(mode) {
+            currentMode = mode;
+            ['study', 'flashcard', 'pitch'].forEach(m => {
+                document.getElementById(`mode-${m}-view`).classList.add('hidden');
+                const btn = document.getElementById(`nav-mode-${m}`);
+                btn.className = "px-3 py-1.5 text-xs font-medium rounded-lg transition-all flex items-center gap-1.5 text-slate-300 hover:text-white hover:bg-slate-700/50";
+            });
+
+            document.getElementById(`mode-${mode}-view`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`nav-mode-${mode}`);
+            activeBtn.className = "px-3 py-1.5 text-xs font-medium rounded-lg transition-all flex items-center gap-1.5 bg-indigo-600 text-white shadow";
+
+            const controls = document.getElementById('view-study-controls');
+            if (mode === 'study') {
+                controls.classList.remove('hidden');
+                filterQuestions();
+            } else if (mode === 'flashcard') {
+                controls.classList.remove('hidden');
+                renderFlashcard();
+            } else {
+                controls.classList.add('hidden');
+                loadPitchQuestion();
+            }
+        }
+
+        // RENDER MODE 1: STUDY LIST
+        function renderStudyList(questions) {
+            const container = document.getElementById('questions-container');
+            if (questions.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-12 text-center text-slate-400">
+                        <i class="fa-solid fa-folder-open text-4xl mb-3 text-slate-600"></i>
+                        <p class="text-base font-semibold text-slate-300">No architectural questions match your selected filters.</p>
+                        <p class="text-xs mt-1">Try clearing your search query or adjusting the star rating filter.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = questions.map(q => {
+                const status = (userProgress[q.id] && userProgress[q.id].status) || 'Needs Review';
+                const notes = (userProgress[q.id] && userProgress[q.id].notes) || '';
+                const starsHtml = generateStarsHtml(q.stars);
+
+                let badgeColor = "bg-amber-500/10 text-amber-400 border-amber-500/20";
+                if (q.stars >= 5.0) badgeColor = "bg-rose-500/10 text-rose-400 border-rose-500/20";
+
+                let statusColor = "text-rose-400 bg-rose-500/10 border-rose-500/20";
+                if (status === 'Practiced') statusColor = "text-amber-400 bg-amber-500/10 border-amber-500/20";
+                if (status === 'Mastered') statusColor = "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
+
+                return `
+                <div class="bg-slate-900 border border-slate-800 hover:border-slate-700/80 rounded-2xl transition shadow-lg overflow-hidden" id="card-${q.id}">
+                    
+                    <!-- Card Top Header -->
+                    <div class="p-5 md:p-6 cursor-pointer select-none" onclick="toggleCardAccordion('${q.id}')">
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="px-2.5 py-1 rounded-full text-xs font-semibold border ${badgeColor}">
+                                    ${starsHtml} ${q.stars.toFixed(1)}/5 • ${q.frequencyPercent}% Frequency
+                                </span>
+                                <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700">
+                                    <i class="fa-solid fa-layer-group text-slate-400 mr-1"></i> Track ${q.trackId}
+                                </span>
+                                <span class="px-2.5 py-1 rounded-full text-xs font-medium ${q.targetContext === 'Freelance Discovery' ? 'bg-purple-500/10 text-purple-300 border border-purple-500/20' : 'bg-blue-500/10 text-blue-300 border border-blue-500/20'}">
+                                    ${q.targetContext}
+                                </span>
+                            </div>
+
+                            <!-- Interactive Confidence Badge -->
+                            <div class="flex items-center gap-2" onclick="event.stopPropagation()">
+                                <select onchange="updateQuestionStatus('${q.id}', this.value)" class="bg-slate-950 border border-slate-700 rounded-lg text-xs font-semibold px-2.5 py-1.5 focus:outline-none ${statusColor}">
+                                    <option value="Needs Review" ${status==='Needs Review'?'selected':''}>🔴 Needs Review</option>
+                                    <option value="Practiced" ${status==='Practiced'?'selected':''}>🟡 Practiced</option>
+                                    <option value="Mastered" ${status==='Mastered'?'selected':''}>🟢 Mastered</option>
+                                </select>
+                                <button onclick="toggleCardAccordion('${q.id}')" class="text-slate-400 hover:text-white text-base px-2">
+                                    <i class="fa-solid fa-chevron-down transition-transform duration-200" id="chevron-${q.id}"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <h3 class="text-lg md:text-xl font-bold text-white group-hover:text-indigo-400 transition">
+                            ${q.title}
+                        </h3>
+                    </div>
+
+                    <!-- Card Expandable Content Body -->
+                    <div class="hidden border-t border-slate-800/80 bg-slate-950/40 p-5 md:p-6 space-y-6" id="body-${q.id}">
+                        
+                        <!-- Think First Checklist -->
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+                            <span class="text-xs font-bold uppercase tracking-wider text-indigo-400 block mb-2 flex items-center gap-1.5">
+                                <i class="fa-solid fa-lightbulb"></i> Think First / Key Talking Points Checklist
+                            </span>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                ${q.cues.map((cue, idx) => `
+                                    <label class="flex items-start gap-2 text-xs text-slate-300 bg-slate-950/60 p-2 rounded border border-slate-800 cursor-pointer">
+                                        <input type="checkbox" class="mt-0.5 rounded bg-slate-900 border-slate-700 text-indigo-600 focus:ring-0">
+                                        <span>${cue}</span>
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Comprehensive Senior Architect Answer -->
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 block mb-3 flex items-center gap-1.5">
+                                <i class="fa-solid fa-shield-halved"></i> Benchmark Senior Architect Sample Answer & Trade-Offs
+                            </span>
+                            <div class="text-sm text-slate-300 leading-relaxed space-y-3 prose prose-invert max-w-none bg-slate-900 border border-slate-800/80 p-5 rounded-xl">
+                                ${q.answer}
+                            </div>
+                        </div>
+
+                        <!-- Verified Reference Links -->
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-2 flex items-center gap-1.5">
+                                <i class="fa-solid fa-book"></i> Verified References & Documentation Specs
+                            </span>
+                            <div class="flex flex-wrap gap-2">
+                                ${q.references.map(ref => `
+                                    <a href="${ref.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 px-3 py-1.5 rounded-lg transition">
+                                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> ${ref.name}
+                                    </a>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Personal Architectural Notes Box -->
+                        <div class="pt-2">
+                            <label class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                                Your Custom Architectural Notes & Project Context
+                            </label>
+                            <textarea onchange="saveQuestionNotes('${q.id}', this.value)" rows="3" placeholder="Add specific client details, past interview experience, or tailored trade-offs..." class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500 font-mono">${notes}</textarea>
+                        </div>
+
+                    </div>
+
+                </div>
+                `;
+            }).join('');
+        }
+
+        function toggleCardAccordion(qId) {
+            const body = document.getElementById(`body-${qId}`);
+            const chevron = document.getElementById(`chevron-${qId}`);
+            if (body.classList.contains('hidden')) {
+                body.classList.remove('hidden');
+                chevron.classList.add('rotate-180');
+            } else {
+                body.classList.add('hidden');
+                chevron.classList.remove('rotate-180');
+            }
+        }
+
+        // GENERATE STARS HTML
+        function generateStarsHtml(stars) {
+            let full = Math.floor(stars);
+            let half = stars % 1 !== 0;
+            let html = '';
+            for (let i = 0; i < full; i++) html += '★';
+            if (half) html += '½';
+            return html;
+        }
+
+        // USER PROGRESS UPDATE LOGIC
+        function updateQuestionStatus(qId, status) {
+            if (!userProgress[qId]) userProgress[qId] = {};
+            userProgress[qId].status = status;
+            localStorage.setItem('archprep_progress', JSON.stringify(userProgress));
+            updateDashboardStats();
+            filterQuestions();
+        }
+
+        function saveQuestionNotes(qId, notesText) {
+            if (!userProgress[qId]) userProgress[qId] = {};
+            userProgress[qId].notes = notesText;
+            localStorage.setItem('archprep_progress', JSON.stringify(userProgress));
+            updateDashboardStats();
+        }
+
+        function updateDashboardStats() {
+            const total = questionBank.length;
+            let mastered = 0;
+            let fiveStarTotal = 0;
+            let fiveStarMastered = 0;
+            let notesCount = 0;
+            let cntArchitect = 0;
+            let cntFreelance = 0;
+
+            questionBank.forEach(q => {
+                const status = (userProgress[q.id] && userProgress[q.id].status) || 'Needs Review';
+                if (status === 'Mastered') mastered++;
+
+                if (q.stars >= 5.0) {
+                    fiveStarTotal++;
+                    if (status === 'Mastered') fiveStarMastered++;
+                }
+
+                if (userProgress[q.id] && userProgress[q.id].notes && userProgress[q.id].notes.trim() !== '') {
+                    notesCount++;
+                }
+
+                if (q.targetContext === 'Full-Time Architect' || q.targetContext === 'Both') cntArchitect++;
+                if (q.targetContext === 'Freelance Discovery' || q.targetContext === 'Both') cntFreelance++;
+            });
+
+            const percent = Math.round((mastered / total) * 100);
+            document.getElementById('stat-readiness').innerText = `${percent}%`;
+            document.getElementById('stat-mastered-count').innerText = `${mastered}/${total} Mastered`;
+            document.getElementById('progress-circle').setAttribute('stroke-dasharray', `${percent}, 100`);
+
+            document.getElementById('stat-five-star-count').innerText = `${fiveStarMastered} / ${fiveStarTotal}`;
+            document.getElementById('stat-notes-count').innerText = `${notesCount} Notes Saved`;
+
+            document.getElementById('cnt-architect').innerText = cntArchitect;
+            document.getElementById('cnt-freelance').innerText = cntFreelance;
+        }
+
+        function resetProgress() {
+            if (confirm("Are you sure you want to reset all interactive mastery statuses and saved notes?")) {
+                localStorage.removeItem('archprep_progress');
+                userProgress = {};
+                updateDashboardStats();
+                filterQuestions();
+            }
+        }
+
+        // MODE 2: FLASHCARD LOGIC
+        function renderFlashcard() {
+            const list = getFilteredQuestions();
+            if (list.length === 0) {
+                document.getElementById('fc-question-title').innerText = "No questions match filter criteria.";
+                document.getElementById('fc-cues-list').innerHTML = "<li>Adjust search or track filters to view cards.</li>";
+                return;
+            }
+
+            if (currentFlashcardIndex >= list.length) currentFlashcardIndex = 0;
+            if (currentFlashcardIndex < 0) currentFlashcardIndex = list.length - 1;
+
+            const q = list[currentFlashcardIndex];
+            document.getElementById('fc-progress').innerText = `Card ${currentFlashcardIndex + 1} of ${list.length}`;
+            document.getElementById('fc-track-badge').innerText = `Track ${q.trackId}: ${q.trackName}`;
+            document.getElementById('fc-rating-stars').innerText = `${generateStarsHtml(q.stars)} ${q.stars.toFixed(1)}/5 (${q.frequencyPercent}% asked)`;
+            document.getElementById('fc-context-tag').innerText = q.targetContext;
+            document.getElementById('fc-question-title').innerText = q.title;
+
+            document.getElementById('fc-cues-list').innerHTML = q.cues.map(c => `<li>${c}</li>`).join('');
+            document.getElementById('fc-answer-text').innerHTML = q.answer;
+
+            // Reset reveal state
+            document.getElementById('fc-answer-area').classList.add('hidden');
+            document.getElementById('fc-reveal-btn').innerHTML = `<i class="fa-solid fa-eye"></i> Reveal Sample Answer`;
+        }
+
+        function revealFlashcardAnswer() {
+            const area = document.getElementById('fc-answer-area');
+            const btn = document.getElementById('fc-reveal-btn');
+            if (area.classList.contains('hidden')) {
+                area.classList.remove('hidden');
+                btn.innerHTML = `<i class="fa-solid fa-eye-slash"></i> Hide Answer`;
+            } else {
+                area.classList.add('hidden');
+                btn.innerHTML = `<i class="fa-solid fa-eye"></i> Reveal Sample Answer`;
+            }
+        }
+
+        function nextFlashcard() {
+            currentFlashcardIndex++;
+            renderFlashcard();
+        }
+
+        function prevFlashcard() {
+            currentFlashcardIndex--;
+            renderFlashcard();
+        }
+
+        // MODE 3: MOCK PITCH TRAINER LOGIC
+        function initPitchTrainerSelect() {
+            const select = document.getElementById('pitch-question-select');
+            select.innerHTML = questionBank.map(q => `
+                <option value="${q.id}">[★ ${q.stars.toFixed(1)}] ${q.title}</option>
+            `).join('');
+            loadPitchQuestion();
+        }
+
+        function loadPitchQuestion() {
+            const qId = document.getElementById('pitch-question-select').value;
+            const q = questionBank.find(item => item.id === qId);
+            if (!q) return;
+
+            document.getElementById('pitch-track-tag').innerText = `Track ${q.trackId}: ${q.trackName}`;
+            document.getElementById('pitch-stars').innerText = `${generateStarsHtml(q.stars)} ${q.stars.toFixed(1)}/5`;
+            document.getElementById('pitch-title').innerText = q.title;
+            document.getElementById('pitch-talking-points').innerHTML = q.cues.map(c => `<li>${c}</li>`).join('');
+            document.getElementById('pitch-benchmark-text').innerHTML = q.answer;
+
+            // Load existing pitch notes
+            const notes = (userProgress[q.id] && userProgress[q.id].pitchNotes) || '';
+            document.getElementById('pitch-user-notes').value = notes;
+
+            // Reset timer
+            resetPitchTimer();
+        }
+
+        function togglePitchTimer() {
+            const btn = document.getElementById('pitch-timer-btn');
+            if (pitchTimerInterval) {
+                clearInterval(pitchTimerInterval);
+                pitchTimerInterval = null;
+                btn.innerText = "Resume Timer";
+                btn.className = "px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition";
+            } else {
+                btn.innerText = "Pause Timer";
+                btn.className = "px-4 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition";
+                pitchTimerInterval = setInterval(() => {
+                    pitchSecondsLeft--;
+                    if (pitchSecondsLeft <= 0) {
+                        clearInterval(pitchTimerInterval);
+                        pitchTimerInterval = null;
+                        pitchSecondsLeft = 0;
+                        alert("⏱️ Pitch Time's up! Wrap up your elevator response.");
+                    }
+                    updatePitchTimerDisplay();
+                }, 1000);
+            }
+        }
+
+        function resetPitchTimer() {
+            if (pitchTimerInterval) {
+                clearInterval(pitchTimerInterval);
+                pitchTimerInterval = null;
+            }
+            pitchSecondsLeft = 120;
+            updatePitchTimerDisplay();
+            const btn = document.getElementById('pitch-timer-btn');
+            btn.innerText = "Start Timer";
+            btn.className = "px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition";
+        }
+
+        function updatePitchTimerDisplay() {
+            const mins = Math.floor(pitchSecondsLeft / 60);
+            const secs = pitchSecondsLeft % 60;
+            document.getElementById('pitch-timer-display').innerText = 
+                `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function savePitchNotes() {
+            const qId = document.getElementById('pitch-question-select').value;
+            const text = document.getElementById('pitch-user-notes').value;
+            if (!userProgress[qId]) userProgress[qId] = {};
+            userProgress[qId].pitchNotes = text;
+            localStorage.setItem('archprep_progress', JSON.stringify(userProgress));
+            alert("✓ Pitch notes saved successfully!");
+        }
+
+        function togglePitchAnswer() {
+            const block = document.getElementById('pitch-benchmark-answer');
+            block.classList.toggle('hidden');
+        }
+
+        // EXPORT STUDY GUIDE AS MARKDOWN
+        function exportStudyGuide() {
+            let md = `# ArchitectPrep Studio - Senior Architect & Advisory Study Guide\n`;
+            md += `Generated on: ${new Date().toLocaleDateString()}\n\n`;
+
+            questionBank.forEach((q, idx) => {
+                const status = (userProgress[q.id] && userProgress[q.id].status) || 'Needs Review';
+                const notes = (userProgress[q.id] && userProgress[q.id].notes) || 'None';
+
+                md += `## ${idx + 1}. ${q.title}\n`;
+                md += `- **Track:** Track ${q.trackId} (${q.trackName})\n`;
+                md += `- **Frequency Rating:** ${q.stars} / 5.0 Stars (${q.frequencyPercent}% frequency)\n`;
+                md += `- **Context:** ${q.targetContext}\n`;
+                md += `- **Mastery Status:** ${status}\n\n`;
+                md += `### Key Talking Points Checklist:\n`;
+                q.cues.forEach(c => md += `- [ ] ${c}\n`);
+                md += `\n### Benchmark Sample Answer:\n${q.answer.replace(/<[^>]*>/g, '')}\n\n`;
+                md += `### Verified References:\n`;
+                q.references.forEach(r => md += `- [${r.name}](${r.url})\n`);
+                md += `\n### Personal Notes:\n${notes}\n\n`;
+                md += `---\n\n`;
+            });
+
+            const blob = new Blob([md], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ArchitectPrep_Studio_Guide_${new Date().toISOString().slice(0,10)}.md`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // DARK/LIGHT THEME TOGGLE
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.className = "fa-solid fa-sun text-amber-500";
+            } else {
+                html.classList.add('dark');
+                icon.className = "fa-solid fa-moon text-amber-400";
+            }
+        }
+    </script>
+</body>
+</html>
