@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevGigX | Freelance & Advisory Command Center</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            800: '#3730a3',
+                            900: '#312e81',
+                            950: '#1e1b4b'
+                        },
+                        accent: {
+                            cyan: '#06b6d4',
+                            emerald: '#10b981',
+                            amber: '#f59e0b',
+                            rose: '#f43f5e',
+                            purple: '#a855f7'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.78);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .light .glass-panel {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        /* Custom scrollbars */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
+
+    <!-- TOP NAV BAR -->
+    <header class="sticky top-0 z-40 w-full glass-panel border-b border-slate-800/80 px-4 lg:px-8 py-3.5">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-500 via-accent-purple to-accent-cyan flex items-center justify-center shadow-lg shadow-brand-500/20 text-white font-black text-xl">
+                    <i class="fa-solid fa-code-branch"></i>
+                </div>
+                <div>
+                    <h1 class="font-black text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-brand-400 bg-clip-text text-transparent flex items-center gap-2">
+                        DevGigX <span class="text-xs px-2 py-0.5 rounded-full bg-brand-500/15 text-brand-400 border border-brand-500/30 font-bold uppercase tracking-wider">SDLC & Advisory Hub</span>
+                    </h1>
+                    <p class="text-xs text-slate-400 hidden sm:block">Freelance, L3 Retainers, Architecture & Corporate Training Launcher</p>
+                </div>
+            </div>
+
+            <!-- View Switcher & Action Buttons -->
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <!-- Navigation Tabs -->
+                <div class="bg-slate-900/90 border border-slate-800 p-1 rounded-xl flex items-center text-xs">
+                    <button onclick="switchView('gigs')" id="tab-gigs" class="px-3 py-1.5 rounded-lg font-semibold transition bg-brand-500 text-white shadow-sm flex items-center gap-1.5">
+                        <i class="fa-solid fa-briefcase"></i> <span class="hidden sm:inline">Gigs & Launcher</span>
+                    </button>
+                    <button onclick="switchView('calculator')" id="tab-calculator" class="px-3 py-1.5 rounded-lg font-semibold text-slate-400 hover:text-white transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-calculator"></i> <span class="hidden sm:inline">Rate Estimator</span>
+                    </button>
+                    <button onclick="switchView('pipeline')" id="tab-pipeline" class="px-3 py-1.5 rounded-lg font-semibold text-slate-400 hover:text-white transition flex items-center gap-1.5 relative">
+                        <i class="fa-solid fa-chart-kanban"></i> <span class="hidden sm:inline">Pipeline</span>
+                        <span id="pipelineCountBadge" class="ml-1 px-1.5 py-0.2 rounded-full bg-indigo-600 text-white text-[10px] font-extrabold">0</span>
+                    </button>
+                </div>
+
+                <!-- Skill Matrix Modal Toggle -->
+                <button onclick="toggleSkillMatrixModal()" class="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-brand-500/50 hover:bg-slate-800 transition text-xs font-semibold text-slate-200">
+                    <i class="fa-solid fa-sliders text-brand-400"></i>
+                    <span class="hidden md:inline">Skills</span>
+                    <span id="navSkillBadge" class="px-2 py-0.5 rounded-full bg-brand-500 text-white text-[10px] font-bold">45</span>
+                </button>
+
+                <!-- Dark/Light Theme Toggle -->
+                <button onclick="toggleTheme()" class="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
+                    <i id="themeIcon" class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN BODY CONTENT -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 lg:px-8 py-6 space-y-6">
+
+        <!-- VIEW 1: GIGS FEED & MULTI-PLATFORM LAUNCHER -->
+        <div id="view-gigs" class="space-y-6">
+
+            <!-- HERO SEARCH & MULTI-PLATFORM DEEP LINK LAUNCHER CARD -->
+            <section class="rounded-2xl bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/60 p-5 lg:p-6 border border-slate-800 shadow-xl relative overflow-hidden">
+                <div class="absolute -top-24 -right-24 w-80 h-80 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4 border-b border-slate-800/80 pb-4">
+                    <div>
+                        <h2 class="text-xl lg:text-2xl font-black text-white flex items-center gap-2">
+                            <i class="fa-solid fa-rocket text-amber-400"></i> 15+ Platform Live Multi-Search Launcher
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-400 mt-1">
+                            Instantly trigger pre-parameterized search queries across global freelancing marketplaces, vetted senior networks, India contract portals, and technical corporate training platforms.
+                        </p>
+                    </div>
+
+                    <!-- Quick Preset Tag Buttons -->
+                    <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                        <span class="text-slate-400 font-semibold">Quick Tags:</span>
+                        <button onclick="setLauncherPreset('GenAI Architect')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-brand-600/30 hover:border-brand-500/50 border border-slate-700 text-slate-300 transition">GenAI Architect</button>
+                        <button onclick="setLauncherPreset('Spring Boot Microservices')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-brand-600/30 hover:border-brand-500/50 border border-slate-700 text-slate-300 transition">Spring Boot Microservices</button>
+                        <button onclick="setLauncherPreset('Corporate AI Training')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-brand-600/30 hover:border-brand-500/50 border border-slate-700 text-slate-300 transition">Corporate AI Training</button>
+                        <button onclick="setLauncherPreset('L3 Production Support')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-brand-600/30 hover:border-brand-500/50 border border-slate-700 text-slate-300 transition">L3 Production Support</button>
+                        <button onclick="setLauncherPreset('LangGraph Agentic AI')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-brand-600/30 hover:border-brand-500/50 border border-slate-700 text-slate-300 transition">LangGraph Agentic AI</button>
+                        <button onclick="setLauncherPreset('System Design Consultant')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-brand-600/30 hover:border-brand-500/50 border border-slate-700 text-slate-300 transition">System Design Consultant</button>
+                    </div>
+                </div>
+
+                <!-- Input Controls -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                    <div class="sm:col-span-2">
+                        <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Target Skill / Service Keyword</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-500 text-xs"></i>
+                            <input type="text" id="launcherQuery" value="GenAI Architect RAG" placeholder="e.g. LangChain, Microservices, Datadog, Java..." class="w-full bg-slate-950 border border-slate-700 rounded-xl pl-9 pr-3 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-brand-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Engagement Model</label>
+                        <select id="launcherEngagement" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+                            <option value="All">All Engagement Models</option>
+                            <option value="Hourly">Hourly Consulting ($/hr or ₹/hr)</option>
+                            <option value="Fixed">Fixed Price MVP / Architecture</option>
+                            <option value="Retainer">Monthly Support & SLA Retainer</option>
+                            <option value="Training">Corporate Training & Mentorship</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Target Market Tier</label>
+                        <select id="launcherRegion" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+                            <option value="Global">Global Remote (US / EU / Worldwide)</option>
+                            <option value="India">India / Delhi NCR / Remote India</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Platform Categories Tabs & Launch Buttons -->
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-2 border-b border-slate-800/80 pb-2 overflow-x-auto text-xs no-scrollbar">
+                        <span class="text-slate-400 font-bold uppercase tracking-wider text-[10px] whitespace-nowrap">Platform Tiers:</span>
+                        <button onclick="switchPlatformTier('global')" id="tierTab-global" class="tier-tab-btn px-3 py-1 rounded-lg bg-brand-500 text-white font-semibold whitespace-nowrap">Global Marketplaces</button>
+                        <button onclick="switchPlatformTier('vetted')" id="tierTab-vetted" class="tier-tab-btn px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold whitespace-nowrap">Vetted Senior Networks</button>
+                        <button onclick="switchPlatformTier('india')" id="tierTab-india" class="tier-tab-btn px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold whitespace-nowrap">India & Direct Contracts</button>
+                        <button onclick="switchPlatformTier('training')" id="tierTab-training" class="tier-tab-btn px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold whitespace-nowrap">Corporate Training & Mentorship</button>
+                    </div>
+
+                    <!-- Platform Buttons Container -->
+                    <div id="platformLauncherGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+                        <!-- Dynamically Injected Buttons -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- SDLC LIFECYCLE STAGE FILTERS & SEARCH BAR -->
+            <section class="glass-panel p-4 rounded-2xl space-y-4">
+                
+                <!-- SDLC Stage Pills -->
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-diagram-project text-brand-400"></i> Filter By Product SDLC & Service Stage:
+                        </span>
+                        <span id="sdlcActiveStageName" class="text-xs font-semibold text-brand-400">All 6 Lifecycle Stages</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2 text-xs">
+                        <button onclick="setSdlcFilter('ALL')" id="sdlc-ALL" class="sdlc-btn px-3 py-2 rounded-xl bg-brand-500 text-white font-bold border border-brand-400 text-center transition shadow-sm">
+                            <i class="fa-solid fa-layer-group block text-base mb-1"></i>
+                            All Stages
+                        </button>
+                        <button onclick="setSdlcFilter('Architecture')" id="sdlc-Architecture" class="sdlc-btn px-2.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 text-center transition">
+                            <i class="fa-solid fa-sitemap block text-base mb-1 text-accent-cyan"></i>
+                            1. Architecture & Design
+                        </button>
+                        <button onclick="setSdlcFilter('Build')" id="sdlc-Build" class="sdlc-btn px-2.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 text-center transition">
+                            <i class="fa-solid fa-code block text-base mb-1 text-brand-400"></i>
+                            2. MVP & GenAI Build
+                        </button>
+                        <button onclick="setSdlcFilter('Audit')" id="sdlc-Audit" class="sdlc-btn px-2.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 text-center transition">
+                            <i class="fa-solid fa-shield-halved block text-base mb-1 text-accent-rose"></i>
+                            3. Audit & Guardrails
+                        </button>
+                        <button onclick="setSdlcFilter('DevOps')" id="sdlc-DevOps" class="sdlc-btn px-2.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 text-center transition">
+                            <i class="fa-solid fa-server block text-base mb-1 text-accent-purple"></i>
+                            4. DevOps & Cloud
+                        </button>
+                        <button onclick="setSdlcFilter('Support')" id="sdlc-Support" class="sdlc-btn px-2.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 text-center transition">
+                            <i class="fa-solid fa-headset block text-base mb-1 text-accent-emerald"></i>
+                            5. Production & Retainers
+                        </button>
+                        <button onclick="setSdlcFilter('Training')" id="sdlc-Training" class="sdlc-btn px-2.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 text-center transition">
+                            <i class="fa-solid fa-chalkboard-user block text-base mb-1 text-accent-amber"></i>
+                            6. Corporate Training
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Secondary Keyword Search & Filter Controls Bar -->
+                <div class="flex flex-col md:flex-row gap-3 items-center justify-between pt-3 border-t border-slate-800/80">
+                    <div class="relative w-full md:w-1/3">
+                        <i class="fa-solid fa-filter absolute left-3.5 top-3 text-slate-500 text-xs"></i>
+                        <input type="text" id="feedSearchInput" oninput="renderGigFeed()" placeholder="Search title, tech stack, client..." class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-9 pr-3 py-2 text-xs sm:text-sm text-slate-100 focus:outline-none focus:border-brand-500">
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2 w-full md:w-auto text-xs">
+                        <select id="feedEngagementFilter" onchange="renderGigFeed()" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-brand-500">
+                            <option value="ALL">All Engagement Models</option>
+                            <option value="Hourly">Hourly Consulting</option>
+                            <option value="Fixed">Fixed Price Project</option>
+                            <option value="Retainer">Monthly L3 Retainer</option>
+                            <option value="Corporate Training">Corporate Workshop</option>
+                        </select>
+
+                        <select id="feedMatchFilter" onchange="renderGigFeed()" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-brand-500">
+                            <option value="0">Min Skill Match: Any</option>
+                            <option value="60">60%+ Match</option>
+                            <option value="75">75%+ Match</option>
+                            <option value="85">85%+ High Match</option>
+                        </select>
+
+                        <select id="feedSort" onchange="renderGigFeed()" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-brand-500 font-semibold">
+                            <option value="match">Sort: Skill Match %</option>
+                            <option value="budget">Sort: Highest Rate / Budget</option>
+                            <option value="recent">Sort: Most Recent</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FEED RESULTS HEADER -->
+            <div class="flex items-center justify-between text-xs text-slate-400 px-1">
+                <div>
+                    Showing <span id="visibleGigCount" class="font-bold text-brand-400">16</span> curated high-ticket opportunities matching your active architect profile.
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="resetFeedFilters()" class="text-slate-400 hover:text-white underline">Reset Filters</button>
+                </div>
+            </div>
+
+            <!-- FREELANCE GIGS & MANDATES GRID -->
+            <div id="gigsGrid" class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                <!-- Dynamically Rendered Gig Cards -->
+            </div>
+
+            <!-- EMPTY FEED STATE -->
+            <div id="feedEmptyState" class="hidden glass-panel rounded-2xl p-12 text-center space-y-4">
+                <div class="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center mx-auto text-slate-500 text-2xl">
+                    <i class="fa-solid fa-folder-open"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white">No Mandates Matched Your Filter</h3>
+                <p class="text-xs text-slate-400 max-w-md mx-auto">Try selecting a different SDLC stage, lowering the min skill match threshold, or resetting your search inputs.</p>
+                <button onclick="resetFeedFilters()" class="px-4 py-2 bg-brand-500 text-white rounded-xl text-xs font-bold hover:bg-brand-600 transition">Reset All Filters</button>
+            </div>
+
+        </div>
+
+        <!-- VIEW 2: FREELANCE RATE & RETAINER ESTIMATOR -->
+        <div id="view-calculator" class="hidden space-y-6">
+            <section class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-6">
+                <div class="border-b border-slate-800 pb-4">
+                    <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-calculator text-brand-400"></i> Freelance Rate & Retainer Estimator
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Calculate optimal billing rates for advisory, architecture MVP builds, L3 retainers, and corporate workshops based on market benchmark data.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Calculator Form Inputs -->
+                    <div class="space-y-4 lg:col-span-1 bg-slate-900/90 p-5 rounded-xl border border-slate-800">
+                        <h3 class="text-sm font-bold text-white uppercase tracking-wider text-brand-400 mb-3">Engagement Parameters</h3>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Service / Engagement Type</label>
+                            <select id="calcType" onchange="calculateRates()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand-500">
+                                <option value="hourly">1. Hourly Consulting & Advisory</option>
+                                <option value="mvp">2. End-to-End Architecture / MVP Build</option>
+                                <option value="retainer">3. Monthly L3 Support & SLA Retainer</option>
+                                <option value="workshop">4. Corporate Training Workshop (Per Day)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Target Market & Currency</label>
+                            <select id="calcMarket" onchange="calculateRates()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand-500">
+                                <option value="global">Global Enterprise (USD $)</option>
+                                <option value="india">India Enterprise / NCR (INR ₹)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Seniority & Expertise Tier</label>
+                            <select id="calcTier" onchange="calculateRates()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand-500">
+                                <option value="lead">Technical Lead / Senior Architect (10-14 yrs)</option>
+                                <option value="principal">Principal Architect / GenAI Lead (15+ yrs)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Estimated Monthly Hours / Scope</label>
+                            <input type="number" id="calcHours" value="40" oninput="calculateRates()" min="5" max="160" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500">
+                            <span class="text-[10px] text-slate-500 mt-1 block">Default: 40 hrs/mo for part-time retainer</span>
+                        </div>
+                    </div>
+
+                    <!-- Calculated Benchmarks Display -->
+                    <div class="lg:col-span-2 space-y-4 flex flex-col justify-between">
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            
+                            <div class="bg-gradient-to-br from-slate-900 to-indigo-950/60 p-4 rounded-xl border border-slate-800 text-center">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Recommended Base Rate</span>
+                                <div id="resBaseRate" class="text-2xl font-black text-brand-400">$65 / hr</div>
+                                <span class="text-[10px] text-slate-500 block mt-1">Standard Market Rate</span>
+                            </div>
+
+                            <div class="bg-gradient-to-br from-slate-900 to-emerald-950/60 p-4 rounded-xl border border-slate-800 text-center">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Specialized AI / RAG Rate</span>
+                                <div id="resAiRate" class="text-2xl font-black text-accent-emerald">$95 / hr</div>
+                                <span class="text-[10px] text-slate-500 block mt-1">Includes LangGraph & GenAI</span>
+                            </div>
+
+                            <div class="bg-gradient-to-br from-slate-900 to-purple-950/60 p-4 rounded-xl border border-slate-800 text-center">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Estimated Monthly Yield</span>
+                                <div id="resMonthlyYield" class="text-2xl font-black text-accent-purple">$3,800 / mo</div>
+                                <span id="resScopeNote" class="text-[10px] text-slate-500 block mt-1">Based on 40 hrs commitment</span>
+                            </div>
+                        </div>
+
+                        <!-- Pricing Strategy Breakdown -->
+                        <div class="bg-slate-900/80 p-5 rounded-xl border border-slate-800 space-y-3">
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+                                <i class="fa-solid fa-lightbulb text-amber-400"></i> Market Benchmark & Proposal Strategy Guide:
+                            </h4>
+                            <ul id="calcAdviceList" class="text-xs text-slate-400 space-y-2 list-disc list-inside leading-relaxed">
+                                <!-- Dynamic advice injected -->
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- VIEW 3: PIPELINE TRACKER & SAVED MANDATES -->
+        <div id="view-pipeline" class="hidden space-y-6">
+            <section class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-6">
+                
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-chart-kanban text-brand-400"></i> Opportunity & Advisory Pipeline Tracker
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">Manage active applications, discovery calls, and retained clients in your local browser storage.</p>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <button onclick="exportPipeline('csv')" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1.5">
+                            <i class="fa-solid fa-file-csv text-emerald-400"></i> Export CSV
+                        </button>
+                        <button onclick="exportPipeline('json')" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1.5">
+                            <i class="fa-solid fa-file-code text-blue-400"></i> Export JSON
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pipeline Summary Cards -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                    <div class="bg-slate-900/90 p-3.5 rounded-xl border border-slate-800">
+                        <span class="text-[10px] text-slate-400 uppercase font-semibold block">Saved Gigs</span>
+                        <span id="pipeStatSaved" class="text-xl font-black text-amber-400">0</span>
+                    </div>
+                    <div class="bg-slate-900/90 p-3.5 rounded-xl border border-slate-800">
+                        <span class="text-[10px] text-slate-400 uppercase font-semibold block">Proposals Sent</span>
+                        <span id="pipeStatSent" class="text-xl font-black text-brand-400">0</span>
+                    </div>
+                    <div class="bg-slate-900/90 p-3.5 rounded-xl border border-slate-800">
+                        <span class="text-[10px] text-slate-400 uppercase font-semibold block">Discovery Calls</span>
+                        <span id="pipeStatCalls" class="text-xl font-black text-accent-cyan">0</span>
+                    </div>
+                    <div class="bg-slate-900/90 p-3.5 rounded-xl border border-slate-800">
+                        <span class="text-[10px] text-slate-400 uppercase font-semibold block">Active Retainers</span>
+                        <span id="pipeStatActive" class="text-xl font-black text-accent-emerald">0</span>
+                    </div>
+                </div>
+
+                <!-- Pipeline List Table / Grid -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="bg-slate-900/90 text-slate-400 uppercase text-[10px] font-bold border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">Opportunity / Client</th>
+                                <th class="p-3">SDLC Stage</th>
+                                <th class="p-3">Budget</th>
+                                <th class="p-3">Status</th>
+                                <th class="p-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pipelineTableBody" class="divide-y divide-slate-800/60 font-medium">
+                            <!-- Injected dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="pipelineEmptyState" class="text-center py-8 text-slate-500 text-xs hidden">
+                    No opportunities tracked yet. Bookmark or change status on any gig card in the feed!
+                </div>
+
+            </section>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-auto border-t border-slate-800/80 bg-slate-950 py-6 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p>© 2026 DevGigX Command Center • Tailored for Senior Architects, AI Consultants & Technical Leads</p>
+            <p class="flex items-center gap-2">
+                <span>Coverage: Global Remote, India NCR & US/EU Timezones</span>
+            </p>
+        </div>
+    </footer>
+
+
+    <!-- MODAL 1: SKILL MATRIX DRAWER -->
+    <div id="skillMatrixModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex justify-end transition-opacity">
+        <div class="w-full max-w-2xl bg-slate-900 h-full overflow-y-auto border-l border-slate-800 p-6 flex flex-col justify-between shadow-2xl">
+            <div>
+                <!-- Header -->
+                <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2.5 rounded-xl bg-brand-500/10 text-brand-400 border border-brand-500/30">
+                            <i class="fa-solid fa-brain text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-white">Your Technical Skill Matrix Profile</h3>
+                            <p class="text-xs text-slate-400">Toggle skills to dynamically update your match percentage across all freelance mandates.</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleSkillMatrixModal()" class="text-slate-400 hover:text-white p-2">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+
+                <!-- Controls -->
+                <div class="flex items-center justify-between my-4 text-xs">
+                    <span class="text-slate-400 font-medium"><span id="matrixActiveCount" class="text-brand-400 font-bold">45</span> Active Skills</span>
+                    <div class="space-x-2">
+                        <button onclick="selectAllSkills(true)" class="text-brand-400 hover:underline font-semibold">Select All</button>
+                        <span class="text-slate-700">|</span>
+                        <button onclick="selectAllSkills(false)" class="text-slate-400 hover:underline">Deselect All</button>
+                        <span class="text-slate-700">|</span>
+                        <button onclick="resetSkillsToDefault()" class="text-indigo-400 hover:underline">Reset Default</button>
+                    </div>
+                </div>
+
+                <!-- Custom Skill Add Bar -->
+                <div class="mb-6 flex gap-2">
+                    <input type="text" id="customSkillInput" placeholder="Add custom skill (e.g. Temporal.io, AutoGen)..." class="flex-grow bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500">
+                    <button onclick="addCustomSkill()" class="px-4 py-2 rounded-xl bg-brand-500 text-white text-xs font-semibold hover:bg-brand-600 transition">Add Skill</button>
+                </div>
+
+                <!-- Skill Categories -->
+                <div id="skillCategoryContainer" class="space-y-5">
+                    <!-- Dynamic skills injected -->
+                </div>
+            </div>
+
+            <!-- Footer Action -->
+            <div class="pt-6 border-t border-slate-800 mt-6 flex items-center justify-between">
+                <span class="text-xs text-slate-400">Match score auto-updates in real time</span>
+                <button onclick="toggleSkillMatrixModal()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-indigo-600 text-white text-xs font-bold shadow-lg shadow-brand-500/20 hover:opacity-90 transition">
+                    Apply & View Matches
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- MODAL 2: PROPOSAL & TRAINING SYLLABUS GENERATOR -->
+    <div id="proposalModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-3xl bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-4">
+            
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
+                    <span id="modalProposalHeaderTitle">Proposal & Pitch Generator</span>
+                </h3>
+                <button onclick="closeProposalModal()" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div>
+                <p class="text-xs text-slate-400 mb-2">
+                    Tailored output generated for <strong id="modalGigTitle" class="text-slate-200">Mandate</strong> (<strong id="modalGigClient" class="text-brand-400">Client</strong>):
+                </p>
+                <textarea id="proposalText" rows="12" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs sm:text-sm text-slate-200 focus:outline-none font-mono leading-relaxed"></textarea>
+            </div>
+
+            <div class="flex items-center justify-between pt-2">
+                <span id="proposalCopyToast" class="text-xs font-semibold text-emerald-400 opacity-0 transition-opacity">
+                    <i class="fa-solid fa-check mr-1"></i> Copied to Clipboard!
+                </span>
+                <div class="flex items-center space-x-2">
+                    <button onclick="closeProposalModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold hover:bg-slate-700">Close</button>
+                    <button onclick="copyProposalText()" class="px-4 py-2 rounded-xl bg-brand-500 text-white text-xs font-bold hover:bg-brand-600 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-copy"></i> Copy Content
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- JAVASCRIPT APPLICATION LOGIC -->
+    <script>
+        /* ==========================================================================
+           1. SKILL MATRIX DATA ARCHITECTURE
+           ========================================================================== */
+        const DEFAULT_SKILL_CATEGORIES = [
+            {
+                name: "Architecture & System Design",
+                icon: "fa-sitemap",
+                skills: [
+                    "Software Architecture", "Solution Architecture", "Enterprise Architecture",
+                    "Cloud-Native Architecture", "Microservices Architecture", "Event-Driven Architecture",
+                    "Platform Engineering", "AI Solution Architecture"
+                ]
+            },
+            {
+                name: "Artificial Intelligence & GenAI",
+                icon: "fa-robot",
+                skills: [
+                    "Generative AI", "Large Language Models (LLMs)", "Retrieval-Augmented Generation (RAG)",
+                    "AI Agents", "Multi-Agent Systems", "AI Model Development", "AI Systems Design",
+                    "AI Architecture Design", "Prompt Engineering", "Prompt Orchestration", "LangChain",
+                    "LangGraph", "Model Context Protocol", "Embedding Models", "Semantic Search",
+                    "AI Workflow Automation", "AI Guardrails", "Intelligent Automation", "Distributed AI Systems"
+                ]
+            },
+            {
+                name: "Backend Engineering & Services",
+                icon: "fa-server",
+                skills: [
+                    "API Design", "API Gateway", "Domain-Driven Design", "Contextual Data Management",
+                    "Data Representation Techniques", "Enhanced Data Retrieval", "Intelligent Search Solutions",
+                    "Automated Process Optimization", "Model Performance Assessment", "AI Reliability Strategies",
+                    "AI Compliance Frameworks", "Distributed Systems", "Service Mesh"
+                ]
+            },
+            {
+                name: "Programming Languages",
+                icon: "fa-code",
+                skills: ["Java", "Kotlin", "Python", "SQL", "HTML"]
+            },
+            {
+                name: "Data & Storage Systems",
+                icon: "fa-database",
+                skills: ["PostgreSQL", "MySQL", "MongoDB", "Couchbase", "Redis"]
+            },
+            {
+                name: "Observability & Monitoring",
+                icon: "fa-chart-line",
+                skills: ["Datadog", "Grafana", "Splunk", "ELK Stack", "Monitoring", "Logging", "Distributed Tracing", "Observability"]
+            },
+            {
+                name: "DevOps & Cloud Reliability",
+                icon: "fa-cloud",
+                skills: ["Infrastructure as Code", "CI/CD Pipelines", "Containerization"]
+            },
+            {
+                name: "Testing & SDLC Methodologies",
+                icon: "fa-vial",
+                skills: ["Automated Testing (JUnit, TestNG)", "Agile", "Scrum", "SDLC"]
+            }
+        ];
+
+        let activeSkills = new Set();
+        function initSkills() {
+            DEFAULT_SKILL_CATEGORIES.forEach(cat => {
+                cat.skills.forEach(s => activeSkills.add(s.toLowerCase()));
+            });
+        }
+        initSkills();
+
+        /* ==========================================================================
+           2. 16 CURATED LIVE-STYLE FREELANCE GIGS & TRAINING MANDATES
+           ========================================================================== */
+        const FREELANCE_DATABASE = [
+            {
+                id: "gig-1",
+                title: "Enterprise RAG & LangGraph Multi-Agent Architecture",
+                client: "FinTech Global SaaS",
+                sdlcStage: "Architecture",
+                sdlcStageLabel: "1. Architecture & Design",
+                engagementModel: "Fixed",
+                budgetUsd: "$8,500 - $14,000",
+                budgetInr: "₹7.0L - ₹11.5L",
+                rateNumeric: 11000,
+                location: "Global Remote (US Timezone)",
+                requiredSkills: ["AI Solution Architecture", "Generative AI", "Retrieval-Augmented Generation (RAG)", "AI Agents", "Multi-Agent Systems", "LangChain", "LangGraph", "Model Context Protocol", "Python", "PostgreSQL", "Redis"],
+                summary: "Architect a fault-tolerant multi-agent workflow using LangGraph & MCP for automated SEC filing analysis. Design vector retrieval, guardrails, and context caching.",
+                directKeywords: "LangGraph Multi-Agent Architect Remote",
+                platformSearchCategory: "global"
+            },
+            {
+                id: "gig-2",
+                title: "2-Day Corporate Bootcamp: Spring Boot 3 & Kafka Microservices",
+                client: "Tech Mahindra / Corporate L&D",
+                sdlcStage: "Training",
+                sdlcStageLabel: "6. Corporate Training",
+                engagementModel: "Corporate Training",
+                budgetUsd: "$2,200 - $3,500 total",
+                budgetInr: "₹1,80,000 - ₹2,80,000",
+                rateNumeric: 2500,
+                location: "India / Delhi NCR (Hybrid/Online)",
+                requiredSkills: ["Java", "Kotlin", "Microservices Architecture", "Event-Driven Architecture", "Domain-Driven Design", "Agile", "SDLC"],
+                summary: "Deliver intensive 2-day live technical workshop for 30 senior engineering leads. Topics: Spring Boot 3, Kafka event streaming, resiliency patterns, and distributed tracing.",
+                directKeywords: "Corporate Trainer Spring Boot Microservices India",
+                platformSearchCategory: "training"
+            },
+            {
+                id: "gig-3",
+                title: "L3 Production Support & Datadog Observability Retainer",
+                client: "HealthTech Platform (EU)",
+                sdlcStage: "Support",
+                sdlcStageLabel: "5. Production & Retainers",
+                engagementModel: "Retainer",
+                budgetUsd: "$4,500 / month",
+                budgetInr: "₹3,75,000 / month",
+                rateNumeric: 4500,
+                location: "Remote (EU / India Timezone)",
+                requiredSkills: ["Datadog", "Grafana", "Observability", "Distributed Tracing", "Monitoring", "Logging", "Java", "PostgreSQL", "Microservices Architecture"],
+                summary: "Provide monthly 30-hour L3 escalation consulting retainer. Conduct root-cause analysis for high-priority outages, APM trace optimization, and SLO dashboard setup.",
+                directKeywords: "Datadog Observability L3 Support Retainer Remote",
+                platformSearchCategory: "vetted"
+            },
+            {
+                id: "gig-4",
+                title: "AI Security, Guardrails & Compliance Audit for FinTech",
+                client: "NeoBank UK",
+                sdlcStage: "Audit",
+                sdlcStageLabel: "3. Audit & Guardrails",
+                engagementModel: "Fixed",
+                budgetUsd: "$6,000 - $9,000",
+                budgetInr: "₹5.0L - ₹7.5L",
+                rateNumeric: 7500,
+                location: "Remote Global",
+                requiredSkills: ["AI Guardrails", "AI Compliance Frameworks", "AI Reliability Strategies", "Generative AI", "Model Performance Assessment", "Python", "API Design"],
+                summary: "Audit existing LLM pipelines for prompt injection risks, data leakage, and PII toxicity. Implement custom guardrail filters (NeMo/Llama-Guard) and compliance documentation.",
+                directKeywords: "AI Guardrails Compliance Auditor Remote",
+                platformSearchCategory: "global"
+            },
+            {
+                id: "gig-5",
+                title: "Legacy Java Monolith to Cloud-Native Kubernetes Migration",
+                client: "Logistics Enterprise NCR",
+                sdlcStage: "DevOps",
+                sdlcStageLabel: "4. DevOps & Cloud",
+                engagementModel: "Hourly",
+                budgetUsd: "$65 - $95 / hr",
+                budgetInr: "₹5,000 - ₹7,500 / hr",
+                rateNumeric: 80,
+                location: "Delhi NCR / Remote Hybrid",
+                requiredSkills: ["Cloud-Native Architecture", "Microservices Architecture", "Java", "Docker", "Containerization", "CI/CD Pipelines", "Infrastructure as Code", "PostgreSQL"],
+                summary: "Lead the refactoring of a legacy Java Spring 4 monolith into domain-driven microservices deployed on AWS EKS with Terraform IaC.",
+                directKeywords: "Java Cloud-Native Microservices Architect Delhi NCR",
+                platformSearchCategory: "india"
+            },
+            {
+                id: "gig-6",
+                title: "1:1 Executive System Design & AI Mentorship",
+                client: "Codementor & Enterprise Clients",
+                sdlcStage: "Training",
+                sdlcStageLabel: "6. Corporate Training",
+                engagementModel: "Hourly",
+                budgetUsd: "$80 - $130 / hr",
+                budgetInr: "₹6,500 - ₹10,500 / hr",
+                rateNumeric: 100,
+                location: "Remote Global",
+                requiredSkills: ["Software Architecture", "AI Systems Design", "Generative AI", "Microservices Architecture", "Distributed Systems", "Domain-Driven Design"],
+                summary: "Conduct 1:1 coaching sessions for engineering managers transitioning into AI Solution Architects. Cover Distributed System Design, RAG, and LLM evaluation.",
+                directKeywords: "System Design AI Mentor Coach Codementor",
+                platformSearchCategory: "training"
+            },
+            {
+                id: "gig-7",
+                title: "Python FastAPI + LangChain Enterprise RAG Build",
+                client: "LegalTech AI Startup",
+                sdlcStage: "Build",
+                sdlcStageLabel: "2. MVP & GenAI Build",
+                engagementModel: "Fixed",
+                budgetUsd: "$5,500 - $8,000",
+                budgetInr: "₹4.5L - ₹6.5L",
+                rateNumeric: 6700,
+                location: "Remote Global",
+                requiredSkills: ["Generative AI", "Retrieval-Augmented Generation (RAG)", "LangChain", "Python", "Embedding Models", "Semantic Search", "PostgreSQL", "API Design"],
+                summary: "Build an end-to-end legal document search engine using hybrid search (pgvector + BM25), chunk re-ranking, and streaming FastAPI responses.",
+                directKeywords: "FastAPI LangChain RAG Developer Remote",
+                platformSearchCategory: "global"
+            },
+            {
+                id: "gig-8",
+                title: "Corporate Workshop: Agentic AI & Model Context Protocol (MCP)",
+                client: "Global IT Services Firm",
+                sdlcStage: "Training",
+                sdlcStageLabel: "6. Corporate Training",
+                engagementModel: "Corporate Training",
+                budgetUsd: "$3,000 / day",
+                budgetInr: "₹2,50,000 / day",
+                rateNumeric: 3000,
+                location: "Remote / Hybrid (Bengaluru / NCR)",
+                requiredSkills: ["Model Context Protocol", "AI Agents", "Multi-Agent Systems", "LangGraph", "Prompt Orchestration", "Python"],
+                summary: "Design and deliver a 1-day masterclass on Anthropic's Model Context Protocol (MCP) and building autonomous multi-agent software development teams.",
+                directKeywords: "Model Context Protocol MCP Corporate Trainer",
+                platformSearchCategory: "training"
+            },
+            {
+                id: "gig-9",
+                title: "Database Performance Tuning & Redis Cache Optimization",
+                client: "E-Commerce Enterprise",
+                sdlcStage: "Audit",
+                sdlcStageLabel: "3. Audit & Guardrails",
+                engagementModel: "Hourly",
+                budgetUsd: "$70 - $110 / hr",
+                budgetInr: "₹5,500 - ₹9,000 / hr",
+                rateNumeric: 90,
+                location: "Remote (Global)",
+                requiredSkills: ["PostgreSQL", "MySQL", "Redis", "Couchbase", "Distributed Systems", "Contextual Data Management", "Automated Process Optimization"],
+                summary: "Resolve database bottleneck issue causing API latency spikes under 100k RPM traffic. Optimize indexing, write multi-level Redis caching, and tune query plans.",
+                directKeywords: "PostgreSQL Redis Database Performance Tuning Consultant",
+                platformSearchCategory: "vetted"
+            },
+            {
+                id: "gig-10",
+                title: "Splunk & Datadog Observability Pipeline Setup",
+                client: "Fintech Startup NCR",
+                sdlcStage: "DevOps",
+                sdlcStageLabel: "4. DevOps & Cloud",
+                engagementModel: "Fixed",
+                budgetUsd: "$4,000 - $6,500",
+                budgetInr: "₹3.2L - ₹5.2L",
+                rateNumeric: 5000,
+                location: "Noida / Gurugram / Remote",
+                requiredSkills: ["Splunk", "Datadog", "ELK Stack", "Observability", "Logging", "Distributed Tracing", "CI/CD Pipelines"],
+                summary: "Implement unified logging and tracing pipelines across 25 microservices. Set up automated alerting, p99 latency dashboards, and incident runbooks.",
+                directKeywords: "Datadog Splunk Observability Specialist Delhi NCR",
+                platformSearchCategory: "india"
+            },
+            {
+                id: "gig-11",
+                title: "Kotlin Ktor Microservices Architecture Design",
+                client: "FinTech Scale-up (Sweden)",
+                sdlcStage: "Architecture",
+                sdlcStageLabel: "1. Architecture & Design",
+                engagementModel: "Hourly",
+                budgetUsd: "$75 - $115 / hr",
+                budgetInr: "₹6,000 - ₹9,500 / hr",
+                rateNumeric: 95,
+                location: "Remote (EU Timezone)",
+                requiredSkills: ["Kotlin", "Java", "Microservices Architecture", "API Gateway", "Domain-Driven Design", "Event-Driven Architecture", "PostgreSQL"],
+                summary: "Architect lightweight coroutine-based Kotlin microservices to replace heavy legacy gateway services. Define API contracts and event-driven patterns.",
+                directKeywords: "Kotlin Ktor Microservices Architect Remote",
+                platformSearchCategory: "vetted"
+            },
+            {
+                id: "gig-12",
+                title: "AI Workflow Automation & Custom LangChain Nodes",
+                client: "SaaS Ops Firm",
+                sdlcStage: "Build",
+                sdlcStageLabel: "2. MVP & GenAI Build",
+                engagementModel: "Fixed",
+                budgetUsd: "$3,500 - $5,000",
+                budgetInr: "₹2.8L - ₹4.0L",
+                rateNumeric: 4200,
+                location: "Remote Global",
+                requiredSkills: ["AI Workflow Automation", "Intelligent Automation", "LangChain", "Python", "API Design", "Prompt Engineering"],
+                summary: "Develop custom LangChain & n8n integrations to automate customer support ticket classification, document summary, and CRM auto-updates.",
+                directKeywords: "AI Workflow Automation LangChain Developer Remote",
+                platformSearchCategory: "global"
+            },
+            {
+                id: "gig-13",
+                title: "Automated Testing (JUnit 5 + TestNG) & CI/CD Pipeline Overhaul",
+                client: "Banking Software Provider",
+                sdlcStage: "Audit",
+                sdlcStageLabel: "3. Audit & Guardrails",
+                engagementModel: "Fixed",
+                budgetUsd: "$4,500 - $7,000",
+                budgetInr: "₹3.5L - ₹5.5L",
+                rateNumeric: 5700,
+                location: "Remote (India)",
+                requiredSkills: ["Automated Testing (JUnit, TestNG)", "Java", "CI/CD Pipelines", "SDLC", "Agile", "Model Performance Assessment"],
+                summary: "Increase core test coverage from 42% to 85% for high-risk payment gateway modules. Implement parallel execution in CI/CD pipeline.",
+                directKeywords: "JUnit TestNG Automated Testing Consultant India",
+                platformSearchCategory: "india"
+            },
+            {
+                id: "gig-14",
+                title: "Cloud Cost Optimization & IaC Terraform Refactoring",
+                client: "Media Platform",
+                sdlcStage: "DevOps",
+                sdlcStageLabel: "4. DevOps & Cloud",
+                engagementModel: "Hourly",
+                budgetUsd: "$70 - $100 / hr",
+                budgetInr: "₹5,500 - ₹8,000 / hr",
+                rateNumeric: 85,
+                location: "Remote Global",
+                requiredSkills: ["Infrastructure as Code", "Containerization", "Cloud-Native Architecture", "Platform Engineering", "Monitoring"],
+                summary: "Audit AWS/GCP cloud billings for 50+ clusters. Re-architect auto-scaling, spot instances, and rewrite infrastructure modules in Terraform.",
+                directKeywords: "Cloud Cost Optimization Terraform Architect Remote",
+                platformSearchCategory: "global"
+            },
+            {
+                id: "gig-15",
+                title: "3-Day Corporate Boot Camp: Advanced RAG, Embeddings & Vector DBs",
+                client: "Enterprise Consulting Firm NCR",
+                sdlcStage: "Training",
+                sdlcStageLabel: "6. Corporate Training",
+                engagementModel: "Corporate Training",
+                budgetUsd: "$3,500 - $5,000 total",
+                budgetInr: "₹2,80,000 - ₹4,000,000",
+                rateNumeric: 4000,
+                location: "Gurugram / Online",
+                requiredSkills: ["Retrieval-Augmented Generation (RAG)", "Embedding Models", "Semantic Search", "Generative AI", "Python", "PostgreSQL"],
+                summary: "Train 40 software engineers on vector databases (pgvector, Milvus), chunking strategies, hybrid reranking, and evaluation frameworks (Ragas).",
+                directKeywords: "RAG Vector DB Corporate Trainer Gurugram",
+                platformSearchCategory: "training"
+            },
+            {
+                id: "gig-16",
+                title: "24/7 SLA Maintenance & L3 Escalation Support Retainer",
+                client: "SaaS Retail Logistics",
+                sdlcStage: "Support",
+                sdlcStageLabel: "5. Production & Retainers",
+                engagementModel: "Retainer",
+                budgetUsd: "$3,800 / month",
+                budgetInr: "₹3,10,000 / month",
+                rateNumeric: 3800,
+                location: "Remote (Global)",
+                requiredSkills: ["Monitoring", "Logging", "Distributed Systems", "Java", "Python", "API Gateway", "Observability"],
+                summary: "Monthly retainer for 25 hours SLA support cover, architecture sanity reviews for major releases, and escalation management.",
+                directKeywords: "L3 SLA Support Retainer Software Architect Remote",
+                platformSearchCategory: "vetted"
+            }
+        ];
+
+        /* ==========================================================================
+           3. PLATFORM DEEP-LINK SEARCH CONFIGURATION (15+ Portals)
+           ========================================================================== */
+        const PLATFORMS_CONFIG = {
+            global: [
+                { name: "Upwork Pro", icon: "fa-briefcase", color: "emerald", getUrl: (q, e) => `https://www.upwork.com/nx/search/jobs/?q=${encodeURIComponent(q)}` },
+                { name: "Freelancer", icon: "fa-globe", color: "blue", getUrl: (q, e) => `https://www.freelancer.com/jobs/${encodeURIComponent(q.toLowerCase().replace(/\s+/g, '-'))}/` },
+                { name: "Fiverr Pro", icon: "fa-star", color: "green", getUrl: (q, e) => `https://www.fiverr.com/search/gigs?query=${encodeURIComponent(q)}` },
+                { name: "Guru.com", icon: "fa-user-tie", color: "indigo", getUrl: (q, e) => `https://www.guru.com/d/jobs/q/${encodeURIComponent(q)}/` },
+                { name: "PeoplePerHour", icon: "fa-clock", color: "amber", getUrl: (q, e) => `https://www.peopleperhour.com/freelance-jobs?q=${encodeURIComponent(q)}` }
+            ],
+            vetted: [
+                { name: "Toptal", icon: "fa-gem", color: "cyan", getUrl: (q, e) => `https://www.toptal.com/freelance-jobs` },
+                { name: "Arc.dev", icon: "fa-code-branch", color: "purple", getUrl: (q, e) => `https://arc.dev/remote-jobs?query=${encodeURIComponent(q)}` },
+                { name: "Turing", icon: "fa-brain", color: "brand", getUrl: (q, e) => `https://www.turing.com/jobs?q=${encodeURIComponent(q)}` },
+                { name: "Contra", icon: "fa-paper-plane", color: "rose", getUrl: (q, e) => `https://contra.com/search/projects?q=${encodeURIComponent(q)}` },
+                { name: "Braintrust", icon: "fa-network-wired", color: "emerald", getUrl: (q, e) => `https://app.usebraintrust.com/jobs/?q=${encodeURIComponent(q)}` }
+            ],
+            india: [
+                { name: "Truelancer", icon: "fa-indian-rupee-sign", color: "amber", getUrl: (q, e) => `https://www.truelancer.com/freelance-jobs?q=${encodeURIComponent(q)}` },
+                { name: "WorkNHire", icon: "fa-building", color: "indigo", getUrl: (q, e) => `https://www.worknhire.com/Projects/search?q=${encodeURIComponent(q)}` },
+                { name: "LinkedIn Contract", icon: "fa-brands fa-linkedin", color: "sky", getUrl: (q, e) => `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(q)}&f_JT=C` },
+                { name: "Naukri Freelance", icon: "fa-magnifying-glass", color: "blue", getUrl: (q, e) => `https://www.naukri.com/${encodeURIComponent(q.toLowerCase().replace(/\s+/g, '-'))}-freelance-jobs` }
+            ],
+            training: [
+                { name: "Codementor", icon: "fa-chalkboard-user", color: "rose", getUrl: (q, e) => `https://www.codementor.io/m/freelance-jobs?q=${encodeURIComponent(q)}` },
+                { name: "MentorCruise", icon: "fa-user-graduate", color: "purple", getUrl: (q, e) => `https://mentorcruise.com/search/?q=${encodeURIComponent(q)}` },
+                { name: "UrbanPro Corporate", icon: "fa-building-columns", color: "emerald", getUrl: (q, e) => `https://www.urbanpro.com/search?q=${encodeURIComponent(q)}` },
+                { name: "Superprof India", icon: "fa-chalkboard", color: "cyan", getUrl: (q, e) => `https://www.superprof.co.in/s/${encodeURIComponent(q)},India,1.html` },
+                { name: "Kolabtree Consulting", icon: "fa-microscope", color: "indigo", getUrl: (q, e) => `https://www.kolabtree.com/find-an-expert/search?q=${encodeURIComponent(q)}` }
+            ]
+        };
+
+        // Application State
+        let activePlatformTier = 'global';
+        let activeSdlcFilter = 'ALL';
+        let savedGigIds = new Set(JSON.parse(localStorage.getItem('devgigx_saved') || '[]'));
+        let gigStatuses = JSON.parse(localStorage.getItem('devgigx_statuses') || '{}');
+
+        /* ==========================================================================
+           4. SKILL MATCH & MATRIX LOGIC
+           ========================================================================== */
+        function calculateSkillMatch(requiredSkills) {
+            if (!requiredSkills || requiredSkills.length === 0) return 100;
+            let count = 0;
+            requiredSkills.forEach(s => {
+                if (activeSkills.has(s.toLowerCase())) count++;
+            });
+            return Math.round((count / requiredSkills.length) * 100);
+        }
+
+        function renderSkillMatrix() {
+            const container = document.getElementById('skillCategoryContainer');
+            container.innerHTML = '';
+
+            document.getElementById('matrixActiveCount').innerText = activeSkills.size;
+            document.getElementById('navSkillBadge').innerText = activeSkills.size;
+
+            DEFAULT_SKILL_CATEGORIES.forEach((cat) => {
+                const div = document.createElement('div');
+                div.className = "bg-slate-950/80 border border-slate-800 rounded-xl p-3.5 space-y-2.5";
+
+                const chipsHtml = cat.skills.map(s => {
+                    const isActive = activeSkills.has(s.toLowerCase());
+                    return `
+                        <button onclick="toggleSingleSkill('${s.replace(/'/g, "\\'")}')" class="px-2.5 py-1 rounded-lg text-xs font-medium transition ${
+                            isActive 
+                            ? 'bg-brand-500/20 text-brand-300 border border-brand-500/40 shadow-sm' 
+                            : 'bg-slate-900 text-slate-500 border border-slate-800 hover:border-slate-700'
+                        }">
+                            <i class="fa-solid ${isActive ? 'fa-check text-brand-400' : 'fa-plus text-slate-600'} mr-1 text-[10px]"></i> ${s}
+                        </button>
+                    `;
+                }).join('');
+
+                div.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid ${cat.icon} text-brand-400"></i> ${cat.name}
+                        </span>
+                        <span class="text-[10px] text-slate-500 font-mono">${cat.skills.filter(s => activeSkills.has(s.toLowerCase())).length}/${cat.skills.length}</span>
+                    </div>
+                    <div class="flex flex-wrap gap-1.5">
+                        ${chipsHtml}
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function toggleSingleSkill(skillName) {
+            const lower = skillName.toLowerCase();
+            if (activeSkills.has(lower)) activeSkills.delete(lower);
+            else activeSkills.add(lower);
+            renderSkillMatrix();
+            renderGigFeed();
+        }
+
+        function selectAllSkills(select) {
+            DEFAULT_SKILL_CATEGORIES.forEach(cat => {
+                cat.skills.forEach(s => {
+                    if (select) activeSkills.add(s.toLowerCase());
+                    else activeSkills.delete(s.toLowerCase());
+                });
+            });
+            renderSkillMatrix();
+            renderGigFeed();
+        }
+
+        function resetSkillsToDefault() {
+            activeSkills.clear();
+            initSkills();
+            renderSkillMatrix();
+            renderGigFeed();
+        }
+
+        function addCustomSkill() {
+            const input = document.getElementById('customSkillInput');
+            const val = input.value.trim();
+            if (val) {
+                DEFAULT_SKILL_CATEGORIES[0].skills.push(val);
+                activeSkills.add(val.toLowerCase());
+                input.value = '';
+                renderSkillMatrix();
+                renderGigFeed();
+            }
+        }
+
+        function toggleSkillMatrixModal() {
+            document.getElementById('skillMatrixModal').classList.toggle('hidden');
+        }
+
+        /* ==========================================================================
+           5. SEARCH LAUNCHER LOGIC
+           ========================================================================== */
+        function setLauncherPreset(queryText) {
+            document.getElementById('launcherQuery').value = queryText;
+            renderPlatformLauncherGrid();
+        }
+
+        function switchPlatformTier(tierKey) {
+            activePlatformTier = tierKey;
+            document.querySelectorAll('.tier-tab-btn').forEach(btn => {
+                btn.classList.remove('bg-brand-500', 'text-white');
+                btn.classList.add('bg-slate-800', 'text-slate-300');
+            });
+            const activeBtn = document.getElementById('tierTab-' + tierKey);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-slate-800', 'text-slate-300');
+                activeBtn.classList.add('bg-brand-500', 'text-white');
+            }
+            renderPlatformLauncherGrid();
+        }
+
+        function renderPlatformLauncherGrid() {
+            const container = document.getElementById('platformLauncherGrid');
+            const q = document.getElementById('launcherQuery').value.trim() || "Software Architect";
+            const eng = document.getElementById('launcherEngagement').value;
+            const reg = document.getElementById('launcherRegion').value;
+
+            const platforms = PLATFORMS_CONFIG[activePlatformTier] || [];
+            container.innerHTML = platforms.map(p => {
+                const targetUrl = p.getUrl(q, eng);
+                return `
+                    <a href="${targetUrl}" target="_blank" class="flex items-center space-x-2.5 p-2.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-brand-500 hover:bg-slate-800/90 transition text-slate-200 text-xs font-semibold group shadow-sm">
+                        <div class="w-7 h-7 rounded-lg bg-slate-800 group-hover:bg-brand-500/20 border border-slate-700/80 flex items-center justify-center text-brand-400">
+                            <i class="${p.icon.includes('fa-') ? p.icon : 'fa-solid ' + p.icon}"></i>
+                        </div>
+                        <div class="truncate">
+                            <div class="truncate text-slate-100 group-hover:text-brand-400 font-bold">${p.name}</div>
+                            <div class="text-[10px] text-slate-500 truncate"><i class="fa-solid fa-arrow-up-right-from-square text-[9px] mr-1"></i>Search Live</div>
+                        </div>
+                    </a>
+                `;
+            }).join('');
+        }
+
+        /* ==========================================================================
+           6. SDLC FEED RENDER ENGINE
+           ========================================================================== */
+        function setSdlcFilter(stageKey) {
+            activeSdlcFilter = stageKey;
+            document.querySelectorAll('.sdlc-btn').forEach(btn => {
+                btn.classList.remove('bg-brand-500', 'text-white', 'font-bold', 'shadow-sm');
+                btn.classList.add('bg-slate-900', 'text-slate-300');
+            });
+            const activeBtn = document.getElementById('sdlc-' + stageKey);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-slate-900', 'text-slate-300');
+                activeBtn.classList.add('bg-brand-500', 'text-white', 'font-bold', 'shadow-sm');
+            }
+
+            const names = {
+                ALL: "All 6 Lifecycle Stages",
+                Architecture: "Stage 1: Enterprise & AI Architecture Design",
+                Build: "Stage 2: MVP & GenAI Agentic Build",
+                Audit: "Stage 3: Code Audit & AI Compliance",
+                DevOps: "Stage 4: Cloud DevOps & Observability",
+                Support: "Stage 5: Production & SLA Retainers",
+                Training: "Stage 6: Corporate Training & Mentorship"
+            };
+            document.getElementById('sdlcActiveStageName').innerText = names[stageKey] || "All 6 Stages";
+            renderGigFeed();
+        }
+
+        function renderGigFeed() {
+            const grid = document.getElementById('gigsGrid');
+            const emptyState = document.getElementById('feedEmptyState');
+            
+            const keyword = document.getElementById('feedSearchInput').value.toLowerCase();
+            const engFilter = document.getElementById('feedEngagementFilter').value;
+            const minMatch = parseInt(document.getElementById('feedMatchFilter').value, 10);
+            const sortBy = document.getElementById('feedSort').value;
+
+            // Process matches
+            let processed = FREELANCE_DATABASE.map(gig => {
+                const matchPct = calculateSkillMatch(gig.requiredSkills);
+                return { ...gig, matchPct };
+            });
+
+            // Filtering
+            let filtered = processed.filter(gig => {
+                if (gig.matchPct < minMatch) return false;
+                if (activeSdlcFilter !== 'ALL' && gig.sdlcStage !== activeSdlcFilter) return false;
+                if (engFilter !== 'ALL' && gig.engagementModel !== engFilter) return false;
+
+                if (keyword) {
+                    const haystack = (gig.title + " " + gig.client + " " + gig.requiredSkills.join(" ") + " " + gig.summary).toLowerCase();
+                    if (!haystack.includes(keyword)) return false;
+                }
+                return true;
+            });
+
+            // Sorting
+            filtered.sort((a, b) => {
+                if (sortBy === 'match') return b.matchPct - a.matchPct;
+                if (sortBy === 'budget') return b.rateNumeric - a.rateNumeric;
+                return 0;
+            });
+
+            document.getElementById('visibleGigCount').innerText = filtered.length;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            grid.innerHTML = filtered.map(gig => {
+                const isSaved = savedGigIds.has(gig.id);
+                const currentStatus = gigStatuses[gig.id] || (isSaved ? 'Saved' : 'New');
+
+                let badgeBg = "bg-emerald-500/10 text-emerald-400 border-emerald-500/30";
+                if (gig.matchPct < 70) badgeBg = "bg-amber-500/10 text-amber-400 border-amber-500/30";
+                if (gig.matchPct < 50) badgeBg = "bg-slate-500/10 text-slate-400 border-slate-500/30";
+
+                const matchedSkills = gig.requiredSkills.filter(s => activeSkills.has(s.toLowerCase()));
+                const missingSkills = gig.requiredSkills.filter(s => !activeSkills.has(s.toLowerCase()));
+
+                return `
+                    <div class="glass-panel rounded-2xl p-5 hover:border-slate-700 transition-all duration-200 flex flex-col justify-between space-y-4 relative group">
+                        
+                        <div>
+                            <div class="flex items-start justify-between gap-3">
+                                <div>
+                                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-brand-400 bg-brand-500/10 border border-brand-500/30 px-2 py-0.5 rounded-full inline-block mb-1.5">
+                                        ${gig.sdlcStageLabel}
+                                    </span>
+                                    <h3 class="font-bold text-slate-100 text-base group-hover:text-brand-400 transition-colors">
+                                        ${gig.title}
+                                    </h3>
+                                    <p class="text-xs font-medium text-slate-400 flex items-center gap-2 mt-1">
+                                        <span class="text-indigo-400 font-semibold">${gig.client}</span>
+                                        <span>•</span>
+                                        <span class="text-slate-300"><i class="fa-solid fa-earth-americas text-brand-400 mr-1"></i>${gig.location}</span>
+                                    </p>
+                                </div>
+
+                                <div class="flex flex-col items-end">
+                                    <div class="px-2.5 py-1 rounded-full border text-xs font-black tracking-tight ${badgeBg} shadow-sm">
+                                        <i class="fa-solid fa-bullseye mr-1"></i>${gig.matchPct}% Match
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Budget & Engagement Badges -->
+                            <div class="flex flex-wrap items-center gap-2 mt-3.5 text-xs">
+                                <span class="px-2.5 py-1 rounded-lg bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 font-extrabold">
+                                    <i class="fa-solid fa-sack-dollar mr-1"></i>${gig.budgetUsd}
+                                </span>
+                                <span class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 font-semibold">
+                                    ${gig.budgetInr}
+                                </span>
+                                <span class="px-2.5 py-1 rounded-lg bg-indigo-950/70 border border-indigo-800 text-indigo-300 font-medium">
+                                    <i class="fa-solid fa-handshake mr-1"></i>${gig.engagementModel}
+                                </span>
+                            </div>
+
+                            <!-- Summary -->
+                            <p class="text-xs text-slate-400 mt-3 leading-relaxed">
+                                ${gig.summary}
+                            </p>
+                        </div>
+
+                        <!-- Skill Tags -->
+                        <div class="space-y-1.5 pt-2 border-t border-slate-800/80">
+                            <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Required Tech Stack:</span>
+                            <div class="flex flex-wrap gap-1 text-[11px]">
+                                ${matchedSkills.map(s => `
+                                    <span class="px-2 py-0.5 rounded bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 font-medium">
+                                        <i class="fa-solid fa-check text-[9px] mr-1"></i>${s}
+                                    </span>
+                                `).join('')}
+                                ${missingSkills.map(s => `
+                                    <span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-500 opacity-70">
+                                        ${s}
+                                    </span>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Footer Actions -->
+                        <div class="pt-3 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2 text-xs">
+                            
+                            <div class="flex items-center space-x-2">
+                                <button onclick="toggleSaveGig('${gig.id}')" class="p-2 rounded-xl bg-slate-900 border border-slate-700 hover:bg-slate-800 transition ${isSaved ? 'text-amber-400' : 'text-slate-400'}">
+                                    <i class="fa-${isSaved ? 'solid' : 'regular'} fa-bookmark"></i>
+                                </button>
+
+                                <select onchange="updateGigStatus('${gig.id}', this.value)" class="bg-slate-900 border border-slate-700 text-slate-300 text-[11px] rounded-xl px-2.5 py-1.5 focus:outline-none focus:border-brand-500">
+                                    <option value="New" ${currentStatus==='New'?'selected':''}>Status: New</option>
+                                    <option value="Saved" ${currentStatus==='Saved'?'selected':''}>Saved</option>
+                                    <option value="Proposal Sent" ${currentStatus==='Proposal Sent'?'selected':''}>Proposal Sent</option>
+                                    <option value="Discovery Call" ${currentStatus==='Discovery Call'?'selected':''}>Discovery Call</option>
+                                    <option value="Active Contract" ${currentStatus==='Active Contract'?'selected':''}>Active Contract</option>
+                                </select>
+                            </div>
+
+                            <div class="flex items-center space-x-2">
+                                <button onclick="openProposalModal('${gig.id}')" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-indigo-500 text-slate-300 hover:text-white transition font-semibold text-[11px] flex items-center gap-1.5">
+                                    <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i> ${gig.sdlcStage==='Training'?'Syllabus':'Pitch Proposal'}
+                                </button>
+
+                                <a href="https://www.upwork.com/nx/search/jobs/?q=${encodeURIComponent(gig.directKeywords)}" target="_blank" class="px-3 py-1.5 rounded-xl bg-brand-500 text-white font-bold hover:bg-brand-600 transition text-[11px] flex items-center gap-1">
+                                    <span>Search Portals</span> <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                                </a>
+                            </div>
+
+                        </div>
+
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function resetFeedFilters() {
+            document.getElementById('feedSearchInput').value = '';
+            document.getElementById('feedEngagementFilter').value = 'ALL';
+            document.getElementById('feedMatchFilter').value = '0';
+            document.getElementById('feedSort').value = 'match';
+            setSdlcFilter('ALL');
+        }
+
+        /* ==========================================================================
+           7. PIPELINE TRACKER LOGIC
+           ========================================================================== */
+        function toggleSaveGig(gigId) {
+            if (savedGigIds.has(gigId)) {
+                savedGigIds.delete(gigId);
+            } else {
+                savedGigIds.add(gigId);
+                gigStatuses[gigId] = 'Saved';
+            }
+            saveState();
+            renderGigFeed();
+            renderPipeline();
+        }
+
+        function updateGigStatus(gigId, status) {
+            gigStatuses[gigId] = status;
+            if (status !== 'New') savedGigIds.add(gigId);
+            saveState();
+            renderGigFeed();
+            renderPipeline();
+        }
+
+        function saveState() {
+            localStorage.setItem('devgigx_saved', JSON.stringify(Array.from(savedGigIds)));
+            localStorage.setItem('devgigx_statuses', JSON.stringify(gigStatuses));
+            document.getElementById('pipelineCountBadge').innerText = savedGigIds.size;
+        }
+
+        function renderPipeline() {
+            const tbody = document.getElementById('pipelineTableBody');
+            const emptyState = document.getElementById('pipelineEmptyState');
+
+            const trackedGigs = FREELANCE_DATABASE.filter(g => savedGigIds.has(g.id) || (gigStatuses[g.id] && gigStatuses[g.id] !== 'New'));
+
+            let countSaved = 0, countSent = 0, countCalls = 0, countActive = 0;
+            trackedGigs.forEach(g => {
+                const st = gigStatuses[g.id] || 'Saved';
+                if (st === 'Saved') countSaved++;
+                if (st === 'Proposal Sent') countSent++;
+                if (st === 'Discovery Call') countCalls++;
+                if (st === 'Active Contract') countActive++;
+            });
+
+            document.getElementById('pipeStatSaved').innerText = countSaved;
+            document.getElementById('pipeStatSent').innerText = countSent;
+            document.getElementById('pipeStatCalls').innerText = countCalls;
+            document.getElementById('pipeStatActive').innerText = countActive;
+
+            if (trackedGigs.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            tbody.innerHTML = trackedGigs.map(gig => {
+                const st = gigStatuses[gig.id] || 'Saved';
+                return `
+                    <tr class="hover:bg-slate-900/60">
+                        <td class="p-3">
+                            <div class="font-bold text-slate-200">${gig.title}</div>
+                            <div class="text-[10px] text-slate-400">${gig.client}</div>
+                        </td>
+                        <td class="p-3 text-brand-400 text-[11px] font-semibold">${gig.sdlcStageLabel}</td>
+                        <td class="p-3 text-emerald-400 font-bold">${gig.budgetUsd}</td>
+                        <td class="p-3">
+                            <select onchange="updateGigStatus('${gig.id}', this.value)" class="bg-slate-900 border border-slate-700 text-slate-300 text-[10px] rounded-lg px-2 py-1 focus:outline-none">
+                                <option value="Saved" ${st==='Saved'?'selected':''}>Saved</option>
+                                <option value="Proposal Sent" ${st==='Proposal Sent'?'selected':''}>Proposal Sent</option>
+                                <option value="Discovery Call" ${st==='Discovery Call'?'selected':''}>Discovery Call</option>
+                                <option value="Active Contract" ${st==='Active Contract'?'selected':''}>Active Contract</option>
+                            </select>
+                        </td>
+                        <td class="p-3 text-right space-x-2">
+                            <button onclick="openProposalModal('${gig.id}')" class="text-amber-400 hover:underline">Pitch</button>
+                            <button onclick="toggleSaveGig('${gig.id}')" class="text-rose-400 hover:underline">Remove</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function exportPipeline(format) {
+            const trackedGigs = FREELANCE_DATABASE.filter(g => savedGigIds.has(g.id));
+            if (trackedGigs.length === 0) {
+                alert("No tracked gigs to export. Bookmark some gigs first!");
+                return;
+            }
+
+            if (format === 'csv') {
+                let csv = "ID,Title,Client,Stage,BudgetUSD,Status\n";
+                trackedGigs.forEach(g => {
+                    csv += `"${g.id}","${g.title}","${g.client}","${g.sdlcStage}","${g.budgetUsd}","${gigStatuses[g.id] || 'Saved'}"\n`;
+                });
+                const link = document.createElement('a');
+                link.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+                link.download = `DevGigX_Pipeline_${new Date().toISOString().slice(0,10)}.csv`;
+                link.click();
+            } else if (format === 'json') {
+                const link = document.createElement('a');
+                link.href = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(trackedGigs, null, 2));
+                link.download = `DevGigX_Pipeline_${new Date().toISOString().slice(0,10)}.json`;
+                link.click();
+            }
+        }
+
+        /* ==========================================================================
+           8. FREELANCE RATE ESTIMATOR CALCULATOR
+           ========================================================================== */
+        function calculateRates() {
+            const type = document.getElementById('calcType').value;
+            const market = document.getElementById('calcMarket').value;
+            const tier = document.getElementById('calcTier').value;
+            const hours = parseInt(document.getElementById('calcHours').value, 10) || 40;
+
+            let baseRateUsd = 65;
+            if (tier === 'principal') baseRateUsd = 95;
+
+            if (type === 'mvp') baseRateUsd *= 1.25;
+            if (type === 'workshop') baseRateUsd *= 1.5;
+
+            const aiRateUsd = Math.round(baseRateUsd * 1.35);
+
+            let symbol = "$";
+            let multiplier = 1;
+            if (market === 'india') {
+                symbol = "₹";
+                multiplier = 83; // approx USD to INR
+            }
+
+            const finalBase = Math.round(baseRateUsd * (market === 'india' ? 65 : 1)); // tiered INR hourly pricing
+            const finalAi = Math.round(aiRateUsd * (market === 'india' ? 65 : 1));
+
+            if (market === 'india') {
+                document.getElementById('resBaseRate').innerText = `₹${(finalBase * 80).toLocaleString()} / hr`;
+                document.getElementById('resAiRate').innerText = `₹${(finalAi * 80).toLocaleString()} / hr`;
+                document.getElementById('resMonthlyYield').innerText = `₹${((finalBase * 80) * hours).toLocaleString()} / mo`;
+            } else {
+                document.getElementById('resBaseRate').innerText = `$${finalBase} / hr`;
+                document.getElementById('resAiRate').innerText = `$${finalAi} / hr`;
+                document.getElementById('resMonthlyYield').innerText = `$${(finalBase * hours).toLocaleString()} / mo`;
+            }
+
+            document.getElementById('resScopeNote').innerText = `Based on ${hours} hrs monthly allocation`;
+
+            // Strategy advice text
+            const adviceList = document.getElementById('calcAdviceList');
+            if (type === 'hourly') {
+                adviceList.innerHTML = `
+                    <li><strong>Consulting Strategy:</strong> Quote a minimum 10-hour weekly retainer to avoid context switching friction.</li>
+                    <li><strong>Specialized Premium:</strong> Charge 35% higher for LangGraph, MCP, or custom vector index optimization over plain Java CRUD.</li>
+                `;
+            } else if (type === 'workshop') {
+                adviceList.innerHTML = `
+                    <li><strong>Corporate Workshop Rates:</strong> Standard 1-day workshops range from $2,000–$3,500 (Global) or ₹1.8L–₹3.0L (India).</li>
+                    <li><strong>Value-Add:</strong> Include hands-on GitHub repo templates and post-workshop 30-day Q&A support.</li>
+                `;
+            } else if (type === 'retainer') {
+                adviceList.innerHTML = `
+                    <li><strong>L3 SLA Retainer:</strong> Set guaranteed 4-hour response SLAs with a capped 25–30 monthly incident hours.</li>
+                    <li><strong>Overage Clause:</strong> Bill additional hours beyond retainer limit at 1.25x hourly rate.</li>
+                `;
+            } else {
+                adviceList.innerHTML = `
+                    <li><strong>Fixed Architecture Scope:</strong> Phase billing into 30% Blueprint, 40% Core MVP Execution, 30% Handover & Audit.</li>
+                    <li><strong>Architecture Guardrails:</strong> Define clear boundaries for scope creep regarding third-party API integrations.</li>
+                `;
+            }
+        }
+
+        /* ==========================================================================
+           9. PROPOSAL & SYLLABUS GENERATOR MODAL
+           ========================================================================== */
+        function openProposalModal(gigId) {
+            const gig = FREELANCE_DATABASE.find(g => g.id === gigId);
+            if (!gig) return;
+
+            const matchedSkills = gig.requiredSkills.filter(s => activeSkills.has(s.toLowerCase()));
+
+            document.getElementById('modalGigTitle').innerText = gig.title;
+            document.getElementById('modalGigClient').innerText = gig.client;
+            
+            const isTraining = gig.sdlcStage === 'Training';
+            document.getElementById('modalProposalHeaderTitle').innerText = isTraining ? "Corporate Workshop Syllabus Generator" : "Architect Proposal Pitch Generator";
+
+            let outputText = "";
+
+            if (isTraining) {
+                outputText = 
+`TECHNICAL SYLLABUS & CORPORATE WORKSHOP OUTLINE
+Target Course: ${gig.title}
+Client Mandate: ${gig.client}
+Delivery Mode: ${gig.location}
+
+1. EXECUTIVE OVERVIEW:
+This intensive, hands-on workshop is designed for senior engineering leads and architects. It bridges enterprise software design with cutting-edge production implementation.
+
+2. MODULE BREAKDOWN:
+• Module 1: Architectural Blueprint & Core Principles
+  - Deep-dive into ${matchedSkills.slice(0, 3).join(', ')}.
+  - Designing for low latency, fault tolerance, and multi-tenant scaling.
+
+• Module 2: Hands-On Production Implementation
+  - Code-along building production patterns with ${matchedSkills.slice(3, 6).join(', ')}.
+  - Hands-on exercises and reference architecture setup.
+
+• Module 3: Security, Observability & Production Readiness
+  - Implementing distributed tracing, Datadog/Grafana monitoring, and incident runbooks.
+  - Final Architecture Review & Q&A session.
+
+3. TRAINER PROFILE & CREDENTIALS:
+Senior Software Architect & Technical Lead with 12+ years expertise across Microservices, Cloud-Native Systems, and GenAI Multi-Agent Architectures.`;
+            } else {
+                outputText = 
+`EXECUTIVE ARCHITECTURE CONSULTING PROPOSAL
+Target Engagement: ${gig.title}
+Client: ${gig.client}
+SDLC Stage: ${gig.sdlcStageLabel}
+
+Dear Hiring Team at ${gig.client},
+
+I am writing to propose my services for ${gig.title}. As a Senior Software Architect and Technical Lead, I specialize in building high-throughput microservices, distributed systems, and cutting-edge GenAI agentic workflows.
+
+WHY MY BACKGROUND MATTERS FOR THIS MANDATE:
+1. Exact Tech Overlap:
+${matchedSkills.map(s => `   - ${s}`).join('\n')}
+
+2. Proven Track Record in ${gig.sdlcStageLabel}:
+   - Hands-on architectural design and implementation experience.
+   - Deep expertise in high-concurrency Java/Kotlin/Python systems, RAG pipelines, and cloud observability.
+   - Reduced operational downtime and optimized API p99 latency for enterprise SaaS platforms.
+
+PROPOSED ENGAGEMENT MILESTONES:
+- Phase 1: Technical Discovery & Architecture Review (Week 1)
+- Phase 2: Core Execution & Integration (${gig.engagementModel})
+- Phase 3: Benchmark Audit, Documentation & Team Knowledge Transfer
+
+I would welcome a 15-minute discovery call to discuss your roadmap and architectural requirements.
+
+Best regards,
+Senior Software Architect & AI Engineering Consultant`;
+            }
+
+            document.getElementById('proposalText').value = outputText;
+            document.getElementById('proposalModal').classList.remove('hidden');
+        }
+
+        function closeProposalModal() {
+            document.getElementById('proposalModal').classList.add('hidden');
+        }
+
+        function copyProposalText() {
+            const txtArea = document.getElementById('proposalText');
+            txtArea.select();
+            document.execCommand('copy');
+            const toast = document.getElementById('proposalCopyToast');
+            toast.classList.remove('opacity-0');
+            setTimeout(() => toast.classList.add('opacity-0'), 2500);
+        }
+
+        /* ==========================================================================
+           10. VIEW SWITCHING & THEME LOGIC
+           ========================================================================== */
+        function switchView(viewKey) {
+            ['gigs', 'calculator', 'pipeline'].forEach(v => {
+                document.getElementById('view-' + v).classList.add('hidden');
+                const tab = document.getElementById('tab-' + v);
+                if (tab) {
+                    tab.classList.remove('bg-brand-500', 'text-white', 'shadow-sm');
+                    tab.classList.add('text-slate-400');
+                }
+            });
+
+            document.getElementById('view-' + viewKey).classList.remove('hidden');
+            const activeTab = document.getElementById('tab-' + viewKey);
+            if (activeTab) {
+                activeTab.classList.remove('text-slate-400');
+                activeTab.classList.add('bg-brand-500', 'text-white', 'shadow-sm');
+            }
+
+            if (viewKey === 'pipeline') renderPipeline();
+            if (viewKey === 'calculator') calculateRates();
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                icon.className = "fa-solid fa-sun text-amber-400";
+            } else {
+                html.classList.remove('light');
+                html.classList.add('dark');
+                icon.className = "fa-solid fa-moon text-slate-400";
+            }
+        }
+
+        /* ==========================================================================
+           11. INITIALIZATION ON WINDOW LOAD
+           ========================================================================== */
+        window.onload = function() {
+            saveState();
+            renderSkillMatrix();
+            renderPlatformLauncherGrid();
+            renderGigFeed();
+            calculateRates();
+        };
+    </script>
+</body>
+</html>
