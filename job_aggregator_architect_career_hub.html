@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArchitectX | AI & Enterprise Solution Architect Job Aggregator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                            950: '#082f49'
+                        },
+                        accent: {
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .light .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        /* Custom scrollbars */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
+
+    <!-- TOP NAV BAR -->
+    <header class="sticky top-0 z-40 w-full glass-panel border-b border-slate-800/80 px-4 lg:px-8 py-3.5">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <!-- Brand Logo -->
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-brand-500/20 text-white font-black text-xl">
+                    <i class="fa-solid fa-layer-group"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-brand-400 bg-clip-text text-transparent">
+                        ArchitectX <span class="text-xs px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/30 font-semibold uppercase">NCR & Remote Hub</span>
+                    </h1>
+                    <p class="text-xs text-slate-400 hidden sm:block">AI & Enterprise Architecture Vacancy Aggregator</p>
+                </div>
+            </div>
+
+            <!-- Global Quick Stats & Mode Toggle -->
+            <div class="flex items-center space-x-3">
+                <button onclick="toggleSkillMatrixModal()" class="relative flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-brand-500/50 hover:bg-slate-800 transition-all text-xs font-semibold text-slate-200 shadow-sm">
+                    <i class="fa-solid fa-sliders text-brand-400"></i>
+                    <span>Skill Matrix</span>
+                    <span id="activeSkillBadgeCount" class="ml-1.5 px-2 py-0.5 rounded-full bg-brand-500 text-white text-[10px] font-bold">40</span>
+                </button>
+
+                <button onclick="toggleSavedTracker()" id="trackerToggleBtn" class="flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-indigo-500/50 hover:bg-slate-800 transition-all text-xs font-semibold text-slate-200">
+                    <i class="fa-solid fa-bookmark text-indigo-400"></i>
+                    <span class="hidden md:inline">Saved Jobs</span>
+                    <span id="savedJobsBadgeCount" class="px-2 py-0.5 rounded-full bg-indigo-600 text-white text-[10px] font-bold">0</span>
+                </button>
+
+                <!-- Dark/Light Theme Toggle -->
+                <button onclick="toggleTheme()" class="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition">
+                    <i id="themeIcon" class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN BODY CONTENT -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 lg:px-8 py-6 space-y-6">
+
+        <!-- HERO & LIVE DEEP-LINK SEARCH LAUNCHER BAR -->
+        <section class="rounded-2xl bg-gradient-to-br from-slate-900 via-slate-900/90 to-indigo-950/40 p-5 lg:p-6 border border-slate-800 shadow-xl relative overflow-hidden">
+            <div class="absolute -top-24 -right-24 w-72 h-72 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4 border-b border-slate-800/80 pb-4">
+                <div>
+                    <h2 class="text-xl lg:text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-bolt text-amber-400"></i> Live Portal Multi-Search Launcher
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-400 mt-1">
+                        Instantly trigger real-time, pre-filtered searches for Enterprise & AI Architect roles across top Indian & Global portals.
+                    </p>
+                </div>
+                <!-- Preset Quick Buttons -->
+                <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                    <span class="text-slate-400 font-medium">Quick Presets:</span>
+                    <button onclick="setSearchPreset('GenAI Architect')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-brand-600/30 hover:border-brand-500/50 border border-slate-700 text-slate-300 transition">GenAI Architect</button>
+                    <button onclick="setSearchPreset('AI Solution Architect')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-brand-600/30 hover:border-brand-500/50 border border-slate-700 text-slate-300 transition">AI Solution Architect</button>
+                    <button onclick="setSearchPreset('Principal Cloud Architect')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-brand-600/30 hover:border-brand-500/50 border border-slate-700 text-slate-300 transition">Principal Cloud Architect</button>
+                    <button onclick="setSearchPreset('Agentic AI Lead')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-brand-600/30 hover:border-brand-500/50 border border-slate-700 text-slate-300 transition">Agentic AI Lead</button>
+                </div>
+            </div>
+
+            <!-- Deep Link Inputs Form -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
+                <div class="md:col-span-2">
+                    <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Target Keyword / Role</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-500 text-xs"></i>
+                        <input type="text" id="launcherQuery" value="AI Solution Architect" placeholder="e.g. GenAI Architect, Microservices Lead" class="w-full bg-slate-950 border border-slate-700 rounded-xl pl-9 pr-3 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-brand-500">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Location Filter</label>
+                    <select id="launcherLocation" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+                        <option value="Delhi NCR">Delhi NCR (All)</option>
+                        <option value="Noida">Noida</option>
+                        <option value="Gurugram">Gurugram</option>
+                        <option value="New Delhi">New Delhi</option>
+                        <option value="Remote">Remote (India / Global)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Posted Within</label>
+                    <select id="launcherFreshness" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+                        <option value="7">Past 7 Days</option>
+                        <option value="1">Past 24 Hours</option>
+                        <option value="14">Past 14 Days</option>
+                        <option value="30">Past 30 Days</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Launch Links Grid -->
+            <div>
+                <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-2">Open Pre-Filtered Portal Queries:</span>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+                    <button onclick="launchPortal('naukri')" class="flex items-center justify-center space-x-2 px-3 py-2 rounded-xl bg-blue-950/60 border border-blue-800/60 hover:bg-blue-900/80 hover:border-blue-500 text-blue-200 text-xs font-semibold transition">
+                        <i class="fa-solid fa-briefcase text-blue-400"></i>
+                        <span>Naukri.com</span>
+                    </button>
+                    <button onclick="launchPortal('linkedin')" class="flex items-center justify-center space-x-2 px-3 py-2 rounded-xl bg-sky-950/60 border border-sky-800/60 hover:bg-sky-900/80 hover:border-sky-500 text-sky-200 text-xs font-semibold transition">
+                        <i class="fa-brands fa-linkedin text-sky-400"></i>
+                        <span>LinkedIn Jobs</span>
+                    </button>
+                    <button onclick="launchPortal('indeed')" class="flex items-center justify-center space-x-2 px-3 py-2 rounded-xl bg-indigo-950/60 border border-indigo-800/60 hover:bg-indigo-900/80 hover:border-indigo-500 text-indigo-200 text-xs font-semibold transition">
+                        <i class="fa-solid fa-magnifying-glass-chart text-indigo-400"></i>
+                        <span>Indeed India</span>
+                    </button>
+                    <button onclick="launchPortal('instahyre')" class="flex items-center justify-center space-x-2 px-3 py-2 rounded-xl bg-purple-950/60 border border-purple-800/60 hover:bg-purple-900/80 hover:border-purple-500 text-purple-200 text-xs font-semibold transition">
+                        <i class="fa-solid fa-rocket text-purple-400"></i>
+                        <span>Instahyre</span>
+                    </button>
+                    <button onclick="launchPortal('wellfound')" class="flex items-center justify-center space-x-2 px-3 py-2 rounded-xl bg-rose-950/60 border border-rose-800/60 hover:bg-rose-900/80 hover:border-rose-500 text-rose-200 text-xs font-semibold transition">
+                        <i class="fa-solid fa-building-user text-rose-400"></i>
+                        <span>Wellfound</span>
+                    </button>
+                    <button onclick="launchPortal('google')" class="flex items-center justify-center space-x-2 px-3 py-2 rounded-xl bg-emerald-950/60 border border-emerald-800/60 hover:bg-emerald-900/80 hover:border-emerald-500 text-emerald-200 text-xs font-semibold transition">
+                        <i class="fa-brands fa-google text-emerald-400"></i>
+                        <span>Google Jobs</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACTIVE FILTER & SEARCH BAR -->
+        <section class="glass-panel p-4 rounded-2xl space-y-4">
+            <div class="flex flex-col md:flex-row gap-3 items-center justify-between">
+                <!-- Search Box -->
+                <div class="relative w-full md:w-1/3">
+                    <i class="fa-solid fa-filter absolute left-3.5 top-3 text-slate-500 text-xs"></i>
+                    <input type="text" id="filterKeyword" oninput="renderJobs()" placeholder="Search title, company, technology..." class="w-full bg-slate-900/90 border border-slate-700/80 rounded-xl pl-9 pr-3 py-2 text-xs sm:text-sm text-slate-100 focus:outline-none focus:border-brand-500">
+                </div>
+
+                <!-- Filter Controls -->
+                <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto text-xs">
+                    <!-- Location Filter -->
+                    <select id="filterLocation" onchange="renderJobs()" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-brand-500">
+                        <option value="ALL">All Locations</option>
+                        <option value="Remote">Remote Only</option>
+                        <option value="Noida">Noida</option>
+                        <option value="Gurugram">Gurugram</option>
+                        <option value="New Delhi">New Delhi</option>
+                    </select>
+
+                    <!-- Work Mode Filter -->
+                    <select id="filterMode" onchange="renderJobs()" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-brand-500">
+                        <option value="ALL">All Work Modes</option>
+                        <option value="Remote">Remote</option>
+                        <option value="Hybrid">Hybrid</option>
+                        <option value="On-site">On-site</option>
+                    </select>
+
+                    <!-- Skill Match Filter -->
+                    <select id="filterMatch" onchange="renderJobs()" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-brand-500">
+                        <option value="0">Min Skill Match: Any</option>
+                        <option value="60">60%+ Match</option>
+                        <option value="75">75%+ Match</option>
+                        <option value="85">85%+ High Match</option>
+                    </select>
+
+                    <!-- Sort By -->
+                    <select id="sortBy" onchange="renderJobs()" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-brand-500 font-semibold">
+                        <option value="match">Sort: Highest Match %</option>
+                        <option value="recent">Sort: Most Recent</option>
+                        <option value="company">Sort: Company Name</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Category Pills Filter -->
+            <div class="flex items-center space-x-2 overflow-x-auto pb-1 text-xs no-scrollbar">
+                <span class="text-slate-400 font-semibold whitespace-nowrap"><i class="fa-solid fa-shapes mr-1"></i> Domain Focus:</span>
+                <button onclick="setDomainFilter('ALL')" id="dom-ALL" class="domain-btn px-3 py-1 rounded-lg bg-brand-500 text-white font-medium whitespace-nowrap shadow-sm">All Roles</button>
+                <button onclick="setDomainFilter('GenAI & Agents')" id="dom-GenAI & Agents" class="domain-btn px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium whitespace-nowrap">GenAI & Agents</button>
+                <button onclick="setDomainFilter('Enterprise Architecture')" id="dom-Enterprise Architecture" class="domain-btn px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium whitespace-nowrap">Enterprise & Cloud Architecture</button>
+                <button onclick="setDomainFilter('Backend & Platform')" id="dom-Backend & Platform" class="domain-btn px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium whitespace-nowrap">Backend & Platform Engineering</button>
+            </div>
+        </section>
+
+        <!-- JOB STATS SUMMARY & TRACKER VIEW BAR -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-400 px-1">
+            <div id="resultsCountText" class="font-medium text-slate-300">
+                Showing <span class="font-bold text-brand-400" id="visibleJobCount">15</span> verified vacancies matching your active skill profile.
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <button onclick="exportShortlist('csv')" class="text-slate-300 hover:text-white flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800">
+                    <i class="fa-solid fa-file-csv text-emerald-400"></i> Export CSV
+                </button>
+                <button onclick="exportShortlist('json')" class="text-slate-300 hover:text-white flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800">
+                    <i class="fa-solid fa-file-code text-blue-400"></i> Export JSON
+                </button>
+            </div>
+        </div>
+
+        <!-- JOB CARDS LISTING GRID -->
+        <div id="jobGrid" class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <!-- Dynamic Job Cards Injected Here via JavaScript -->
+        </div>
+
+        <!-- EMPTY STATE -->
+        <div id="emptyState" class="hidden glass-panel rounded-2xl p-12 text-center space-y-4">
+            <div class="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center mx-auto text-slate-500 text-2xl">
+                <i class="fa-solid fa-folder-open"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white">No Vacancies Matched</h3>
+            <p class="text-xs text-slate-400 max-w-md mx-auto">Try lowering the Skill Match filter, clearing search keywords, or selecting additional skills in your Skill Matrix panel.</p>
+            <button onclick="resetFilters()" class="px-4 py-2 bg-brand-500 text-white rounded-xl text-xs font-bold hover:bg-brand-600 transition">Reset Filters</button>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-auto border-t border-slate-800/80 bg-slate-950 py-6 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p>© 2026 ArchitectX Job Aggregator • Tailored for AI & Enterprise Solution Architects</p>
+            <p class="flex items-center gap-2">
+                <span>Locations: Delhi NCR (Noida, Gurugram, New Delhi) & Remote</span>
+            </p>
+        </div>
+    </footer>
+
+
+    <!-- MODAL: SKILL MATRIX DRAWER / PANEL -->
+    <div id="skillMatrixModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex justify-end transition-opacity">
+        <div class="w-full max-w-2xl bg-slate-900 h-full overflow-y-auto border-l border-slate-800 p-6 flex flex-col justify-between shadow-2xl">
+            <div>
+                <!-- Header -->
+                <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2.5 rounded-xl bg-brand-500/10 text-brand-400 border border-brand-500/30">
+                            <i class="fa-solid fa-brain text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-white">Your Skill Matrix Profile</h3>
+                            <p class="text-xs text-slate-400">Toggle skills to dynamically update your match percentage across all job vacancies.</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleSkillMatrixModal()" class="text-slate-400 hover:text-white p-2">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+
+                <!-- Skill Controls -->
+                <div class="flex items-center justify-between my-4 text-xs">
+                    <span class="text-slate-400 font-medium"><span id="matrixActiveCount" class="text-brand-400 font-bold">40</span> Active Skills</span>
+                    <div class="space-x-2">
+                        <button onclick="selectAllSkills(true)" class="text-brand-400 hover:underline font-semibold">Select All</button>
+                        <span class="text-slate-700">|</span>
+                        <button onclick="selectAllSkills(false)" class="text-slate-400 hover:underline">Deselect All</button>
+                        <span class="text-slate-700">|</span>
+                        <button onclick="resetSkillsToDefault()" class="text-indigo-400 hover:underline">Reset Default</button>
+                    </div>
+                </div>
+
+                <!-- Custom Skill Add Bar -->
+                <div class="mb-6 flex gap-2">
+                    <input type="text" id="customSkillInput" placeholder="Add custom skill (e.g. Temporal.io, AutoGen)..." class="flex-grow bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500">
+                    <button onclick="addCustomSkill()" class="px-4 py-2 rounded-xl bg-brand-500 text-white text-xs font-semibold hover:bg-brand-600 transition">Add Skill</button>
+                </div>
+
+                <!-- Skill Categories Accordion / Lists -->
+                <div id="skillCategoryContainer" class="space-y-5">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Footer Drawer Action -->
+            <div class="pt-6 border-t border-slate-800 mt-6 flex items-center justify-between">
+                <span class="text-xs text-slate-400">Match score auto-updates in real time</span>
+                <button onclick="toggleSkillMatrixModal()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-indigo-600 text-white text-xs font-bold shadow-lg shadow-brand-500/20 hover:opacity-90 transition">
+                    Apply & View Matches
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- MODAL: AI COVER NOTE & PITCH GENERATOR -->
+    <div id="coverNoteModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
+                    Tailored AI Pitch & Skill Match Summary
+                </h3>
+                <button onclick="closeCoverNoteModal()" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div>
+                <p class="text-xs text-slate-400 mb-2">
+                    Generated pitch highlight note for <strong id="modalJobTitle" class="text-slate-200">Role</strong> at <strong id="modalJobCompany" class="text-brand-400">Company</strong>:
+                </p>
+                <textarea id="coverNoteText" rows="10" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-xs sm:text-sm text-slate-200 focus:outline-none font-mono leading-relaxed"></textarea>
+            </div>
+
+            <div class="flex items-center justify-between pt-2">
+                <span id="copyToast" class="text-xs font-semibold text-emerald-400 opacity-0 transition-opacity">
+                    <i class="fa-solid fa-check mr-1"></i> Copied to Clipboard!
+                </span>
+                <div class="flex items-center space-x-2">
+                    <button onclick="closeCoverNoteModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold hover:bg-slate-700">Close</button>
+                    <button onclick="copyCoverNote()" class="px-4 py-2 rounded-xl bg-brand-500 text-white text-xs font-bold hover:bg-brand-600 transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-copy"></i> Copy Pitch Note
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- JAVASCRIPT APP LOGIC -->
+    <script>
+        /* ==========================================================================
+           1. SKILL MATRIX DATA ARCHITECTURE
+           ========================================================================== */
+        const DEFAULT_SKILL_CATEGORIES = [
+            {
+                name: "Architecture & Engineering",
+                icon: "fa-cubes",
+                skills: [
+                    "Software Architecture", "Solution Architecture", "Enterprise Architecture",
+                    "Cloud-Native Architecture", "Microservices Architecture", "Event-Driven Architecture",
+                    "Platform Engineering", "AI Solution Architecture"
+                ]
+            },
+            {
+                name: "Artificial Intelligence & GenAI",
+                icon: "fa-robot",
+                skills: [
+                    "Generative AI", "Large Language Models (LLMs)", "Retrieval-Augmented Generation (RAG)",
+                    "AI Agents", "Multi-Agent Systems", "AI Model Development", "AI Systems Design",
+                    "AI Architecture Design", "Prompt Engineering", "Prompt Orchestration", "LangChain",
+                    "LangGraph", "Model Context Protocol", "Embedding Models", "Semantic Search",
+                    "AI Workflow Automation", "AI Guardrails", "Intelligent Automation", "Distributed AI Systems"
+                ]
+            },
+            {
+                name: "Backend Engineering & Data Modeling",
+                icon: "fa-server",
+                skills: [
+                    "API Design", "API Gateway", "Domain-Driven Design", "Contextual Data Management",
+                    "Data Representation Techniques", "Enhanced Data Retrieval", "Intelligent Search Solutions",
+                    "Automated Process Optimization", "Model Performance Assessment", "AI Reliability Strategies",
+                    "AI Compliance Frameworks", "Distributed Systems", "Service Mesh"
+                ]
+            },
+            {
+                name: "Programming Languages",
+                icon: "fa-code",
+                skills: ["Java", "Kotlin", "Python", "SQL", "HTML"]
+            },
+            {
+                name: "Data & Storage",
+                icon: "fa-database",
+                skills: ["PostgreSQL", "MySQL", "MongoDB", "Couchbase", "Redis"]
+            },
+            {
+                name: "Observability & Monitoring",
+                icon: "fa-chart-line",
+                skills: ["Datadog", "Grafana", "Splunk", "ELK Stack", "Monitoring", "Logging", "Distributed Tracing", "Observability"]
+            },
+            {
+                name: "DevOps & Reliability",
+                icon: "fa-cloud-gear",
+                skills: ["Infrastructure as Code", "CI/CD Pipelines", "Containerization"]
+            },
+            {
+                name: "Testing & Methodologies",
+                icon: "fa-vial",
+                skills: ["Automated Testing (JUnit, TestNG)", "Agile", "Scrum", "SDLC"]
+            }
+        ];
+
+        // Active State of User Skills
+        let activeSkills = new Set();
+        // Load default skills
+        function initSkills() {
+            DEFAULT_SKILL_CATEGORIES.forEach(cat => {
+                cat.skills.forEach(s => activeSkills.add(s.toLowerCase()));
+            });
+        }
+        initSkills();
+
+        /* ==========================================================================
+           2. CURATED VERIFIED JOB VACANCIES DATASET (Delhi NCR & Remote)
+           ========================================================================== */
+        const JOB_DATABASE = [
+            {
+                id: "job-1",
+                title: "Applied AI Architect",
+                company: "OpenAI / Tech Enterprise Partner",
+                location: "Delhi NCR",
+                subLocation: "New Delhi / Hybrid",
+                workMode: "Hybrid",
+                expRange: "10 - 16 Yrs",
+                salary: "₹55L - ₹85L PA",
+                postedDate: "2026-03-28",
+                domain: "GenAI & Agents",
+                requiredSkills: ["AI Solution Architecture", "Generative AI", "Large Language Models (LLMs)", "Retrieval-Augmented Generation (RAG)", "AI Agents", "LangChain", "LangGraph", "Model Context Protocol", "Python", "Distributed AI Systems", "API Design"],
+                summary: "Lead complex GenAI system designs, multi-agent frameworks, and LLM deployments for top enterprise clients across North India. Architect RAG pipelines and custom prompt orchestration engines.",
+                directSearchKeywords: "Applied AI Architect OpenAI Delhi NCR",
+                naukriUrl: "https://www.naukri.com/ai-architect-jobs-in-delhi-ncr",
+                linkedInUrl: "https://www.linkedin.com/jobs/search/?keywords=Applied%20AI%20Architect&location=Delhi%20NCR",
+                indeedUrl: "https://in.indeed.com/jobs?q=AI+Solution+Architect&l=Delhi+NCR"
+            },
+            {
+                id: "job-2",
+                title: "Principal Engineer / Data Science & AI Architect",
+                company: "Nagarro",
+                location: "Gurugram",
+                subLocation: "Gurugram (DLF Cyber City)",
+                workMode: "Hybrid",
+                expRange: "12 - 18 Yrs",
+                salary: "₹42L - ₹65L PA",
+                postedDate: "2026-03-27",
+                domain: "GenAI & Agents",
+                requiredSkills: ["AI Architecture Design", "Software Architecture", "Generative AI", "RAG", "LangChain", "Python", "Java", "Microservices Architecture", "PostgreSQL", "Datadog", "CI/CD Pipelines"],
+                summary: "Drive enterprise-wide AI solutions, establishing reference architecture standards for Generative AI, RAG platforms, and high-throughput microservices for Global 2000 customers.",
+                directSearchKeywords: "Nagarro Principal Engineer AI Architect Gurugram",
+                naukriUrl: "https://www.naukri.com/nagarro-ai-architect-jobs-in-gurgaon",
+                linkedInUrl: "https://www.linkedin.com/jobs/search/?keywords=Nagarro%20AI%20Architect&location=Gurugram",
+                indeedUrl: "https://in.indeed.com/jobs?q=Nagarro+AI+Architect&l=Gurugram"
+            },
+            {
+                id: "job-3",
+                title: "GENAI - Agentic AI Architect",
+                company: "Birlasoft",
+                location: "Noida",
+                subLocation: "Noida Sector 126",
+                workMode: "Hybrid",
+                expRange: "10 - 15 Yrs",
+                salary: "₹38L - ₹55L PA",
+                postedDate: "2026-03-29",
+                domain: "GenAI & Agents",
+                requiredSkills: ["AI Agents", "Multi-Agent Systems", "LangGraph", "Model Context Protocol", "Prompt Engineering", "Python", "Java", "API Gateway", "Redis", "Distributed AI Systems", "Containerization"],
+                summary: "Architect next-generation Agentic AI platforms using LangGraph and Model Context Protocol (MCP). Integrate enterprise ERPs and legacy databases with autonomous intelligent agents.",
+                directSearchKeywords: "Birlasoft GenAI Agentic AI Architect Noida",
+                naukriUrl: "https://www.naukri.com/birlasoft-genai-architect-jobs-in-noida",
+                linkedInUrl: "https://www.linkedin.com/jobs/search/?keywords=Birlasoft%20Agentic%20AI%20Architect&location=Noida",
+                indeedUrl: "https://in.indeed.com/jobs?q=Birlasoft+GenAI+Architect&l=Noida"
+            },
+            {
+                id: "job-4",
+                title: "Lead AI Engineer - Agentic Systems",
+                company: "S&P Global",
+                location: "Gurugram",
+                subLocation: "Gurugram Sector 43",
+                workMode: "Hybrid",
+                expRange: "9 - 14 Yrs",
+                salary: "₹40L - ₹60L PA",
+                postedDate: "2026-03-26",
+                domain: "GenAI & Agents",
+                requiredSkills: ["AI Systems Design", "Generative AI", "Multi-Agent Systems", "Retrieval-Augmented Generation (RAG)", "Semantic Search", "Embedding Models", "Python", "SQL", "PostgreSQL", "Grafana"],
+                summary: "Design resilient agentic workflows and semantic search indices over massive financial data stores. Oversee model evaluation, vector index scaling, and prompt safety guardrails.",
+                directSearchKeywords: "SP Global Lead AI Engineer Agentic Systems Gurugram",
+                naukriUrl: "https://www.naukri.com/sp-global-ai-engineer-jobs-in-gurgaon",
+                linkedInUrl: "https://www.linkedin.com/jobs/search/?keywords=S%26P%20Global%20AI%20Lead&location=Gurugram",
+                indeedUrl: "https://in.indeed.com/jobs?q=S%26P+Global+AI+Architect&l=Gurugram"
+            },
+            {
+                id: "job-5",
+                title: "Expert Senior Manager - AI Engineering & Architecture",
+                company: "Bain & Company",
+                location: "Gurugram",
+                subLocation: "Gurugram (Golf Course Rd)",
+                workMode: "On-site",
+                expRange: "12 - 18 Yrs",
+                salary: "₹50L - ₹80L PA",
+                postedDate: "2026-03-25",
+                domain: "Enterprise Architecture",
+                requiredSkills: ["Enterprise Architecture", "AI Solution Architecture", "Cloud-Native Architecture", "Microservices Architecture", "Generative AI", "Intelligent Automation", "Domain-Driven Design", "AI Reliability Strategies", "Agile"],
+                summary: "Lead Bain's AI Innovation Vector in India. Advise executive clients on cloud-native transformation, enterprise LLM integration, and multi-cloud platform engineering standardizations.",
+                directSearchKeywords: "Bain Company AI Engineering Manager Gurugram",
+                naukriUrl: "https://www.naukri.com/bain-company-ai-architect-jobs-in-gurgaon",
+                linkedInUrl: "https://www.linkedin.com/jobs/search/?keywords=Bain%20AI%20Manager&location=Gurugram",
+                indeedUrl: "https://in.indeed.com/jobs?q=Bain+AI+Architect&l=Gurugram"
+            },
+            {
+                id: "job-6",
+                title: "Solution Engineering Lead - Apps & AI",
+                company: "Microsoft",
+                location: "Gurugram",
+                subLocation: "Gurugram",
+                workMode: "Hybrid",
+                expRange: "11 - 17 Yrs",
+                salary: "₹50L - ₹78L PA",
+                postedDate: "2026-03-28",
+                domain: "Enterprise Architecture",
+                requiredSkills: ["Solution Architecture", "Cloud-Native Architecture", "Generative AI", "Retrieval-Augmented Generation (RAG)", "Microservices Architecture", "Event-Driven Architecture", "Java", "Python", "Redis", "Observability"],
+                summary: "Drive cloud and AI solution blueprints on Azure OpenAI services for India enterprise accounts. Guide application modernizations from monolith to event-driven microservices.",
+                directSearchKeywords: "Microsoft Solution Engineering Lead AI Gurugram",
+                naukriUrl: "https://www.naukri.com/microsoft-solution-architect-jobs-in-gurgaon",
+                linkedInUrl: "https://www.linkedin.com/jobs/search/?keywords=Microsoft%20Solution%20Architect%20AI&location=Gurugram",
+                indeedUrl: "https://in.indeed.com/jobs?q=Microsoft+AI+Architect&l=Gurugram"
+            },
+            {
+                id: "job-7",
+                title: "Solution Architect - LLM & Agent Systems",
+                company: "Sarvam AI",
+                location: "New Delhi",
+                subLocation: "New Delhi (South Extension)",
+                workMode: "On-site",
+                expRange: "8 - 15 Yrs",
+                salary: "₹45L - ₹70L PA",
+                postedDate: "2026-03-29",
+                domain: "GenAI & Agents",
+                requiredSkills: ["AI Model Development", "Large Language Models (LLMs)", "LangChain", "LangGraph", "Python", "SQL", "PostgreSQL", "Redis", "Distributed AI Systems", "Model Performance Assessment"],
+                summary: "Work at the forefront of Indic LLM models and enterprise voice/text voicebots. Build low-latency serving infrastructure, model context management, and custom domain fine-tuning pipelines.",
+                directSearchKeywords: "Sarvam AI Solution Architect New Delhi",
+                naukriUrl: "https://www.naukri.com/sarvam-ai-jobs-in-delhi-ncr",
+                linkedInUrl: "https://www.linkedin.com/jobs/search/?keywords=Sarvam%20AI%20Architect&location=New%20Delhi",
+                indeedUrl: "https://in.indeed.com/jobs?q=Sarvam+AI+Architect&l=New+Delhi"
+            },
+            {
+                id: "job-8",
+                title: "Principal Solutions Architect - Search & AI",
+                company: "Elastic",
+                location: "Delhi NCR",
+                subLocation: "Delhi NCR / Remote Hybrid",
+                workMode: "Hybrid",
+                expRange: "12 - 18 Yrs",
+                salary: "₹48L - ₹72L PA",
+                postedDate: "2026-03-24",
+                domain: "Backend & Platform",
+                requiredSkills: ["Semantic Search", "Enhanced Data Retrieval", "Intelligent Search Solutions", "Embedding Models", "ELK Stack", "Distributed Systems", "Java", "Kotlin", "Python", "API Design", "Observability"],
+                summary: "Guide global accounts on hybrid search architectures (Vector + Keyword Search), RAG grounding, and Elasticsearch vector database acceleration for AI platforms.",
+                directSearchKeywords: "Elastic Principal Solutions Architect Delhi NCR",
+                naukriUrl: "https://www.naukri.com/elastic-solutions-architect-jobs-in-delhi-ncr",
+                linkedInUrl: "https://www.linkedin.com/jobs/search/?keywords=Elastic%20Solutions%20Architect&location=Delhi%20NCR",
+                indeedUrl: "https://in.indeed.com/jobs?q=Elastic+Architect&l=Delhi+NCR"
+            },
+            {
+                id: "job-9",
+                title: "AI Solution Architect",
+                company: "Bloom AI",
+                location: "Delhi NCR",
+                subLocation: "Noida / Remote Hybrid",
+                workMode: "Hybrid",
+                expRange: "9 - 14 Yrs",
+                salary: "₹35L - ₹52L PA",
+                postedDate: "2026-03-28",
+                domain: "GenAI & Agents",
+                requiredSkills: ["AI Solution Architecture", "Generative AI", "RAG", "Prompt Orchestration", "Python", "PostgreSQL", "MongoDB", "Datadog", "CI/CD Pipelines", "Containerization"],
+                summary: "Design scalable GenAI applications, automated data ingestion RAG pipelines, and automated agent workflows for global analytics and financial services clients.",
+                directSearchKeywords: "Bloom AI Solution Architect Delhi NCR",
+                naukriUrl: "https://www.naukri.com/bloom-ai-jobs-in-delhi-ncr",
+                linkedInUrl: "https://www.linkedin.com/jobs/search/?keywords=Bloom%20AI%20Architect&location=Delhi%20NCR",
+                indeedUrl: "https://in.indeed.com/jobs?q=Bloom+AI+Architect"
+            },
+            {
+                id: "job-10",
+                title: "Principal Software Engineer / Architect - AI",
+                company: "Avalara",
+                location: "Remote",
+                subLocation: "Remote (India)",
+                workMode: "Remote",
+                expRange: "12 - 20 Yrs",
+                salary: "₹45L - ₹75L PA",
+                postedDate: "2026-03-27",
+                domain: "Backend & Platform",
+                requiredSkills: ["Software Architecture", "Platform Engineering", "Cloud-Native Architecture", "Microservices Architecture", "Event-Driven Architecture", "Java", "Kotlin", "Python", "PostgreSQL", "Redis", "Datadog", "Containerization"],
+                summary: "Architect core enterprise compliance calculation microservices. Infuse GenAI agents into document parsing, tax taxonomy mapping, and real-time transaction processing engines.",
+                directSearchKeywords: "Avalara Principal Software Engineer AI Remote",
+                naukriUrl: "https://www.naukri.com/avalara-architect-jobs-remote",
+                linkedInUrl: "https://www.linkedin.com/jobs/search/?keywords=Avalara%20Principal%20Architect&location=Remote",
+                indeedUrl: "https://in.indeed.com/jobs?q=Avalara+Architect+Remote"
+            },
+            {
+                id: "job-11",
+                title: "AI Architect - Enterprise Automation",
+                company: "PairSoft",
+                location: "Remote",
+                subLocation: "Remote (India / Global)",
+                workMode: "Remote",
+                expRange: "10 - 16 Yrs",
+                salary: "₹40L - ₹65L PA",
+                postedDate: "2026-03-26",
+                domain: "GenAI & Agents",
+                requiredSkills: ["AI Architecture Design", "Generative AI", "AI Workflow Automation", "Intelligent Automation", "Python", "API Gateway", "Couchbase", "Redis", "Monitoring", "CI/CD Pipelines"],
+                summary: "Drive end-to-end architecture of AI-powered document intelligence, AP automation, and conversational ERP assistants serving 5000+ mid-market and enterprise clients.",
+                directSearchKeywords: "PairSoft AI Architect Remote",
+                naukriUrl: "https://www.naukri.com/pairsoft-ai-architect-jobs",
+                linkedInUrl: "https://www.linkedin.com/jobs/search/?keywords=PairSoft%20AI%20Architect&location=Remote",
+                indeedUrl: "https://in.indeed.com/jobs?q=PairSoft+AI+Architect"
+            },
+            {
+                id: "job-12",
+                title: "AI Solution Architect - GenAI Practice Lead",
+                company: "Bhrigu LLC",
+                location: "Remote",
+                subLocation: "Remote (US / India)",
+                workMode: "Remote",
+                expRange: "11 - 17 Yrs",
+                salary: "$60K - $90K USD",
+                postedDate: "2026-03-28",
+                domain: "GenAI & Agents",
+                requiredSkills: ["AI Solution Architecture", "Large Language Models (LLMs)", "LangChain", "LangGraph", "Model Context Protocol", "Python", "SQL", "MySQL", "Distributed Systems", "AI Guardrails"],
+                summary: "Architect client-facing GenAI prototypes, oversee multi-agent system execution, establish AI compliance guardrails, and lead offshore AI developer teams.",
+                directSearchKeywords: "Bhrigu LLC AI Solution Architect Remote",
+                naukriUrl: "https://www.naukri.com/bhrigu-ai-architect-jobs",
+                linkedInUrl: "https://www.linkedin.com/jobs/search/?keywords=Bhrigu%20AI%20Architect",
+                indeedUrl: "https://in.indeed.com/jobs?q=Bhrigu+AI+Architect"
+            },
+            {
+                id: "job-13",
+                title: "Platform Architecture & Engineering Lead",
+                company: "RushCiti",
+                location: "Remote",
+                subLocation: "Remote (Global)",
+                workMode: "Remote",
+                expRange: "10 - 15 Yrs",
+                salary: "₹38L - ₹60L PA",
+                postedDate: "2026-03-25",
+                domain: "Backend & Platform",
+                requiredSkills: ["Platform Engineering", "Cloud-Native Architecture", "Microservices Architecture", "Event-Driven Architecture", "Domain-Driven Design", "Java", "Kotlin", "Redis", "Datadog", "Grafana", "Infrastructure as Code"],
+                summary: "Build high-speed, zero-trust developer platform infrastructure. Establish Kubernetes operator patterns, service mesh standardizations, and automated CI/CD pipelines.",
+                directSearchKeywords: "RushCiti Platform Architecture Lead Remote",
+                naukriUrl: "https://www.naukri.com/rushciti-platform-architect-jobs",
+                linkedInUrl: "https://www.linkedin.com/jobs/search/?keywords=RushCiti%20Platform%20Architect",
+                indeedUrl: "https://in.indeed.com/jobs?q=RushCiti+Architect"
+            },
+            {
+                id: "job-14",
+                title: "Solution Architect - Enterprise AI Practice",
+                company: "Capgemini",
+                location: "Gurugram",
+                subLocation: "Gurugram Sector 21",
+                workMode: "Hybrid",
+                expRange: "12 - 18 Yrs",
+                salary: "₹36L - ₹54L PA",
+                postedDate: "2026-03-28",
+                domain: "Enterprise Architecture",
+                requiredSkills: ["Solution Architecture", "Enterprise Architecture", "AI Solution Architecture", "Microservices Architecture", "Event-Driven Architecture", "API Design", "Java", "Python", "SQL", "PostgreSQL", "Splunk", "Scrum"],
+                summary: "Lead complex solutioning RFPs, technology selection, and microservices modernization for European and North American enterprise engagements.",
+                directSearchKeywords: "Capgemini Solution Architect Gurugram",
+                naukriUrl: "https://www.naukri.com/capgemini-solution-architect-jobs-in-gurgaon",
+                linkedInUrl: "https://www.linkedin.com/jobs/search/?keywords=Capgemini%20Solution%20Architect&location=Gurugram",
+                indeedUrl: "https://in.indeed.com/jobs?q=Capgemini+Solution+Architect&l=Gurugram"
+            },
+            {
+                id: "job-15",
+                title: "Enterprise AI Solution Architect",
+                company: "Rapyder Cloud Solutions",
+                location: "New Delhi",
+                subLocation: "New Delhi / Remote",
+                workMode: "Hybrid",
+                expRange: "10 - 15 Yrs",
+                salary: "₹34L - ₹50L PA",
+                postedDate: "2026-03-24",
+                domain: "Enterprise Architecture",
+                requiredSkills: ["AI Solution Architecture", "Cloud-Native Architecture", "Generative AI", "RAG", "Prompt Engineering", "Python", "MySQL", "Redis", "Infrastructure as Code", "Containerization"],
+                summary: "Architect cloud-native GenAI workloads on AWS & GCP. Deliver customized RAG implementations, vector index tuning, and AI security compliance for mid-enterprise customers.",
+                directSearchKeywords: "Rapyder Cloud Solutions AI Architect New Delhi",
+                naukriUrl: "https://www.naukri.com/rapyder-cloud-architect-jobs-in-delhi",
+                linkedInUrl: "https://www.linkedin.com/jobs/search/?keywords=Rapyder%20AI%20Architect&location=New%20Delhi",
+                indeedUrl: "https://in.indeed.com/jobs?q=Rapyder+AI+Architect"
+            }
+        ];
+
+        // User Bookmarks & Saved Application Tracker
+        let savedJobIds = new Set(JSON.parse(localStorage.getItem('saved_architect_jobs') || '[]'));
+        let jobStatuses = JSON.parse(localStorage.getItem('architect_job_statuses') || '{}');
+        let selectedDomainFilter = 'ALL';
+        let showOnlySaved = false;
+
+        /* ==========================================================================
+           3. SKILL MATCHING ENGINE
+           ========================================================================== */
+        function calculateSkillMatch(requiredSkills) {
+            if (!requiredSkills || requiredSkills.length === 0) return 100;
+            let matchCount = 0;
+            requiredSkills.forEach(skill => {
+                if (activeSkills.has(skill.toLowerCase())) {
+                    matchCount++;
+                }
+            });
+            return Math.round((matchCount / requiredSkills.length) * 100);
+        }
+
+        /* ==========================================================================
+           4. RENDER SKILL MATRIX MODAL CONTENT
+           ========================================================================== */
+        function renderSkillMatrix() {
+            const container = document.getElementById('skillCategoryContainer');
+            container.innerHTML = '';
+
+            document.getElementById('matrixActiveCount').innerText = activeSkills.size;
+            document.getElementById('activeSkillBadgeCount').innerText = activeSkills.size;
+
+            DEFAULT_SKILL_CATEGORIES.forEach((cat, cIdx) => {
+                const catDiv = document.createElement('div');
+                catDiv.className = "bg-slate-950/80 border border-slate-800 rounded-xl p-3.5 space-y-2.5";
+
+                let skillsChipsHtml = cat.skills.map(s => {
+                    const isActive = activeSkills.has(s.toLowerCase());
+                    return `
+                        <button onclick="toggleSingleSkill('${s.replace(/'/g, "\\'")}')" class="px-2.5 py-1 rounded-lg text-xs font-medium transition ${
+                            isActive 
+                            ? 'bg-brand-500/20 text-brand-300 border border-brand-500/40 shadow-sm' 
+                            : 'bg-slate-900 text-slate-500 border border-slate-800 hover:border-slate-700'
+                        }">
+                            <i class="fa-solid ${isActive ? 'fa-check text-brand-400' : 'fa-plus text-slate-600'} mr-1 text-[10px]"></i> ${s}
+                        </button>
+                    `;
+                }).join('');
+
+                catDiv.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid ${cat.icon} text-brand-400"></i> ${cat.name}
+                        </span>
+                        <span class="text-[10px] text-slate-500 font-mono">${cat.skills.filter(s => activeSkills.has(s.toLowerCase())).length}/${cat.skills.length}</span>
+                    </div>
+                    <div class="flex flex-wrap gap-1.5">
+                        ${skillsChipsHtml}
+                    </div>
+                `;
+                container.appendChild(catDiv);
+            });
+        }
+
+        function toggleSingleSkill(skillName) {
+            const lower = skillName.toLowerCase();
+            if (activeSkills.has(lower)) {
+                activeSkills.delete(lower);
+            } else {
+                activeSkills.add(lower);
+            }
+            renderSkillMatrix();
+            renderJobs();
+        }
+
+        function selectAllSkills(select) {
+            DEFAULT_SKILL_CATEGORIES.forEach(cat => {
+                cat.skills.forEach(s => {
+                    if (select) activeSkills.add(s.toLowerCase());
+                    else activeSkills.delete(s.toLowerCase());
+                });
+            });
+            renderSkillMatrix();
+            renderJobs();
+        }
+
+        function resetSkillsToDefault() {
+            activeSkills.clear();
+            initSkills();
+            renderSkillMatrix();
+            renderJobs();
+        }
+
+        function addCustomSkill() {
+            const input = document.getElementById('customSkillInput');
+            const val = input.value.trim();
+            if (val) {
+                // Add to first category dynamically or custom list
+                DEFAULT_SKILL_CATEGORIES[0].skills.push(val);
+                activeSkills.add(val.toLowerCase());
+                input.value = '';
+                renderSkillMatrix();
+                renderJobs();
+            }
+        }
+
+        function toggleSkillMatrixModal() {
+            const modal = document.getElementById('skillMatrixModal');
+            modal.classList.toggle('hidden');
+        }
+
+        /* ==========================================================================
+           5. LIVE MULTI-PORTAL SEARCH LAUNCHER LOGIC
+           ========================================================================== */
+        function setSearchPreset(keyword) {
+            document.getElementById('launcherQuery').value = keyword;
+        }
+
+        function launchPortal(portalKey) {
+            const query = encodeURIComponent(document.getElementById('launcherQuery').value.trim() || "AI Solution Architect");
+            const loc = document.getElementById('launcherLocation').value;
+            const freshness = document.getElementById('launcherFreshness').value;
+            let targetUrl = "";
+
+            const locEncoded = encodeURIComponent(loc);
+
+            switch (portalKey) {
+                case 'naukri':
+                    targetUrl = `https://www.naukri.com/${query.toLowerCase().replace(/%20/g, '-')}-jobs-in-${loc.toLowerCase().replace(/%20/g, '-')}`;
+                    break;
+                case 'linkedin':
+                    // LinkedIn jobs filter parameters
+                    let f_TPR = freshness == '1' ? 'r86400' : (freshness == '7' ? 'r604800' : 'r2592000');
+                    targetUrl = `https://www.linkedin.com/jobs/search/?keywords=${query}&location=${locEncoded}&f_TPR=${f_TPR}`;
+                    break;
+                case 'indeed':
+                    targetUrl = `https://in.indeed.com/jobs?q=${query}&l=${locEncoded}&fromage=${freshness}`;
+                    break;
+                case 'instahyre':
+                    targetUrl = `https://www.instahyre.com/jobs/?q=${query}`;
+                    break;
+                case 'wellfound':
+                    targetUrl = `https://wellfound.com/jobs?keyword=${query}`;
+                    break;
+                case 'google':
+                    targetUrl = `https://www.google.com/search?q=${query}+jobs+in+${locEncoded}&ibp=htl;jobs`;
+                    break;
+            }
+
+            window.open(targetUrl, '_blank');
+        }
+
+        /* ==========================================================================
+           6. MAIN RENDER ENGINE FOR JOB VACANCIES
+           ========================================================================== */
+        function renderJobs() {
+            const grid = document.getElementById('jobGrid');
+            const emptyState = document.getElementById('emptyState');
+            
+            const keyword = document.getElementById('filterKeyword').value.toLowerCase();
+            const locationFilter = document.getElementById('filterLocation').value;
+            const modeFilter = document.getElementById('filterMode').value;
+            const minMatch = parseInt(document.getElementById('filterMatch').value, 10);
+            const sortBy = document.getElementById('sortBy').value;
+
+            // Process & Calculate Match for each job
+            let processedJobs = JOB_DATABASE.map(job => {
+                const matchPct = calculateSkillMatch(job.requiredSkills);
+                return { ...job, matchPct };
+            });
+
+            // Filter logic
+            let filtered = processedJobs.filter(job => {
+                // Show only saved filter
+                if (showOnlySaved && !savedJobIds.has(job.id)) return false;
+
+                // Match % filter
+                if (job.matchPct < minMatch) return false;
+
+                // Domain filter
+                if (selectedDomainFilter !== 'ALL' && job.domain !== selectedDomainFilter) return false;
+
+                // Location filter
+                if (locationFilter !== 'ALL') {
+                    if (locationFilter === 'Remote' && job.workMode !== 'Remote') return false;
+                    if (locationFilter !== 'Remote' && !job.location.includes(locationFilter) && !job.subLocation.includes(locationFilter)) return false;
+                }
+
+                // Work Mode filter
+                if (modeFilter !== 'ALL' && job.workMode !== modeFilter) return false;
+
+                // Text keyword search filter
+                if (keyword) {
+                    const textContent = (job.title + " " + job.company + " " + job.requiredSkills.join(" ") + " " + job.summary).toLowerCase();
+                    if (!textContent.includes(keyword)) return false;
+                }
+
+                return true;
+            });
+
+            // Sorting logic
+            filtered.sort((a, b) => {
+                if (sortBy === 'match') return b.matchPct - a.matchPct;
+                if (sortBy === 'recent') return new Date(b.postedDate) - new Date(a.postedDate);
+                if (sortBy === 'company') return a.company.localeCompare(b.company);
+                return 0;
+            });
+
+            // Update visible stats
+            document.getElementById('visibleJobCount').innerText = filtered.length;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            // Build Job Cards HTML
+            grid.innerHTML = filtered.map(job => {
+                const isSaved = savedJobIds.has(job.id);
+                const currentStatus = jobStatuses[job.id] || (isSaved ? 'Saved' : 'New');
+
+                // Match Color Badge Logic
+                let badgeBg = "bg-emerald-500/10 text-emerald-400 border-emerald-500/30";
+                if (job.matchPct < 70) badgeBg = "bg-amber-500/10 text-amber-400 border-amber-500/30";
+                if (job.matchPct < 50) badgeBg = "bg-slate-500/10 text-slate-400 border-slate-500/30";
+
+                // Separate matched vs missing skills
+                const matchedSkills = job.requiredSkills.filter(s => activeSkills.has(s.toLowerCase()));
+                const missingSkills = job.requiredSkills.filter(s => !activeSkills.has(s.toLowerCase()));
+
+                return `
+                    <div class="glass-panel rounded-2xl p-5 hover:border-slate-700 transition-all duration-200 flex flex-col justify-between space-y-4 relative group">
+                        
+                        <!-- Top Header: Title, Company, Match % -->
+                        <div>
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="flex items-start space-x-3.5">
+                                    <div class="w-11 h-11 rounded-xl bg-slate-800 border border-slate-700/80 flex items-center justify-center text-brand-400 font-bold text-lg flex-shrink-0 shadow-sm">
+                                        ${job.company.charAt(0)}
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold text-slate-100 text-base group-hover:text-brand-400 transition-colors">
+                                            ${job.title}
+                                        </h3>
+                                        <p class="text-xs font-medium text-slate-400 flex items-center gap-1.5 mt-0.5">
+                                            <span class="text-brand-400 font-semibold">${job.company}</span>
+                                            <span>•</span>
+                                            <span class="text-slate-300"><i class="fa-solid fa-location-dot text-rose-400 mr-1"></i>${job.subLocation}</span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Match Badge Ring -->
+                                <div class="flex flex-col items-end">
+                                    <div class="px-2.5 py-1 rounded-full border text-xs font-black tracking-tight ${badgeBg} shadow-sm flex items-center gap-1">
+                                        <i class="fa-solid fa-bullseye"></i> ${job.matchPct}% Match
+                                    </div>
+                                    <span class="text-[10px] text-slate-500 mt-1 font-mono">${matchedSkills.length}/${job.requiredSkills.length} skills</span>
+                                </div>
+                            </div>
+
+                            <!-- Meta Pills (Work Mode, Exp, Salary, Domain) -->
+                            <div class="flex flex-wrap items-center gap-2 mt-3.5 text-[11px]">
+                                <span class="px-2.5 py-0.5 rounded-md bg-slate-800/90 text-slate-300 border border-slate-700/60 font-medium">
+                                    <i class="fa-solid fa-laptop-house text-indigo-400 mr-1"></i>${job.workMode}
+                                </span>
+                                <span class="px-2.5 py-0.5 rounded-md bg-slate-800/90 text-slate-300 border border-slate-700/60 font-medium">
+                                    <i class="fa-solid fa-briefcase text-emerald-400 mr-1"></i>${job.expRange}
+                                </span>
+                                <span class="px-2.5 py-0.5 rounded-md bg-slate-800/90 text-slate-300 border border-slate-700/60 font-medium">
+                                    <i class="fa-solid fa-indian-rupee-sign text-amber-400 mr-1"></i>${job.salary}
+                                </span>
+                                <span class="px-2.5 py-0.5 rounded-md bg-indigo-950/60 text-indigo-300 border border-indigo-800/50 font-semibold">
+                                    ${job.domain}
+                                </span>
+                            </div>
+
+                            <!-- Role Summary -->
+                            <p class="text-xs text-slate-400 line-clamp-2 mt-3 leading-relaxed">
+                                ${job.summary}
+                            </p>
+                        </div>
+
+                        <!-- Matched & Missing Skill Tag Cloud -->
+                        <div class="space-y-1.5 pt-2 border-t border-slate-800/80">
+                            <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Skill Alignment:</span>
+                            <div class="flex flex-wrap gap-1 text-[11px]">
+                                ${matchedSkills.map(s => `
+                                    <span class="px-2 py-0.5 rounded bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 font-medium">
+                                        <i class="fa-solid fa-check text-[9px] mr-1"></i>${s}
+                                    </span>
+                                `).join('')}
+                                ${missingSkills.map(s => `
+                                    <span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-500 opacity-70">
+                                        ${s}
+                                    </span>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Card Footer: Direct Apply Links & Actions -->
+                        <div class="pt-3 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2 text-xs">
+                            
+                            <!-- Application Status Dropdown & Bookmark -->
+                            <div class="flex items-center space-x-2">
+                                <button onclick="toggleSaveJob('${job.id}')" class="p-2 rounded-xl bg-slate-900 border border-slate-700 hover:bg-slate-800 transition ${isSaved ? 'text-amber-400' : 'text-slate-400'}">
+                                    <i class="fa-${isSaved ? 'solid' : 'regular'} fa-bookmark"></i>
+                                </button>
+                                
+                                <select onchange="updateJobStatus('${job.id}', this.value)" class="bg-slate-900 border border-slate-700 text-slate-300 text-[11px] rounded-xl px-2.5 py-1.5 focus:outline-none focus:border-brand-500">
+                                    <option value="New" ${currentStatus==='New'?'selected':''}>Status: New</option>
+                                    <option value="Saved" ${currentStatus==='Saved'?'selected':''}>Saved</option>
+                                    <option value="Applied" ${currentStatus==='Applied'?'selected':''}>Applied</option>
+                                    <option value="Interviewing" ${currentStatus==='Interviewing'?'selected':''}>Interviewing</option>
+                                    <option value="Archived" ${currentStatus==='Archived'?'selected':''}>Archived</option>
+                                </select>
+                            </div>
+
+                            <!-- Tailor Pitch & Direct Portal Search Links -->
+                            <div class="flex items-center space-x-2">
+                                <button onclick="openCoverNoteModal('${job.id}')" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-indigo-500 text-slate-300 hover:text-white transition font-medium text-[11px] flex items-center gap-1">
+                                    <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i> Pitch
+                                </button>
+
+                                <!-- Direct Search Launchers -->
+                                <div class="flex items-center space-x-1">
+                                    <a href="${job.naukriUrl}" target="_blank" title="Search on Naukri" class="p-1.5 rounded-lg bg-blue-950/60 text-blue-300 hover:bg-blue-900 border border-blue-800/60 transition">
+                                        <i class="fa-solid fa-briefcase"></i>
+                                    </a>
+                                    <a href="${job.linkedInUrl}" target="_blank" title="Search on LinkedIn" class="p-1.5 rounded-lg bg-sky-950/60 text-sky-300 hover:bg-sky-900 border border-sky-800/60 transition">
+                                        <i class="fa-brands fa-linkedin"></i>
+                                    </a>
+                                    <a href="${job.indeedUrl}" target="_blank" title="Search on Indeed" class="p-1.5 rounded-lg bg-indigo-950/60 text-indigo-300 hover:bg-indigo-900 border border-indigo-800/60 transition">
+                                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                `;
+            }).join('');
+        }
+
+        /* ==========================================================================
+           7. TRACKER, BOOKMARKS & FILTER STATE LOGIC
+           ========================================================================== */
+        function toggleSaveJob(jobId) {
+            if (savedJobIds.has(jobId)) {
+                savedJobIds.delete(jobId);
+            } else {
+                savedJobIds.add(jobId);
+                jobStatuses[jobId] = 'Saved';
+            }
+            localStorage.setItem('saved_architect_jobs', JSON.stringify(Array.from(savedJobIds)));
+            localStorage.setItem('architect_job_statuses', JSON.stringify(jobStatuses));
+            document.getElementById('savedJobsBadgeCount').innerText = savedJobIds.size;
+            renderJobs();
+        }
+
+        function updateJobStatus(jobId, status) {
+            jobStatuses[jobId] = status;
+            if (status !== 'New') savedJobIds.add(jobId);
+            localStorage.setItem('saved_architect_jobs', JSON.stringify(Array.from(savedJobIds)));
+            localStorage.setItem('architect_job_statuses', JSON.stringify(jobStatuses));
+            document.getElementById('savedJobsBadgeCount').innerText = savedJobIds.size;
+            renderJobs();
+        }
+
+        function toggleSavedTracker() {
+            showOnlySaved = !showOnlySaved;
+            const btn = document.getElementById('trackerToggleBtn');
+            if (showOnlySaved) {
+                btn.classList.add('bg-indigo-600', 'text-white');
+                btn.classList.remove('bg-slate-900', 'text-slate-200');
+            } else {
+                btn.classList.remove('bg-indigo-600', 'text-white');
+                btn.classList.add('bg-slate-900', 'text-slate-200');
+            }
+            renderJobs();
+        }
+
+        function setDomainFilter(dom) {
+            selectedDomainFilter = dom;
+            document.querySelectorAll('.domain-btn').forEach(btn => {
+                btn.classList.remove('bg-brand-500', 'text-white');
+                btn.classList.add('bg-slate-800', 'text-slate-300');
+            });
+            const activeBtn = document.getElementById('dom-' + dom);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-slate-800', 'text-slate-300');
+                activeBtn.classList.add('bg-brand-500', 'text-white');
+            }
+            renderJobs();
+        }
+
+        function resetFilters() {
+            document.getElementById('filterKeyword').value = '';
+            document.getElementById('filterLocation').value = 'ALL';
+            document.getElementById('filterMode').value = 'ALL';
+            document.getElementById('filterMatch').value = '0';
+            document.getElementById('sortBy').value = 'match';
+            setDomainFilter('ALL');
+            showOnlySaved = false;
+            renderJobs();
+        }
+
+        /* ==========================================================================
+           8. EXPORT SHORTLIST AS CSV / JSON
+           ========================================================================== */
+        function exportShortlist(format) {
+            const jobsToExport = JOB_DATABASE.filter(j => savedJobIds.has(j.id) || calculateSkillMatch(j.requiredSkills) >= 70);
+
+            if (jobsToExport.length === 0) {
+                alert("No jobs saved or high-matched to export. Bookmark some jobs first!");
+                return;
+            }
+
+            if (format === 'csv') {
+                let csvContent = "data:text/csv;charset=utf-8,ID,Title,Company,Location,WorkMode,Salary,SkillMatchPct,DirectLink\n";
+                jobsToExport.forEach(j => {
+                    const matchPct = calculateSkillMatch(j.requiredSkills);
+                    csvContent += `"${j.id}","${j.title}","${j.company}","${j.location}","${j.workMode}","${j.salary}","${matchPct}%","${j.linkedInUrl}"\n`;
+                });
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", `Architect_Jobs_Shortlist_${new Date().toISOString().slice(0,10)}.csv`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else if (format === 'json') {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(jobsToExport, null, 2));
+                const link = document.createElement("a");
+                link.setAttribute("href", dataStr);
+                link.setAttribute("download", `Architect_Jobs_Shortlist_${new Date().toISOString().slice(0,10)}.json`);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+
+        /* ==========================================================================
+           9. COVER NOTE / TAILORED PITCH GENERATOR
+           ========================================================================== */
+        function openCoverNoteModal(jobId) {
+            const job = JOB_DATABASE.find(j => j.id === jobId);
+            if (!job) return;
+
+            const matchedSkills = job.requiredSkills.filter(s => activeSkills.has(s.toLowerCase()));
+            const matchPct = calculateSkillMatch(job.requiredSkills);
+
+            document.getElementById('modalJobTitle').innerText = job.title;
+            document.getElementById('modalJobCompany').innerText = job.company;
+
+            const pitchText = 
+`Subject: Application for ${job.title} - Solution Architect Profile (${matchPct}% Skill Alignment)
+
+Dear Hiring Team at ${job.company},
+
+I am writing to express my strong interest in the ${job.title} role (${job.subLocation}). With over 12+ years of hands-on technical enterprise experience across Cloud-Native Architecture, Microservices, and Generative AI Systems, my background strongly mirrors your requirements.
+
+Key Core Overlaps with your target tech stack:
+${matchedSkills.map(s => `• ${s}`).join('\n')}
+
+Highlights of my architecture profile:
+1. GenAI & Multi-Agent Systems: Expertise in LangChain, LangGraph, RAG pipelines, and Model Context Protocol (MCP).
+2. Enterprise Platform Engineering: Proven track record designing high-throughput microservices in Java, Kotlin, Python, and SQL databases (PostgreSQL, Redis).
+3. Reliability & Observability: Deep experience implementing distributed tracing, Datadog/Grafana monitoring, and automated CI/CD pipelines.
+
+I would welcome the opportunity to discuss how my architectural skills can drive ${job.company}'s technology initiatives.
+
+Best regards,
+Enterprise & AI Solution Architect
+Location Focus: Delhi NCR / Remote`;
+
+            document.getElementById('coverNoteText').value = pitchText;
+            document.getElementById('coverNoteModal').classList.remove('hidden');
+        }
+
+        function closeCoverNoteModal() {
+            document.getElementById('coverNoteModal').classList.add('hidden');
+        }
+
+        function copyCoverNote() {
+            const textArea = document.getElementById('coverNoteText');
+            textArea.select();
+            document.execCommand('copy');
+            const toast = document.getElementById('copyToast');
+            toast.classList.remove('opacity-0');
+            setTimeout(() => toast.classList.add('opacity-0'), 2500);
+        }
+
+        /* ==========================================================================
+           10. THEME TOGGLE
+           ========================================================================== */
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                icon.className = "fa-solid fa-sun text-amber-400";
+            } else {
+                html.classList.remove('light');
+                html.classList.add('dark');
+                icon.className = "fa-solid fa-moon text-slate-400";
+            }
+        }
+
+        /* ==========================================================================
+           11. INITIALIZATION ON WINDOW LOAD
+           ========================================================================== */
+        window.onload = function() {
+            document.getElementById('savedJobsBadgeCount').innerText = savedJobIds.size;
+            renderSkillMatrix();
+            renderJobs();
+        };
+    </script>
+</body>
+</html>
