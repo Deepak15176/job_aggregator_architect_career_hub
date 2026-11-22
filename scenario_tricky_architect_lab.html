@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scenario & Tricky Architect Lab</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Vue 3 CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        code, pre {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.4);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.7);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-200 min-h-screen">
+    <div id="app" class="pb-16">
+        <!-- Toast Notification -->
+        <div v-if="toast.show" class="fixed bottom-6 right-6 z-50 px-4 py-3 rounded-xl shadow-2xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 border border-indigo-500 flex items-center gap-3 transition-all transform animate-bounce">
+            <span class="text-lg">✨</span>
+            <span class="text-sm font-medium">{{ toast.message }}</span>
+        </div>
+
+        <!-- Header -->
+        <header class="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <!-- Title & Logo -->
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-500/30">
+                            ⚡
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 dark:from-indigo-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
+                                Architect Prep Studio
+                            </h1>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                                Principal Architect Interview & Production Incident Mastery
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Action Bar -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <!-- Drill Mode Toggle -->
+                        <button @click="toggleDrillMode" 
+                                :class="drillMode ? 'bg-amber-500 text-white ring-2 ring-amber-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'"
+                                class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
+                            <span>🧠</span>
+                            <span>Drill / Self-Test</span>
+                            <span v-if="drillMode" class="ml-1 bg-amber-700 text-white text-[10px] px-1.5 py-0.5 rounded-full">ACTIVE</span>
+                        </button>
+
+                        <!-- Random Picker -->
+                        <button @click="pickRandomQuestion" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center gap-1.5 transition">
+                            <span>🎲</span>
+                            <span>Random Card</span>
+                        </button>
+
+                        <!-- Notes Summary Drawer Toggle -->
+                        <button @click="showNotesModal = true" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center gap-1.5 transition relative">
+                            <span>📝</span>
+                            <span>My Notes</span>
+                            <span v-if="savedNotesCount > 0" class="w-4 h-4 rounded-full bg-indigo-600 text-white text-[10px] flex items-center justify-center font-bold">
+                                {{ savedNotesCount }}
+                            </span>
+                        </button>
+
+                        <!-- Export Markdown -->
+                        <button @click="exportMarkdown" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-1.5 transition shadow-sm">
+                            <span>📥</span>
+                            <span>Export MD</span>
+                        </button>
+
+                        <!-- Dark Mode Switch -->
+                        <button @click="toggleDarkMode" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                            <span v-if="isDark">☀️</span>
+                            <span v-else>🌙</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Primary Track Tabs -->
+                <div class="flex items-center gap-2 mt-4 border-b border-slate-200 dark:border-slate-800 pb-2 overflow-x-auto">
+                    <button @click="selectedTrack = 'all'" 
+                            :class="selectedTrack === 'all' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
+                            class="px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 whitespace-nowrap">
+                        <span>🌟 All Tracks</span>
+                        <span class="px-1.5 py-0.5 rounded-md text-[10px] bg-white/20">{{ questions.length }}</span>
+                    </button>
+                    
+                    <button @click="selectedTrack = 'scenario'" 
+                            :class="selectedTrack === 'scenario' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
+                            class="px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 whitespace-nowrap">
+                        <span>🏗️ Scenario-Based Deep-Dives</span>
+                        <span class="px-1.5 py-0.5 rounded-md text-[10px] bg-white/20">{{ scenarioCount }}</span>
+                    </button>
+
+                    <button @click="selectedTrack = 'tricky'" 
+                            :class="selectedTrack === 'tricky' ? 'bg-amber-600 text-white shadow-md' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
+                            class="px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 whitespace-nowrap">
+                        <span>⚡ Tricky & Curveball Traps</span>
+                        <span class="px-1.5 py-0.5 rounded-md text-[10px] bg-white/20">{{ trickyCount }}</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+            
+            <!-- Dashboard Stats & Filter Bar -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-sm mb-6">
+                <!-- Top Row: Search & Overview -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+                    <!-- Search Input -->
+                    <div class="lg:col-span-5 relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            🔍
+                        </span>
+                        <input type="text" v-model="searchQuery" 
+                               placeholder="Search scenarios, traps, Kafka, Spring, GenAI, MCP, JVM..." 
+                               class="w-full pl-9 pr-8 py-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100 placeholder-slate-400">
+                        <button v-if="searchQuery" @click="searchQuery = ''" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                            ✕
+                        </button>
+                    </div>
+
+                    <!-- Domain Selector Dropdown -->
+                    <div class="lg:col-span-3">
+                        <select v-model="selectedDomain" class="w-full py-2 px-3 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="all">🌐 All Architectural Domains ({{ questions.length }})</option>
+                            <option v-for="d in domains" :key="d" :value="d">
+                                {{ d }} ({{ countByDomain(d) }})
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Star Frequency Filter -->
+                    <div class="lg:col-span-2">
+                        <select v-model="selectedStars" class="w-full py-2 px-3 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="all">⭐ All Star Ratings</option>
+                            <option value="5">★★★★★ (5 Stars / Must-Master)</option>
+                            <option value="4">★★★★☆ (4+ Stars / High-Freq)</option>
+                        </select>
+                    </div>
+
+                    <!-- Mastery Filter -->
+                    <div class="lg:col-span-2">
+                        <select v-model="selectedMastery" class="w-full py-2 px-3 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="all">📊 All Mastery Statuses</option>
+                            <option value="unseen">⚪ Unseen</option>
+                            <option value="reviewing">🟡 Reviewing</option>
+                            <option value="mastered">🟢 Mastered</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Stats Summary Row -->
+                <div class="flex flex-wrap items-center justify-between gap-4 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/80 text-xs text-slate-500 dark:text-slate-400 font-medium">
+                    <div class="flex items-center gap-4">
+                        <span>Showing <strong class="text-indigo-600 dark:text-indigo-400 font-bold">{{ filteredQuestions.length }}</strong> of {{ questions.length }} Cards</span>
+                        <span class="hidden sm:inline">|</span>
+                        <span class="hidden sm:inline flex items-center gap-1">
+                            <span>🟢 Mastered:</span>
+                            <strong class="text-emerald-600 dark:text-emerald-400 font-bold">{{ countByMastery('mastered') }}</strong>
+                        </span>
+                        <span class="hidden sm:inline">|</span>
+                        <span class="hidden sm:inline flex items-center gap-1">
+                            <span>🟡 Reviewing:</span>
+                            <strong class="text-amber-600 dark:text-amber-400 font-bold">{{ countByMastery('reviewing') }}</strong>
+                        </span>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <button @click="expandAllCards(true)" class="hover:text-indigo-600 dark:hover:text-indigo-400 underline">Expand All</button>
+                        <span>/</span>
+                        <button @click="expandAllCards(false)" class="hover:text-indigo-600 dark:hover:text-indigo-400 underline">Collapse All</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Questions Grid -->
+            <div v-if="filteredQuestions.length === 0" class="bg-white dark:bg-slate-900 rounded-2xl p-12 text-center border border-slate-200 dark:border-slate-800">
+                <div class="text-4xl mb-3">🔍</div>
+                <h3 class="text-lg font-bold text-slate-700 dark:text-slate-200">No matching questions found</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Try resetting your search query or domain filters.</p>
+                <button @click="resetFilters" class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold hover:bg-indigo-700 transition">
+                    Reset All Filters
+                </button>
+            </div>
+
+            <div class="space-y-6">
+                <div v-for="q in filteredQuestions" :key="q.id" 
+                     :id="'card-' + q.id"
+                     class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition duration-200 overflow-hidden">
+                    
+                    <!-- Card Top Header -->
+                    <div class="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+                        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-3">
+                            <!-- Badges -->
+                            <div class="flex flex-wrap items-center gap-2">
+                                <!-- Track Badge -->
+                                <span :class="q.track === 'scenario' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800' : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border-amber-200 dark:border-amber-800'"
+                                      class="px-2.5 py-1 rounded-md text-[11px] font-extrabold uppercase tracking-wide border">
+                                    {{ q.track === 'scenario' ? '🏗️ Scenario' : '⚡ Tricky Trap' }}
+                                </span>
+
+                                <!-- Domain Badge -->
+                                <span class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                                    {{ q.domain }}
+                                </span>
+
+                                <!-- Star & Frequency Rating -->
+                                <span class="px-2.5 py-1 rounded-md text-[11px] font-bold bg-rose-50 text-rose-700 dark:bg-rose-950/80 dark:text-rose-300 border border-rose-200 dark:border-rose-900 flex items-center gap-1">
+                                    <span>{{ renderStars(q.stars) }}</span>
+                                    <span>{{ q.frequency }}</span>
+                                </span>
+                            </div>
+
+                            <!-- Mastery & Quick Controls -->
+                            <div class="flex items-center gap-3">
+                                <!-- Mastery Dropdown -->
+                                <select :value="getMastery(q.id)" @change="setMastery(q.id, $event.target.value)" 
+                                        :class="{
+                                            'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400': getMastery(q.id) === 'unseen',
+                                            'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 font-bold': getMastery(q.id) === 'reviewing',
+                                            'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 font-bold': getMastery(q.id) === 'mastered'
+                                        }"
+                                        class="px-2.5 py-1 rounded-lg text-xs border border-transparent focus:outline-none cursor-pointer">
+                                    <option value="unseen">⚪ Unseen</option>
+                                    <option value="reviewing">🟡 Reviewing</option>
+                                    <option value="mastered">🟢 Mastered</option>
+                                </select>
+
+                                <!-- Expand/Collapse Toggle -->
+                                <button @click="toggleCard(q.id)" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800 transition">
+                                    <span v-if="expandedCards[q.id]" class="text-sm font-bold">▲</span>
+                                    <span v-else class="text-sm font-bold">▼</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Card Question Title -->
+                        <h2 class="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100 leading-snug cursor-pointer" @click="toggleCard(q.id)">
+                            #{{ q.id }}. {{ q.title }}
+                        </h2>
+
+                        <!-- Problem Statement / Trap Box -->
+                        <div class="mt-3 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs sm:text-sm text-slate-700 dark:text-slate-300 flex gap-3">
+                            <span class="text-lg">⚠️</span>
+                            <div>
+                                <strong class="font-bold text-amber-800 dark:text-amber-400 block mb-0.5">The Core Challenge / Production Trap:</strong>
+                                {{ q.problem }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Body (Expandable) -->
+                    <div v-show="expandedCards[q.id]" class="p-5 sm:p-6 space-y-6">
+
+                        <!-- DRILL MODE OVERLAY IF ACTIVE & UNREVEALED -->
+                        <div v-if="drillMode && !revealedCards[q.id]" class="bg-indigo-50/50 dark:bg-slate-800/40 rounded-xl p-6 border border-indigo-200 dark:border-indigo-900 text-center space-y-4">
+                            <div class="max-w-md mx-auto space-y-2">
+                                <span class="text-3xl block">🧠</span>
+                                <h4 class="font-bold text-slate-800 dark:text-slate-100">Self-Test Drill Active</h4>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">
+                                    Formulate your senior architect response step-by-step. What pattern, algorithm, or trade-off addresses this incident?
+                                </p>
+                            </div>
+
+                            <!-- Scratchpad textarea -->
+                            <div class="max-w-xl mx-auto text-left">
+                                <label class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">Your Draft Scratchpad:</label>
+                                <textarea v-model="scratchpads[q.id]" 
+                                          placeholder="Type key points (e.g., CDC, Outbox pattern, Virtual Thread pinning fix, Vector clock)..." 
+                                          rows="3" 
+                                          class="w-full p-3 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
+                                </textarea>
+                            </div>
+
+                            <!-- Reveal Button -->
+                            <button @click="revealCard(q.id)" class="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-xl text-xs font-bold shadow-md transition transform hover:scale-105">
+                                🔓 Reveal Expected Answer & Code Blueprint
+                            </button>
+                        </div>
+
+                        <!-- FULL DETAILED CONTENT (Shown when drill mode off OR revealed) -->
+                        <div v-else class="space-y-6">
+                            
+                            <!-- 1. Expected Senior-Level Answer -->
+                            <div>
+                                <h3 class="text-xs font-extrabold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5 mb-2">
+                                    <span>💡</span>
+                                    <span>Expected Senior-Level Answer & Architecture Solution</span>
+                                </h3>
+                                <div class="text-xs sm:text-sm leading-relaxed text-slate-700 dark:text-slate-300 space-y-2 bg-slate-50 dark:bg-slate-800/40 p-4 rounded-xl border border-slate-200/80 dark:border-slate-800" v-html="q.answer">
+                                </div>
+                            </div>
+
+                            <!-- 2. Concrete Real-World / Code / Architecture Example -->
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <h3 class="text-xs font-extrabold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                                        <span>💻</span>
+                                        <span>Concrete Real-World / Code / Architecture Implementation</span>
+                                    </h3>
+                                    <button @click="copyCode(q.example, q.id)" class="text-[11px] font-semibold text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 flex items-center gap-1">
+                                        <span>📋</span>
+                                        <span>{{ copiedId === q.id ? 'Copied!' : 'Copy Snippet' }}</span>
+                                    </button>
+                                </div>
+                                <div class="bg-slate-950 text-slate-100 rounded-xl p-4 overflow-x-auto text-xs border border-slate-800 shadow-inner">
+                                    <pre class="leading-relaxed font-mono"><code>{{ q.example }}</code></pre>
+                                </div>
+                            </div>
+
+                            <!-- 3. Interviewer / Client Follow-Up Trap -->
+                            <div class="bg-rose-500/10 border border-rose-500/20 rounded-xl p-4 text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+                                <h3 class="text-xs font-extrabold uppercase tracking-wider text-rose-700 dark:text-rose-400 flex items-center gap-1.5 mb-1.5">
+                                    <span>🪤</span>
+                                    <span>Interviewer / Client Second-Order Follow-Up Trap</span>
+                                </h3>
+                                <p class="leading-relaxed">
+                                    {{ q.followup }}
+                                </p>
+                            </div>
+
+                            <!-- 4. Personal Notes Area -->
+                            <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <label class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+                                        <span>📝</span>
+                                        <span>Personal Notes & Architectural Insight</span>
+                                    </label>
+                                    <span v-if="notes[q.id]" class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">Saved automatically</span>
+                                </div>
+                                <textarea :value="notes[q.id] || ''" 
+                                          @input="updateNote(q.id, $event.target.value)" 
+                                          placeholder="Add your project experiences, personal takeaways, or team specific notes here..." 
+                                          rows="2" 
+                                          class="w-full p-3 text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 dark:text-slate-100">
+                                </textarea>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Notes Summary Modal -->
+        <div v-if="showNotesModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-3xl w-full max-h-[85vh] flex flex-col shadow-2xl">
+                <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                    <h3 class="font-bold text-base text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                        <span>📝</span>
+                        <span>My Saved Architectural Study Notes ({{ savedNotesCount }})</span>
+                    </h3>
+                    <button @click="showNotesModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xl font-bold">✕</button>
+                </div>
+                
+                <div class="p-6 overflow-y-auto space-y-4 flex-1">
+                    <div v-if="savedNotesCount === 0" class="text-center py-8 text-slate-400 text-xs">
+                        You have not written any notes yet. Add notes inside question cards to save key takeaways!
+                    </div>
+                    <div v-for="(noteText, qId) in activeNotesMap" :key="qId" class="p-4 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400">Card #{{ qId }}: {{ getQuestionTitle(qId) }}</span>
+                            <button @click="jumpToCard(qId)" class="text-[11px] font-semibold text-slate-500 hover:underline">Jump to Card</button>
+                        </div>
+                        <p class="text-xs text-slate-700 dark:text-slate-300 font-mono whitespace-pre-wrap">{{ noteText }}</p>
+                    </div>
+                </div>
+
+                <div class="p-4 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+                    <button @click="showNotesModal = false" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold">
+                        Close Window
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Application Script -->
+    <script>
+        const { createApp, ref, computed, onMounted, watch } = Vue;
+
+        createApp({
+            setup() {
+                // Dark Mode State
+                const isDark = ref(localStorage.getItem('arch_lab_theme') === 'dark' || (!('arch_lab_theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches));
+                
+                const toggleDarkMode = () => {
+                    isDark.value = !isDark.value;
+                    localStorage.setItem('arch_lab_theme', isDark.value ? 'dark' : 'light');
+                    applyTheme();
+                };
+
+                const applyTheme = () => {
+                    if (isDark.value) {
+                        document.documentElement.classList.add('dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                    }
+                };
+
+                // Filter & Search States
+                const selectedTrack = ref('all');
+                const selectedDomain = ref('all');
+                const selectedStars = ref('all');
+                const selectedMastery = ref('all');
+                const searchQuery = ref('');
+                const drillMode = ref(false);
+                const showNotesModal = ref(false);
+
+                // Card Expansion & Reveal State
+                const expandedCards = ref({});
+                const revealedCards = ref({});
+                const scratchpads = ref({});
+                const copiedId = ref(null);
+
+                // LocalStorage Persistent State
+                const masteryState = ref(JSON.parse(localStorage.getItem('arch_lab_mastery') || '{}'));
+                const notes = ref(JSON.parse(localStorage.getItem('arch_lab_notes') || '{}'));
+
+                // Toast Notification State
+                const toast = ref({ show: false, message: '' });
+                const showToast = (msg) => {
+                    toast.value.message = msg;
+                    toast.value.show = true;
+                    setTimeout(() => { toast.value.show = false; }, 3000);
+                };
+
+                // Master Questions Dataset (24 Questions: 12 Scenarios + 12 Tricky)
+                const questions = ref([
+                    // SCENARIO 1
+                    {
+                        id: 1,
+                        title: "RAG Hallucination & Latency Crisis in Enterprise Financial Agent",
+                        track: "scenario",
+                        domain: "GenAI & Agents",
+                        stars: 5,
+                        frequency: "98% Must-Master",
+                        problem: "A multi-turn financial advisory AI agent powered by LangGraph and MCP tools suffers 14-second end-to-end response latency and a 12% hallucination rate on real-time account balances, leading to compliance risk.",
+                        answer: `
+                            <p><strong>1. Hybrid Retrieval Strategy:</strong> Replace naive dense vector search with a hybrid pipeline combining BM25 lexical keyword matching and vector embeddings (e.g., BGE-M3), fused via Reciprocal Rank Fusion (RRF) and Cohere Rerank v3. This guarantees exact financial entity resolution.</p>
+                            <p><strong>2. Deterministic SQL Tool Fallback:</strong> Remove structured numerical queries from LLM generative reasoning. When a query asks for balances or numeric figures, route deterministically to an MCP SQL tool with rigid JSON Schema validation and parameters.</p>
+                            <p><strong>3. Speculative Tool Execution & Parallel Processing:</strong> Trigger context retrieval and DB connection pool checks in parallel using AsyncIO/coroutines. Stream responses via Server-Sent Events (SSE) to reduce Time-To-First-Token (TTFT) below 800ms.</p>
+                            <p><strong>4. Rolling Summary Pruning:</strong> Implement sliding-window context compression with historical state summarization to keep context window under 4k tokens, preventing attention degradation.</p>
+                        `,
+                        example: `# Python / LangGraph Deterministic Tool Routing Guardrail
+from langgraph.graph import StateGraph, END
+from pydantic import BaseModel, Field
+
+class FinancialQueryState(BaseModel):
+    query: str
+    intent: str = ""
+    account_id: str = ""
+    balance_result: float = None
+
+def guardrail_intent_router(state: FinancialQueryState):
+    # Deterministic regex / classifier route before LLM call
+    if "balance" in state.query.lower() or "statement" in state.query.lower():
+        return "sql_mcp_tool"
+    return "rag_vector_search"
+
+def sql_mcp_tool(state: FinancialQueryState):
+    # Direct fast DB lookup via connection pool (12ms latency)
+    state.balance_result = db_pool.query_balance(state.account_id)
+    return state
+
+# LangGraph Workflow Construction
+builder = StateGraph(FinancialQueryState)
+builder.add_node("router", guardrail_intent_router)
+builder.add_node("sql_mcp_tool", sql_mcp_tool)
+builder.set_conditional_entry_point("router", {"sql_mcp_tool": "sql_mcp_tool", "rag_vector_search": "rag_vector_search"})
+graph = builder.compile()`,
+                        followup: "What happens when the database schema changes dynamically, breaking the MCP tool JSON schema parameters?"
+                    },
+
+                    // SCENARIO 2
+                    {
+                        id: 2,
+                        title: "Out-of-Order Kafka Message Processing in Dual-DC Distributed Inventory",
+                        track: "scenario",
+                        domain: "Microservices & Kafka",
+                        stars: 5,
+                        frequency: "95% Must-Master",
+                        problem: "An active-active dual data center setup streams StockUpdated and OrderPlaced events via Kafka. Network jitter causes OrderPlaced to arrive before StockUpdated, producing negative inventory balances.",
+                        answer: `
+                            <p><strong>1. Event Sourcing & Vector Clocks:</strong> Include a logical sequence vector clock or monotonic revision number in event headers. Reject updates with smaller revision numbers than stored state.</p>
+                            <p><strong>2. Key-Partitioned Ordering:</strong> Ensure all events for a given SKU/Product ID are keyed strictly by <code>product_id</code> so they land on the same Kafka partition, guaranteeing in-partition causal ordering.</p>
+                            <p><strong>3. Outbox Pattern + Debezium CDC:</strong> Eliminate dual-writes by persisting state and outbox events in a single DB local transaction, streamed via Debezium CDC to Kafka.</p>
+                            <p><strong>4. Idempotency & Optimistic Locking:</strong> Guard PostgreSQL updates using optimistic locking (<code>WHERE version = :expectedVersion</code>). If out-of-order, throw non-retryable exception to route event to a delayed re-evaluation queue.</p>
+                        `,
+                        example: `@Component
+public class InventoryKafkaConsumer {
+    @Autowired private InventoryRepository repo;
+    @Autowired private StringRedisTemplate redis;
+
+    @KafkaListener(topics = "inventory-events", groupId = "inventory-group")
+    public void processEvent(ConsumerRecord<String, InventoryEvent> record, Acknowledgment ack) {
+        InventoryEvent event = record.value();
+        String lockKey = "lock:inv:" + event.getProductId();
+        
+        // Redis Distributed Lock for strict local concurrency
+        Boolean acquired = redis.opsForValue().setIfAbsent(lockKey, "LOCKED", Duration.ofSeconds(5));
+        if (Boolean.TRUE.equals(acquired)) {
+            try {
+                Inventory inv = repo.findById(event.getProductId()).orElseThrow();
+                // Sequence / Version check for Out-of-Order protection
+                if (event.getSequenceNumber() > inv.getLastProcessedSequence()) {
+                    inv.setQuantity(inv.getQuantity() + event.getDelta());
+                    inv.setLastProcessedSequence(event.getSequenceNumber());
+                    repo.save(inv); // Optimistic Lock @Version check
+                    ack.acknowledge();
+                } else {
+                    // Stale message discarded safely
+                    ack.acknowledge();
+                }
+            } finally {
+                redis.delete(lockKey);
+            }
+        }
+    }`,
+                        followup: "If a Kafka partition rebalance triggers during a 100k msg/sec peak spike, how do you prevent consumer lag cascades without dropping order sequence?"
+                    },
+
+                    // SCENARIO 3
+                    {
+                        id: 3,
+                        title: "Cascading Thread Pool Exhaustion & GC Pause Storm under Peak Black Friday",
+                        track: "scenario",
+                        domain: "JVM & Spring Boot",
+                        stars: 5,
+                        frequency: "94% Must-Master",
+                        problem: "A Spring Boot 3 app running on JDK 21 experiences 8-second G1GC stop-the-world pauses and java.lang.OutOfMemoryError during a 50,000 TPS spike due to unbounded thread creation and carrier thread pinning.",
+                        answer: `
+                            <p><strong>1. Virtual Thread Carrier Pinning Fix:</strong> Replace legacy <code>synchronized</code> blocks with <code>ReentrantLock</code>. Native <code>synchronized</code> blocks in JDK <22 pin Virtual Threads to platform OS carrier threads, neutralizing Project Loom concurrency benefits.</p>
+                            <p><strong>2. Thread Pool Sizing & Backpressure:</strong> Enforce strict request queue bounds on Tomcat / Netty threads. Return HTTP 429 (Too Many Requests) using Resilience4j Bulkhead rather than building unbounded task queues in heap.</p>
+                            <p><strong>3. G1GC Ergonomics Tuning:</strong> Configure <code>-XX:MaxGCPauseMillis=50</code>, <code>-XX:G1ReservePercent=15</code>, and <code>-XX:InitiatingHeapOccupancyPercent=45</code> to initiate concurrent marking cycles earlier before heap exhaustion.</p>
+                            <p><strong>4. Object Allocation Reduction:</strong> Replace String concatenations in high-throughput hot paths with zero-copy ByteBuffers and object pooling for serialization frameworks.</p>
+                        `,
+                        example: `// Spring Boot 3.2+ Virtual Thread Configuration with Safe Lock Usage
+@Configuration
+public class LoomConfig {
+
+    @Bean
+    public TomcatProtocolHandlerCustomizer<?> protocolHandlerVirtualThreadCustomizer() {
+        return protocolHandler -> protocolHandler.setExecutor(Executors.newVirtualThreadPerTaskExecutor());
+    }
+}
+
+@Service
+public class OrderService {
+    // CORRECTION: Use ReentrantLock instead of synchronized to prevent carrier thread pinning
+    private final ReentrantLock lock = new ReentrantLock();
+
+    public void processOrder(OrderCmd cmd) {
+        lock.lock();
+        try {
+            // High-throughput inventory update logic
+        } finally {
+            lock.unlock();
+        }
+    }
+}`,
+                        followup: "If Virtual Threads pin carrier threads inside third-party legacy JDBC drivers using synchronized methods, how do you isolate them without rewriting the driver?"
+                    },
+
+                    // SCENARIO 4
+                    {
+                        id: 4,
+                        title: "Thundering Herd & Cache Stampede in Distributed Multi-Tenant SaaS",
+                        track: "scenario",
+                        domain: "Polyglot Data & Caching",
+                        stars: 4,
+                        frequency: "89% High-Frequency",
+                        problem: "When a global multi-tenant Redis configuration key expires TTL at midnight, 10,000 concurrent client nodes hammer PostgreSQL simultaneously, exhausting the HikariCP connection pool and cascading into DB failure.",
+                        answer: `
+                            <p><strong>1. Probabilistic Early Expiration (XFetch Algorithm):</strong> Calculate dynamic recomputation likelihood prior to TTL expiry using algorithm: <code>- delta * beta * log(rand()) > TTL - now</code>.</p>
+                            <p><strong>2. SingleFlight Mutex Locking:</strong> Force concurrent app processes on the same node to collapse duplicate requests into a single downstream DB lookup using SingleFlight pattern or Redis Mutex.</p>
+                            <p><strong>3. Stale-While-Revalidate (Background Asynchronous Refresh):</strong> Serve stale cached content to incoming client requests while an asynchronous background worker recalculates and updates the cache.</p>
+                            <p><strong>4. TTL Jitter Injection:</strong> Add random jitter delta (e.g., ± 15% random variance) to all set TTLs to prevent synchronized expiration of multi-tenant cache keys.</p>
+                        `,
+                        example: `// Java XFetch Probabilistic Cache Invalidation Implementation
+public class XFetchCache {
+    private final double beta = 1.0; // Aggressiveness factor
+
+    public String getWithXFetch(String key, long ttlSeconds, Supplier<String> dbFallback) {
+        CacheEntry entry = redis.get(key);
+        long now = System.currentTimeMillis();
+        
+        // Dynamic early recalculation formula
+        if (entry == null || (now - (entry.delta * beta * Math.log(Math.random()))) > entry.expiryTimestamp) {
+            if (acquireDistributedLock("lock:" + key)) {
+                try {
+                    long start = System.currentTimeMillis();
+                    String newValue = dbFallback.get();
+                    long computeTime = System.currentTimeMillis() - start;
+                    
+                    CacheEntry newEntry = new CacheEntry(newValue, now + (ttlSeconds * 1000), computeTime);
+                    redis.set(key, newEntry);
+                    return newValue;
+                } finally {
+                    releaseLock("lock:" + key);
+                }
+            }
+        }
+        return entry != null ? entry.value : dbFallback.get();
+    }
+}`,
+                        followup: "What if the Redis cluster itself experiences a failover while 50,000 SingleFlight locks are actively held across nodes?"
+                    },
+
+                    // SCENARIO 5
+                    {
+                        id: 5,
+                        title: "Distributed Tracing Loss & Metric Overhead in High-Throughput Event Mesh",
+                        track: "scenario",
+                        domain: "Cloud & Observability",
+                        stars: 4,
+                        frequency: "86% High-Frequency",
+                        problem: "An OpenTelemetry Collector drops 40% of span context during 1,000,000 events/min spikes, leading to missing distributed trace correlation across Kafka message boundaries and gRPC calls.",
+                        answer: `
+                            <p><strong>1. Tail-Based Sampling:</strong> Move sampling decisions from client SDKs (head-based) to OpenTelemetry Collectors (tail-based). Retain 100% of trace samples with errors or latency > 500ms while sampling 1% of successful trace paths.</p>
+                            <p><strong>2. W3C TraceContext Propagation:</strong> Inject and extract <code>traceparent</code> and <code>tracestate</code> explicit headers across Kafka record headers and gRPC metadata keys.</p>
+                            <p><strong>3. Metric Exemplars:</strong> Attach trace IDs directly to Prometheus metrics as exemplars, enabling instant one-click jump from metric spikes in Grafana to specific trace spans.</p>
+                            <p><strong>4. Memory Limiter & Buffer Tuning:</strong> Configure Otel Collector batch processor queues with memory_limiter constraints to prevent OOM drops under load spikes.</p>
+                        `,
+                        example: `# OpenTelemetry Collector Pipeline YAML Configuration (Tail-Based Sampling)
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_percentage: 75
+    spike_limit_percentage: 20
+
+  tail_sampling:
+    decision_wait: 10s
+    num_traces: 50000
+    expected_new_traces_per_sec: 2000
+    policies:
+      - name: drop_errors_policy
+        type: status_code
+        status_code: {status_codes: [ERROR]}
+      - name: latency_policy
+        type: latency
+        latency: {threshold_ms: 500}
+      - name: probabilistic_policy
+        type: probabilistic
+        probabilistic: {sampling_percentage: 1.0}
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, tail_sampling, batch]
+      exporters: [otlp/tempo]`,
+                        followup: "How do you trace non-deterministic async operations like scheduled background batch aggregation jobs triggered hours after the HTTP request?"
+                    },
+
+                    // SCENARIO 6
+                    {
+                        id: 6,
+                        title: "Monolith Database Deadlock & Migration Failure for Legacy Retail ERP",
+                        track: "scenario",
+                        domain: "Freelance & Client Rescue",
+                        stars: 5,
+                        frequency: "92% Must-Master",
+                        problem: "A client tried migrating a 4TB legacy MySQL monolith to PostgreSQL microservices using direct SQL ETL. High lock contention caused database deadlocks, collapsing live client transactions and incurring 3 hours of unscheduled downtime.",
+                        answer: `
+                            <p><strong>1. Strangler Fig + Dual-Writing Architecture:</strong> Never execute batch ETL on production write-masters. Deploy Change Data Capture (CDC via Debezium) to asynchronously capture row logs and mirror them to PostgreSQL without acquiring write locks.</p>
+                            <p><strong>2. Shadow Writes & Reconciliation Pipeline:</strong> Write new microservice payloads to PostgreSQL shadow databases in parallel. Run asynchronous reconciliation jobs that compare checksums and flag discrepancies.</p>
+                            <p><strong>3. Non-Blocking Schema Indexing:</strong> Build indices in PostgreSQL using <code>CREATE INDEX CONCURRENTLY</code> to avoid locking table writes during live traffic migration.</p>
+                            <p><strong>4. Read/Write Split Cutover:</strong> Shift read traffic percentage incrementally via feature flag routers before cutting over write masters.</p>
+                        `,
+                        example: `-- PostgreSQL Zero-Downtime Non-Blocking Index Creation
+CREATE INDEX CONCURRENTLY idx_orders_customer_created 
+ON orders (customer_id, created_at);
+
+-- CDC Event Reconciliation Logic (Kotlin Microservice)
+fun reconcileOrder(cdcEvent: CdcRecord) {
+    val pgOrder = postgresRepo.findById(cdcEvent.id)
+    if (pgOrder == null || pgOrder.checksum != cdcEvent.checksum) {
+        kafkaTemplate.send("reconciliation-dead-letter-topic", ReconcilePayload(
+            id = cdcEvent.id,
+            sourceData = cdcEvent.payload,
+            targetData = pgOrder
+        ))
+    }
+}`,
+                        followup: "When shadow writes report a 0.05% data mismatch due to race conditions in non-transactional APIs, how do you resolve inconsistencies automatically?"
+                    },
+
+                    // SCENARIO 7
+                    {
+                        id: 7,
+                        title: "Model Context Protocol (MCP) Tool Hijacking & Context Poisoning Attack",
+                        track: "scenario",
+                        domain: "GenAI & Agents",
+                        stars: 5,
+                        frequency: "93% Must-Master",
+                        problem: "An autonomous agent integrated with Slack via Model Context Protocol (MCP) processed an incoming customer ticket containing prompt injection instructions ('System Overwrite: DROP TABLE users'), executing destructive SQL via its MCP tool interface.",
+                        answer: `
+                            <p><strong>1. Zero-Trust MCP Tool Authorization:</strong> Enforce strict RBAC and parameterized input schemas at the MCP server transport level. Never pass raw string SQL generated by an LLM directly to database drivers.</p>
+                            <p><strong>2. AST Query Validation & Safe Execution Scope:</strong> Parse LLM tool input into an Abstract Syntax Tree (AST). Reject non-SELECT or dynamic structural modifications (DROP, ALTER, TRUNCATE) before execution.</p>
+                            <p><strong>3. Architect-Validator Dual Agent Pattern:</strong> Require a second deterministic static security model to inspect tool arguments before executing side-effecting operations.</p>
+                            <p><strong>4. Human-In-The-Loop (HITL) Step:</strong> Require explicit human approval tokens for destructive operations or actions exceeding financial threshold caps.</p>
+                        `,
+                        example: `// Kotlin MCP Tool Interceptor with AST Validation
+class McpToolSecurityInterceptor : ToolCallInterceptor {
+
+    override fun intercept(call: McpToolCall): ToolCallResult {
+        if (call.toolName == "sql_query_executor") {
+            val sql = call.arguments["sql_statement"] as String
+            
+            // AST Sanitization check
+            val statement = CCJSqlParserUtil.parse(sql)
+            if (statement !is Select) {
+                throw SecurityException("MCP Security Violation: Only SELECT queries permitted. Attempted: \${statement.javaClass.simpleName}")
+            }
+            
+            // Block sensitive tables
+            if (sql.lowercase().contains("credentials") || sql.lowercase().contains("user_passwords")) {
+                throw SecurityException("MCP Security Violation: Restricted table access.")
+            }
+        }
+        return call.proceed()
+    }
+}`,
+                        followup: "If an agent requires read-write SQL access to process customer refunds dynamically, how do you bound the SQL execution scope deterministically?"
+                    },
+
+                    // SCENARIO 8
+                    {
+                        id: 8,
+                        title: "Distributed Saga Split-Brain & Dual-Commit Inconsistency in Payment Gateway",
+                        track: "scenario",
+                        domain: "Microservices & Kafka",
+                        stars: 5,
+                        frequency: "97% Must-Master",
+                        problem: "A choreographed Saga between Order, Payment, and Inventory services charged a user's credit card but failed to reserve inventory because a worker pod crashed mid-flight, leaving the system in a dual-commit split-brain state.",
+                        answer: `
+                            <p><strong>1. Orchestrated Saga Pattern with State Machine:</strong> Transition from choreography to orchestration (e.g., using Temporal.io or Axon Framework). A centralized durable execution engine tracks workflow step transitions and guarantees execution of compensating transactions.</p>
+                            <p><strong>2. Transactional Outbox Pattern:</strong> Write state changes and outward domain events into an outbox database table inside the exact same local ACID transaction as the domain state.</p>
+                            <p><strong>3. Idempotency Key Propagation:</strong> Pass client idempotency keys across service bounds to ensure payment retries execute at-most-once.</p>
+                            <p><strong>4. Automatic Compensating Workflows:</strong> Design explicit undo steps (e.g., <code>RefundPaymentCommand</code>) that trigger automatically when inventory reservation times out or fails.</p>
+                        `,
+                        example: `// Temporal.io Java Workflow Orchestrator for Resilient Payment Saga
+@WorkflowInterface
+public class OrderFulfillmentWorkflow {
+    @WorkflowMethod
+    void fulfillOrder(OrderRequest request);
+}
+
+public class OrderFulfillmentWorkflowImpl implements OrderFulfillmentWorkflow {
+    private final PaymentActivities payment = Workflow.newActivityStub(PaymentActivities.class);
+    private final InventoryActivities inventory = Workflow.newActivityStub(InventoryActivities.class);
+
+    @Override
+    public void fulfillOrder(OrderRequest request) {
+        String paymentId = payment.chargeCreditCard(request.getPaymentDetails());
+        
+        try {
+            // Step 2: Reserve Inventory
+            inventory.reserveStock(request.getItems());
+        } catch (Exception ex) {
+            // COMPENSATING TRANSACTION: Guaranteed execution even if worker pod restarts
+            Saga.Options sagaOptions = new Saga.Options();
+            payment.refundPayment(paymentId, "Inventory Reservation Failed");
+            throw new WorkflowFailedException("Order Saga Rolled Back Safely", ex);
+        }
+    }
+}`,
+                        followup: "What happens if the compensating refund transaction itself fails permanently due to a 500 error from a third-party payment gateway?"
+                    },
+
+                    // SCENARIO 9
+                    {
+                        id: 9,
+                        title: "PostgreSQL Write Amplification & Table Bloat Breakdown in Real-Time Leaderboard",
+                        track: "scenario",
+                        domain: "Polyglot Data & Caching",
+                        stars: 4,
+                        frequency: "84% High-Frequency",
+                        problem: "A gaming service issuing 5,000 updates/sec on user score columns caused massive PostgreSQL table bloat, autovacuum failure to reclaim dead tuples, and a 900% read latency degradation.",
+                        answer: `
+                            <p><strong>1. Architectural Offloading to Redis ZSET:</strong> Move high-frequency real-time score updates to Redis Sorted Sets (<code>ZSET</code>). Batch update PostgreSQL asynchronously in background intervals (e.g., every 30 seconds).</p>
+                            <p><strong>2. PostgreSQL Heap-Only Tuples (HOT) Optimization:</strong> Lower table <code>fillfactor</code> from 100 to 70. This leaves space inside existing data pages for updates, avoiding index updates and write amplification.</p>
+                            <p><strong>3. Autovacuum Tuning:</strong> Scale autovacuum workers and lower scale factor thresholds (<code>autovacuum_vacuum_scale_factor = 0.05</code>) to vacuum dead tuples aggressively before bloat accumulates.</p>
+                            <p><strong>4. Table Partitioning:</strong> Partition leaderboard tables by time window or region to drop old partitions instantly without Vacuum overhead.</p>
+                        `,
+                        example: `-- PostgreSQL HOT Optimization & Vacuum Parameter Configuration
+ALTER TABLE user_scores SET (
+    fillfactor = 70,
+    autovacuum_vacuum_scale_factor = 0.02,
+    autovacuum_vacuum_threshold = 1000
+);
+
+// Redis High-Throughput Leaderboard Scoring Service (Spring Data Redis)
+@Service
+public class LeaderboardService {
+    @Autowired private StringRedisTemplate redis;
+
+    public void updateScore(String userId, double scoreDelta) {
+        // Atomic O(log(N)) write in Redis
+        redis.opsForZSet().incrementScore("leaderboard:global", userId, scoreDelta);
+    }
+
+    // Scheduled Batch Sync to PostgreSQL (Runs every 30s)
+    @Scheduled(fixedRate = 30000)
+    public void syncScoresToPostgres() {
+        Set<ZSetOperations.TypedTuple<String>> topScores = redis.opsForZSet().popMin("leaderboard:batch_sync", 500);
+        // Batch SQL Update Execution...
+    }
+}`,
+                        followup: "If Redis crashes before flushing the last 5 seconds of score updates, how do you guarantee zero data loss without sacrificing high write throughput?"
+                    },
+
+                    // SCENARIO 10
+                    {
+                        id: 10,
+                        title: "Kubernetes Pod OOMKilled Cascade in Spring Boot Reactive Microservices",
+                        track: "scenario",
+                        domain: "Cloud & Observability",
+                        stars: 4,
+                        frequency: "87% High-Frequency",
+                        problem: "Spring Boot WebFlux microservices running on Kubernetes continuously crashed with exit code 137 (OOMKilled) under sudden traffic spikes despite max heap being set to 70% of container limits.",
+                        answer: `
+                            <p><strong>1. Netty Direct Memory Allocation Overhead:</strong> Spring WebFlux relies on Netty, which allocates non-heap Off-Heap Direct Memory for zero-copy network socket buffers. Max Direct Memory must be capped via <code>-XX:MaxDirectMemorySize</code>.</p>
+                            <p><strong>2. Container Awareness & MaxRAMPercentage:</strong> Replace static <code>-Xmx</code> flags with <code>-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0</code> to dynamically respect cgroup v2 limits.</p>
+                            <p><strong>3. Reactive Backpressure Enforcement:</strong> Apply reactive backpressure operators like <code>onBackpressureBuffer</code> or <code>limitRate</code> to drop or throttle unbound incoming reactive streams when memory thresholds breach.</p>
+                            <p><strong>4. Kubernetes Memory Request/Limit Ratios:</strong> Set container memory request equal to memory limit to prevent K8s node OS kernel overcommitting physical RAM.</p>
+                        `,
+                        example: `# Kubernetes Deployment Manifest with Tuned JVM Container Limits
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reactive-gateway
+spec:
+  template:
+    spec:
+      containers:
+        - name: gateway
+          image: company/reactive-gateway:latest
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "1000m"
+            limits:
+              memory: "2Gi"
+              cpu: "2000m"
+          env:
+            - name: JAVA_TOOL_OPTIONS
+              value: >-
+                -XX:+UseContainerSupport
+                -XX:MaxRAMPercentage=60.0
+                -XX:MaxDirectMemorySize=512m
+                -XX:+ExitOnOutOfMemoryError`,
+                        followup: "Why can Netty direct memory leak even if Java heap usage stays perfectly flat under 200MB during memory leak diagnostics?"
+                    },
+
+                    // SCENARIO 11
+                    {
+                        id: 11,
+                        title: "Spring Security Dual Token Context Collapse in Microservice Gateway Filter",
+                        track: "scenario",
+                        domain: "JVM & Spring Boot",
+                        stars: 4,
+                        frequency: "83% High-Frequency",
+                        problem: "A Spring Cloud Gateway passing JWT security tokens downstream experienced security context leakage under high concurrency, resulting in User A occasionally accessing User B's tenant data.",
+                        answer: `
+                            <p><strong>1. Reactive Security Context Pollution:</strong> Standard <code>SecurityContextHolder</code> uses <code>ThreadLocal</code>, which is unsafe in reactive WebFlux threads where Netty threads are reused across thousands of interleaved async requests.</p>
+                            <p><strong>2. Reactive SecurityContextHolder Usage:</strong> Utilize <code>ReactiveSecurityContextHolder.getContext()</code> which stores security context in Reactor's Subscriber Context hierarchy rather than ThreadLocal.</p>
+                            <p><strong>3. Immutable Token Translation:</strong> Construct new request headers immutably using <code>ServerHttpRequest.mutate()</code> rather than modifying shared global state buffers.</p>
+                            <p><strong>4. Thread Context Teardown Interceptor:</strong> Implement WebFilter cleanup hooks to guarantee context detachment upon request completion.</p>
+                        `,
+                        example: `// Spring Cloud Gateway Thread-Safe Security Filter
+@Component
+public class SafeJwtAuthenticationFilter implements WebFilter {
+
+    @Override
+    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+        String token = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+        
+        if (token != null && token.startsWith("Bearer ")) {
+            Claims claims = validateAndParseJwt(token.substring(7));
+            Authentication auth = new UsernamePasswordAuthenticationToken(claims.getSubject(), null, getAuthorities(claims));
+
+            // Store immutably in Reactive Context (NOT ThreadLocal)
+            return chain.filter(exchange.mutate()
+                    .request(r -> r.header("X-Tenant-Id", claims.get("tenant_id", String.class)))
+                    .build())
+                    .contextWrite(ReactiveSecurityContextHolder.withAuthentication(auth));
+        }
+        return chain.filter(exchange);
+    }
+}`,
+                        followup: "How does setting SecurityContextHolder.MODE_INHERITABLETHREADLOCAL fail catastrophic in thread-pooled executor environments?"
+                    },
+
+                    // SCENARIO 12
+                    {
+                        id: 12,
+                        title: "Multi-Region Data Sovereignty & GDPR Compliance Lockdown for Global Fintech",
+                        track: "scenario",
+                        domain: "Freelance & Client Rescue",
+                        stars: 5,
+                        frequency: "91% Must-Master",
+                        problem: "A global client expanding to Europe and LatAm faced multi-million dollar GDPR/FINMA fines because their AWS architecture stored all user PII in a centralized US-East PostgreSQL instance.",
+                        answer: `
+                            <p><strong>1. Regional Data Sharding Architecture:</strong> Deploy localized Database instances (EU-Central-1, SA-East-1, US-East-1). User routing tiers inspect request IP/claims and route queries to regional shard databases.</p>
+                            <p><strong>2. Field-Level Envelope Encryption (KMS / Vault):</strong> Encrypt sensitive PII fields (SSN, Passport, Credit Card) at application level prior to DB persist using region-restricted KMS master keys.</p>
+                            <p><strong>3. Data Residency Tokenization:</strong> Store anonymized surrogate UUID tokens globally while keeping mapped raw PII data locked inside strict regional DB boundaries.</p>
+                            <p><strong>4. Cross-Region Cell Architecture:</strong> Build isolated cell units per region to ensure blast containment and local regulatory compliance.</p>
+                        `,
+                        example: `// Kotlin Dynamic Multi-Region Routing DataSource
+class RegionalRoutingDataSource : AbstractRoutingDataSource() {
+    override fun determineCurrentLookupKey(): Any {
+        val userContext = UserContextHolder.getContext()
+        return when (userContext.region) {
+            "EU" -> "eu-central-1-db"
+            "LATAM" -> "sa-east-1-db"
+            else -> "us-east-1-db"
+        }
+    }
+}
+
+// Application-Level KMS Field Encryption Aspect Snippet
+@Aspect
+@Component
+class PiiEncryptionAspect(private val kmsClient: KmsClient) {
+    @Around("@annotation(EncryptPii)")
+    fun encryptSensitiveFields(pjp: ProceedingJoinPoint): Any {
+        val entity = pjp.args[0]
+        // Encrypt PII field using region KMS key...
+        return pjp.proceed()
+    }
+}`,
+                        followup: "How do you execute cross-region analytical reporting across EU and US nodes without exporting raw EU PII outside EU borders?"
+                    },
+
+                    // TRICKY 13
+                    {
+                        id: 13,
+                        title: "The synchronized Virtual Thread Pinning Trap & @Transactional Async Boundary",
+                        track: "tricky",
+                        domain: "JVM & Spring Boot",
+                        stars: 5,
+                        frequency: "96% Must-Master",
+                        problem: "Upgrading a legacy Spring Boot 3 app to Java 21 Virtual Threads resulted in dramatic throughput DEGRADATION instead of speedups. Additionally, calls to @Async methods inside @Transactional blocks failed to commit data.",
+                        answer: `
+                            <p><strong>Trap 1 (Virtual Thread Pinning):</strong> In JDK <22, executing a blocking I/O operation inside a <code>synchronized</code> block pins the underlying OS carrier thread, preventing other Virtual Threads from using it and causing thread starvation.</p>
+                            <p><strong>Trap 2 (@Async & @Transactional Boundary):</strong> <code>@Transactional</code> relies on <code>TransactionSynchronizationManager</code>, which binds DB connection state to the calling <code>ThreadLocal</code>. Annotating a method with <code>@Async</code> spawns a new thread, severing the transaction thread-local context.</p>
+                            <p><strong>Solution:</strong> Replace <code>synchronized</code> with <code>ReentrantLock</code>. For async execution after transaction commit, publish domain events handled by <code>@TransactionalEventListener(phase = AFTER_COMMIT)</code>.</p>
+                        `,
+                        example: `// WRONG: ThreadLocal lost in @Async call inside @Transactional
+@Service
+public class BadOrderService {
+    @Transactional
+    public void placeOrder() {
+        repo.save(new Order());
+        asyncNotify(); // BUG: Runs on separate thread BEFORE commit!
+    }
+
+    @Async public void asyncNotify() { /* DB context lost */ }
+}
+
+// CORRECT: Event-Driven Transactional Event Listener
+@Service
+public class CorrectOrderService {
+    @Autowired private ApplicationEventPublisher publisher;
+
+    @Transactional
+    public void placeOrder() {
+        Order order = repo.save(new Order());
+        publisher.publishEvent(new OrderCreatedEvent(order.getId()));
+    }
+}
+
+@Component
+public class OrderEventListener {
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handleOrderCreated(OrderCreatedEvent event) {
+        // Runs safely AFTER DB commit has succeeded on new worker thread!
+    }
+}`,
+                        followup: "What happens if the event listener fails AFTER the database transaction has already committed successfully?"
+                    },
+
+                    // TRICKY 14
+                    {
+                        id: 14,
+                        title: "Kafka Dual Rebalance Storm & The Phantom Consumer Offset Commit",
+                        track: "tricky",
+                        domain: "Microservices & Kafka",
+                        stars: 5,
+                        frequency: "95% Must-Master",
+                        problem: "A Kafka consumer group continually rebalances every 5 minutes, processing the exact same messages repeatedly while enable.auto.commit=true still loses some messages during restarts.",
+                        answer: `
+                            <p><strong>Trap 1 (Rebalance Storm):</strong> If message processing time exceeds <code>max.poll.interval.ms</code> (default 5 mins), Kafka broker assumes the consumer is dead and triggers a rebalance. The consumer gets evicted, but keeps processing in background.</p>
+                            <p><strong>Trap 2 (Phantom Auto-Commit Loss):</strong> <code>enable.auto.commit=true</code> automatically commits offsets asynchronously during the next <code>poll()</code> call, regardless of whether processing succeeded, leading to silent data loss on crashes.</p>
+                            <p><strong>Solution:</strong> Set <code>enable.auto.commit=false</code>, use <code>AckMode.MANUAL_IMMEDIATE</code>, reduce <code>max.poll.records</code>, and ensure async worker execution timeouts remain under <code>max.poll.interval.ms</code>.</p>
+                        `,
+                        example: `@Configuration
+public class KafkaConsumerConfig {
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory());
+        
+        // Disable auto commit & enable manual immediate acknowledgment
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
+        
+        // Prevent rebalance eviction by tuning poll limits
+        Properties props = new Properties();
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "50"); // Lower batch count
+        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, "300000"); // 5 mins
+        factory.setCommonErrorHandler(new DefaultErrorHandler(new FixedBackOff(1000L, 3)));
+        
+        return factory;
+    }
+}`,
+                        followup: "Why does calling ack.acknowledge() NOT guarantee an immediate network payload commit to the Kafka broker when using batch listeners?"
+                    },
+
+                    // TRICKY 15
+                    {
+                        id: 15,
+                        title: "RAG Vector Search Precision Decay & Token Context Compression Trap",
+                        track: "tricky",
+                        domain: "GenAI & Agents",
+                        stars: 5,
+                        frequency: "92% Must-Master",
+                        problem: "Increasing vector search top-K from 5 to 25 decreased RAG answer accuracy instead of improving it, while inflating token costs by 400%.",
+                        answer: `
+                            <p><strong>The Trap ("Lost in the Middle" Phenomenon):</strong> LLMs demonstrate strong recall for information placed at the absolute start or end of context windows, but perform poorly at retrieving facts buried in the middle of long contexts.</p>
+                            <p><strong>Solution 1 (Cross-Encoder Reranking):</strong> Retrieve top-30 candidate chunks using fast vector search (HNSW), then pass candidates through a Cross-Encoder Reranker (e.g. Cohere Rerank) to trim down to the top 4 hyper-relevant chunks.</p>
+                            <p><strong>Solution 2 (Contextual Position Re-ordering):</strong> Reorder retrieved chunks so that highest scoring relevant chunks are placed at the top and bottom of the prompt context window.</p>
+                        `,
+                        example: `# Python Reciprocal Rank Fusion (RRF) & Position Re-ordering
+def reorder_context_lost_in_middle(chunks: list) -> list:
+    """
+    Reorders chunks to place most relevant at start and end.
+    Input sorted by rank: [1, 2, 3, 4, 5, 6]
+    Output: [1, 3, 5, 6, 4, 2]
+    """
+    sorted_chunks = sorted(chunks, key=lambda x: x.score, reverse=True)
+    reordered = []
+    for i, chunk in enumerate(sorted_chunks):
+        if i % 2 == 0:
+            reordered.insert(0, chunk)
+        else:
+            reordered.append(chunk)
+    return reordered`,
+                        followup: "How do you automatically distinguish between vector retrieval failure vs LLM reasoning failure in production monitoring?"
+                    },
+
+                    // TRICKY 16
+                    {
+                        id: 16,
+                        title: "PostgreSQL Phantom Read in REPEATABLE READ & Lost Update Trap",
+                        track: "tricky",
+                        domain: "Polyglot Data & Caching",
+                        stars: 4,
+                        frequency: "89% High-Frequency",
+                        problem: "A developer assumed setting PostgreSQL isolation level to REPEATABLE READ prevents lost updates when updating account balances concurrently (balance = balance + delta).",
+                        answer: `
+                            <p><strong>The Trap:</strong> In PostgreSQL, <code>REPEATABLE READ</code> prevents non-repeatable reads and phantom reads. However, if two concurrent transactions execute a read followed by an update on the same row, the second transaction throws a serialization error: <code>ERROR: could not serialize access due to concurrent update</code> rather than silently overwriting!</p>
+                            <p><strong>Solution 1:</strong> Use atomic SQL updates: <code>UPDATE account SET balance = balance + :delta WHERE id = :id</code>.</p>
+                            <p><strong>Solution 2:</strong> Use Optimistic Locking with JPA <code>@Version</code> and implement Spring <code>@Retryable</code> to retry serialization failure exceptions automatically.</p>
+                        `,
+                        example: `// Java Spring Optimistic Lock Retry Handling for Postgres Serialization Failure
+@Service
+public class AccountService {
+
+    @Autowired private AccountRepository repo;
+
+    @Retryable(
+        retryFor = { ObjectOptimisticLockingFailureException.class, SQLException.class },
+        maxAttempts = 3,
+        backoff = @Backoff(delay = 100, multiplier = 2)
+    )
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void updateBalance(Long accountId, BigDecimal amount) {
+        Account account = repo.findById(accountId).orElseThrow();
+        account.setBalance(account.getBalance().add(amount));
+        repo.save(account); // Triggers @Version increment check
+    }
+}`,
+                        followup: "Why does SELECT FOR UPDATE degrade throughput severely in high-concurrency microservices, and how do you replace it?"
+                    },
+
+                    // TRICKY 17
+                    {
+                        id: 17,
+                        title: "Kubernetes Silent StatefulSet Split-Brain & Dual Master Data Corruption",
+                        track: "tricky",
+                        domain: "Cloud & Observability",
+                        stars: 4,
+                        frequency: "88% High-Frequency",
+                        problem: "A network partition between Kubernetes worker nodes caused K8s master to mark a PostgreSQL pod 'Unknown' and reschedule a new master pod on another node while the old pod was still writing to EBS storage.",
+                        answer: `
+                            <p><strong>The Trap:</strong> Kubernetes StatefulSets do NOT automatically force-delete pods during node network partitions to prevent dual-primary data corruption. Force-deleting a pod (<code>kubectl delete pod --force</code>) while the node is still alive causes two write instances to attach to storage simultaneously.</p>
+                            <p><strong>Solution:</strong> Implement automated Node Fencing (STONITH). Use tools like Kube-Fencing or AWS I/O Fencing to revoke cloud storage volume attachments at the AWS API level before launching replacement pods.</p>
+                        `,
+                        example: `# Kubernetes PodDisruptionBudget & StatefulSet Safety Manifest
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: postgres-pdb
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: postgres-cluster
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-cluster
+spec:
+  serviceName: "postgres"
+  replicas: 3
+  podManagementPolicy: "OrderedReady" # Prevents dual master initialization`,
+                        followup: "What is the extreme danger of running 'kubectl delete pod --force --grace-period=0' on a StatefulSet database master?"
+                    },
+
+                    // TRICKY 18
+                    {
+                        id: 18,
+                        title: "The Silent Spring Bean Scope Leak & ThreadLocal Memory Poisoning",
+                        track: "tricky",
+                        domain: "Freelance & Client Rescue",
+                        stars: 4,
+                        frequency: "85% High-Frequency",
+                        problem: "A multi-tenant SaaS application reported customer data leaking randomly between unrelated tenant user sessions in a Spring Boot service.",
+                        answer: `
+                            <p><strong>Trap 1 (Bean Scope Injection Leak):</strong> Injecting a <code>Prototype</code> or <code>Request</code> scoped bean directly into a <code>Singleton</code> bean without dynamic proxy mode causes the Singleton to lock onto the initial bean instance forever!</p>
+                            <p><strong>Trap 2 (ThreadLocal Contamination):</strong> Storing user session info in a <code>ThreadLocal</code> without clearing it in a <code>finally</code> block reuses dirty context when Tomcat recycles worker threads from the pool.</p>
+                            <p><strong>Solution:</strong> Use <code>@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)</code> and enforce <code>ThreadLocal.remove()</code> inside HandlerInterceptor <code>afterCompletion()</code>.</p>
+                        `,
+                        example: `// SAFE: Scoped Proxy Configuration for Request Beans
+@Component
+@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+public class TenantContext {
+    private String tenantId;
+    public String getTenantId() { return tenantId; }
+    public void setTenantId(String tenantId) { this.tenantId = tenantId; }
+}
+
+// SAFE: ThreadLocal Cleanup Handler Interceptor
+@Component
+public class TenantInterceptor implements HandlerInterceptor {
+    private static final ThreadLocal<String> CONTEXT = new ThreadLocal<>();
+
+    @Override
+    public void afterCompletion(HttpServletRequest req, HttpServletResponse res, Object handler, Exception ex) {
+        // MANDATORY: Clear thread context to prevent thread-pool memory leaks!
+        CONTEXT.remove();
+    }
+}`,
+                        followup: "How do parallel streams (ForkJoinPool.commonPool()) compound ThreadLocal leakage across processing pipelines?"
+                    },
+
+                    // TRICKY 19
+                    {
+                        id: 19,
+                        title: "Model Context Protocol (MCP) Tool Calling Non-Determinism & Infinite Loop Trap",
+                        track: "tricky",
+                        domain: "GenAI & Agents",
+                        stars: 5,
+                        frequency: "91% Must-Master",
+                        problem: "An LLM agent connected to enterprise tools via MCP entered an infinite recursive tool call loop (search_user -> search_user -> search_user), burning $400 in API credits in 10 minutes.",
+                        answer: `
+                            <p><strong>The Trap:</strong> LLMs can hallucinate tool parameters or fail to recognize stop conditions when tool responses loosely match prompt criteria, resulting in repeating call graphs.</p>
+                            <p><strong>Solution 1 (Recursion Budget Limit):</strong> Enforce a strict max iteration depth guardrail in the agent runtime loop (e.g., max 5 tool calls per user turn).</p>
+                            <p><strong>Solution 2 (Call Graph Hashing):</strong> Hash exact tool parameters <code>md5(tool_name + args)</code>. If the identical tool signature is called twice with the same inputs, abort loop and invoke fallback reasoning.</p>
+                        `,
+                        example: `# Python Agent Loop Guardrail with Tool Execution Call Graph Hashing
+import hashlib
+
+class AgentRunner:
+    def __init__(self, max_steps=5):
+        self.max_steps = max_steps
+        self.seen_tool_calls = set()
+
+    def execute_agent_loop(self, user_prompt):
+        step = 0
+        while step < self.max_steps:
+            step += 1
+            tool_call = llm.decide_tool(user_prompt)
+            if not tool_call:
+                break // Success termination
+            
+            # Generate unique hash of tool call
+            call_hash = hashlib.md5(f"{tool_call.name}:{tool_call.args}".encode()).hexdigest()
+            if call_hash in self.seen_tool_calls:
+                raise SystemError(f"Infinite Tool Call Loop Detected for {tool_call.name}. Aborting execution.")
+            
+            self.seen_tool_calls.add(call_hash)
+            tool_result = execute_mcp_tool(tool_call)
+        
+        if step >= self.max_steps:
+            return "Agent execution budget exceeded."`,
+                        followup: "How do you gracefully handle rate-limiting and exponential backoff when an agent invokes 5 MCP tools in parallel?"
+                    },
+
+                    // TRICKY 20
+                    {
+                        id: 20,
+                        title: "Spring Proxy Self-Invocation Trap & Dynamic Proxy vs CGLIB Bytecode Pitfall",
+                        track: "tricky",
+                        domain: "JVM & Spring Boot",
+                        stars: 4,
+                        frequency: "82% High-Frequency",
+                        problem: "Calling an internal method annotated with @Transactional or @Cacheable from another method within the SAME class bypasses transaction and caching logic completely.",
+                        answer: `
+                            <p><strong>The Trap:</strong> Spring AOP uses Dynamic Proxies (CGLIB or JDK Proxies). When an external client calls a Spring Bean, it invokes the Proxy object wrapper. However, internal method calls (<code>this.methodB()</code>) target the raw underlying instance directly, bypassing proxy interceptors.</p>
+                            <p><strong>Solution 1 (Refactor to Separate Beans):</strong> Split responsibilities into separate Spring components to force proxy traversal.</p>
+                            <p><strong>Solution 2 (Self-Injection with @Lazy):</strong> Inject the bean proxy into itself using <code>@Autowired @Lazy private MyService self;</code> and invoke <code>self.methodB()</code>.</p>
+                        `,
+                        example: `@Service
+public class OrderService {
+
+    // Self-injection workaround to access proxy
+    @Autowired @Lazy private OrderService self;
+
+    public void processBatch() {
+        // WRONG: this.updateOrder() BYPASSES @Transactional proxy!
+        // this.updateOrder();
+
+        // CORRECT: Calling via self proxy invokes Spring Transaction Interceptor!
+        self.updateOrder();
+    }
+
+    @Transactional
+    public void updateOrder() {
+        // Database transactional mutation
+    }
+}`,
+                        followup: "Why can't CGLIB proxy final classes or private methods, and what exception does Spring Boot 3 throw when encountered?"
+                    },
+
+                    // TRICKY 21
+                    {
+                        id: 21,
+                        title: "Kafka Exactly-Once Semantics (EOS) Fallacy in Cross-Cluster Mirrored Environments",
+                        track: "tricky",
+                        domain: "Microservices & Kafka",
+                        stars: 5,
+                        frequency: "94% Must-Master",
+                        problem: "An architect built a payment engine relying on Kafka processing.guarantee=exactly_once_v2. During disaster recovery failover to a mirrored cluster, duplicate payment events caused double billing.",
+                        answer: `
+                            <p><strong>The Trap:</strong> Kafka Exactly-Once Semantics (EOS) is strictly scoped to a SINGLE Kafka cluster transaction coordinator. When events are replicated across clusters via MirrorMaker 2, transaction IDs and sequence numbers are NOT preserved across cluster boundaries!</p>
+                            <p><strong>Solution:</strong> Enforce application-level idempotency at the database sink layer (e.g. Unique Constraints on <code>transaction_id</code> or Redis Deduplication Filters) rather than relying on transport-layer EOS across clusters.</p>
+                        `,
+                        example: `@Service
+public class IdempotentPaymentConsumer {
+
+    @Autowired private PaymentRepository paymentRepo;
+
+    @KafkaListener(topics = "payments")
+    public void processPayment(PaymentEvent event, Acknowledgment ack) {
+        try {
+            // DB Unique Constraint on payment_reference guarantees at-most-once write
+            paymentRepo.saveAndFlush(new PaymentRecord(
+                event.getPaymentReference(), 
+                event.getAmount()
+            ));
+            ack.acknowledge();
+        } catch (DataIntegrityViolationException ex) {
+            // Duplicate event across cluster replication caught safely
+            log.warn("Duplicate payment event ignored: {}", event.getPaymentReference());
+            ack.acknowledge(); // Commit offset to discard duplicate
+        }
+    }
+}`,
+                        followup: "What is the performance overhead of querying Redis for idempotency checks on every message, and how do you optimize it using Bloom Filters?"
+                    },
+
+                    // TRICKY 22
+                    {
+                        id: 22,
+                        title: "Redis Cache Invalidation Race Condition & Delayed Double Delete Trap",
+                        track: "tricky",
+                        domain: "Polyglot Data & Caching",
+                        stars: 4,
+                        frequency: "87% High-Frequency",
+                        problem: "Updating PostgreSQL and invalidating Redis cache using standard Cache-Aside pattern still resulted in stale data persisting in Redis indefinitely.",
+                        answer: `
+                            <p><strong>The Trap (Race Condition):</strong> Concurrent sequence: Thread 1 reads DB (gets old value 'A'). Thread 2 updates DB to 'B' and invalidates Redis cache. Thread 1 writes stale value 'A' back to Redis cache! Redis now holds stale 'A' until TTL expires.</p>
+                            <p><strong>Solution 1 (Delayed Double Delete):</strong> Delete cache key, update DB, wait short sleep delay (e.g. 500ms), then execute second cache delete.</p>
+                            <p><strong>Solution 2 (CDC Cache Invalidation):</strong> Use Debezium CDC to tail PostgreSQL write logs and delete Redis keys strictly AFTER commit confirmation.</p>
+                        `,
+                        example: `// Java Delayed Double Delete Cache Pattern
+@Service
+public class UserService {
+    @Autowired private RedisTemplate<String, String> redis;
+    @Autowired private UserRepository userRepo;
+    @Autowired private ScheduledExecutorService scheduler;
+
+    public void updateUser(User user) {
+        String key = "user:" + user.getId();
+        
+        // 1. First Invalidation
+        redis.delete(key);
+        
+        // 2. DB Update
+        userRepo.save(user);
+        
+        // 3. Delayed Second Invalidation (500ms later to wipe out concurrent read races)
+        scheduler.schedule(() -> {
+            redis.delete(key);
+        }, 500, TimeUnit.MILLISECONDS);
+    }
+}`,
+                        followup: "How do you calculate the mathematically optimal sleep duration for the second deletion in globally distributed systems?"
+                    },
+
+                    // TRICKY 23
+                    {
+                        id: 23,
+                        title: "Prometheus High-Cardinality Explosion & Out-Of-Memory Crash",
+                        track: "tricky",
+                        domain: "Cloud & Observability",
+                        stars: 4,
+                        frequency: "83% High-Frequency",
+                        problem: "Adding user_id as a label tag on custom Micrometer metrics crashed Prometheus TSDB with Out-Of-Memory (OOM) within 2 hours of deployment.",
+                        answer: `
+                            <p><strong>The Trap (High Cardinality):</strong> Prometheus creates a separate time-series stream for every unique combination of key-value label tags. Adding high-cardinality values (UUIDs, User IDs, IP addresses) generates millions of metric series, overwhelming RAM memory allocation.</p>
+                            <p><strong>Solution:</strong> Never use dynamic high-cardinality fields in metrics. Reserve dynamic values for Distributed Tracing spans or Logs. In Prometheus, restrict labels to low-cardinality ENUMs (e.g. <code>http_status_code</code>, <code>region</code>, <code>handler_name</code>).</p>
+                        `,
+                        example: `// WRONG: Explosive High Cardinality Metric
+MeterRegistry registry = ...;
+// DANGEROUS: Generates 1 million metric series for 1M users!
+registry.counter("http.requests", "user_id", userId).increment();
+
+// CORRECT: Low-Cardinality Metric Tagging
+registry.counter("http.requests", 
+    "endpoint", "/api/v1/orders", 
+    "status", "200", 
+    "region", "us-east-1"
+).increment();`,
+                        followup: "If a developer accidentally deploys high-cardinality metrics to production, how do you drop those metric series dynamically at the OpenTelemetry Collector layer?"
+                    },
+
+                    // TRICKY 24
+                    {
+                        id: 24,
+                        title: "The Distributed Lock Redlock Algorithm Flaw & System Clock Skew Trap",
+                        track: "tricky",
+                        domain: "Freelance & Client Rescue",
+                        stars: 5,
+                        frequency: "90% Must-Master",
+                        problem: "A client relied on Redis Redlock algorithm across 5 nodes for high-availability distributed locking, but double-execution of critical financial payouts occurred during a server NTP clock jump.",
+                        answer: `
+                            <p><strong>The Trap (System Clock Skew & GC Pause):</strong> Redlock assumes physical server clocks tick at equal rates across nodes. If Node 3 experiences NTP clock drift, or a JVM Stop-The-World GC pause occurs AFTER lock acquisition but BEFORE payout execution, the lock TTL expires, allowing Worker 2 to acquire the lock concurrently!</p>
+                            <p><strong>Solution (Fencing Tokens):</strong> Ensure target storage systems verify incrementing <code>Fencing Tokens</code> issued by the lock manager. Storage engines reject writes carrying a fencing token lower than the highest previously seen token.</p>
+                        `,
+                        example: `-- PostgreSQL Fencing Token Guardrail
+-- Storage verifies fencing token sequence on update
+UPDATE merchant_payout 
+SET status = 'PAID', 
+    last_fencing_token = :newToken 
+WHERE payout_id = :id 
+  AND last_fencing_token < :newToken; -- Blocks stale lock holder write!`,
+                        followup: "Why are consensus engines like etcd or Apache ZooKeeper safer for distributed locking than Redis Redlock?"
+                    }
+                ]);
+
+                // Available Domain List
+                const domains = [
+                    'GenAI & Agents',
+                    'Microservices & Kafka',
+                    'JVM & Spring Boot',
+                    'Polyglot Data & Caching',
+                    'Cloud & Observability',
+                    'Freelance & Client Rescue'
+                ];
+
+                // Counts by Track
+                const scenarioCount = computed(() => questions.value.filter(q => q.track === 'scenario').length);
+                const trickyCount = computed(() => questions.value.filter(q => q.track === 'tricky').length);
+
+                // Filtered Questions Logic
+                const filteredQuestions = computed(() => {
+                    return questions.value.filter(q => {
+                        // Track Filter
+                        if (selectedTrack.value !== 'all' && q.track !== selectedTrack.value) return false;
+                        
+                        // Domain Filter
+                        if (selectedDomain.value !== 'all' && q.domain !== selectedDomain.value) return false;
+
+                        // Star Rating Filter
+                        if (selectedStars.value === '5' && q.stars !== 5) return false;
+                        if (selectedStars.value === '4' && q.stars < 4) return false;
+
+                        // Mastery Filter
+                        const currentMastery = getMastery(q.id);
+                        if (selectedMastery.value !== 'all' && currentMastery !== selectedMastery.value) return false;
+
+                        // Search Query
+                        if (searchQuery.value.trim() !== '') {
+                            const query = searchQuery.value.toLowerCase();
+                            const matchTitle = q.title.toLowerCase().includes(query);
+                            const matchProblem = q.problem.toLowerCase().includes(query);
+                            const matchDomain = q.domain.toLowerCase().includes(query);
+                            const matchExample = q.example.toLowerCase().includes(query);
+                            const matchFollowup = q.followup.toLowerCase().includes(query);
+                            return matchTitle || matchProblem || matchDomain || matchExample || matchFollowup;
+                        }
+
+                        return true;
+                    });
+                });
+
+                // Mastery Helper Methods
+                const getMastery = (id) => masteryState.value[id] || 'unseen';
+                
+                const setMastery = (id, status) => {
+                    masteryState.value = { ...masteryState.value, [id]: status };
+                    localStorage.setItem('arch_lab_mastery', JSON.stringify(masteryState.value));
+                    showToast(`Updated Card #${id} status to ${status.toUpperCase()}`);
+                };
+
+                const countByMastery = (status) => {
+                    return questions.value.filter(q => getMastery(q.id) === status).length;
+                };
+
+                const countByDomain = (domain) => {
+                    return questions.value.filter(q => q.domain === domain).length;
+                };
+
+                // Card Expansion Methods
+                const toggleCard = (id) => {
+                    expandedCards.value[id] = !expandedCards.value[id];
+                };
+
+                const expandAllCards = (state) => {
+                    questions.value.forEach(q => {
+                        expandedCards.value[q.id] = state;
+                    });
+                };
+
+                // Drill Mode & Reveal Methods
+                const toggleDrillMode = () => {
+                    drillMode.value = !drillMode.value;
+                    if (drillMode.value) {
+                        revealedCards.value = {}; // Reset revealed states
+                        showToast("Self-Test Drill Mode Activated! Answers Hidden.");
+                    } else {
+                        showToast("Returned to Full Reading Mode.");
+                    }
+                };
+
+                const revealCard = (id) => {
+                    revealedCards.value[id] = true;
+                    showToast(`Revealed solution for Card #${id}`);
+                };
+
+                // Notes Management
+                const updateNote = (id, text) => {
+                    notes.value = { ...notes.value, [id]: text };
+                    localStorage.setItem('arch_lab_notes', JSON.stringify(notes.value));
+                };
+
+                const savedNotesCount = computed(() => {
+                    return Object.values(notes.value).filter(val => val && val.trim() !== '').length;
+                });
+
+                const activeNotesMap = computed(() => {
+                    const result = {};
+                    for (const [id, val] of Object.entries(notes.value)) {
+                        if (val && val.trim() !== '') {
+                            result[id] = val;
+                        }
+                    }
+                    return result;
+                });
+
+                const getQuestionTitle = (id) => {
+                    const q = questions.value.find(item => item.id == id);
+                    return q ? q.title : '';
+                };
+
+                const jumpToCard = (id) => {
+                    showNotesModal.value = false;
+                    expandedCards.value[id] = true;
+                    setTimeout(() => {
+                        const el = document.getElementById('card-' + id);
+                        if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                };
+
+                // Random Card Selector
+                const pickRandomQuestion = () => {
+                    const randIndex = Math.floor(Math.random() * questions.value.length);
+                    const q = questions.value[randIndex];
+                    expandedCards.value[q.id] = true;
+                    setTimeout(() => {
+                        const el = document.getElementById('card-' + q.id);
+                        if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                    showToast(`Picked Card #${q.id}: ${q.title}`);
+                };
+
+                // Copy Code to Clipboard
+                const copyCode = (codeText, id) => {
+                    const textArea = document.createElement("textarea");
+                    textArea.value = codeText;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    try {
+                        document.execCommand('copy');
+                        copiedId.value = id;
+                        showToast("Code snippet copied to clipboard!");
+                        setTimeout(() => { copiedId.value = null; }, 2000);
+                    } catch (err) {
+                        showToast("Failed to copy snippet.");
+                    }
+                    document.body.removeChild(textArea);
+                };
+
+                // Export Study Sheet in Markdown
+                const exportMarkdown = () => {
+                    let md = `# Architect Prep Studio - Master Study Sheet\n\n`;
+                    md += `*Exported on: ${new Date().toLocaleDateString()}*\n\n`;
+                    md += `--- \n\n`;
+
+                    questions.value.forEach(q => {
+                        const mastery = getMastery(q.id).toUpperCase();
+                        const userNote = notes.value[q.id] || 'None';
+                        
+                        md += `## #${q.id}. ${q.title}\n`;
+                        md += `**Track:** ${q.track.toUpperCase()} | **Domain:** ${q.domain} | **Rating:** ${renderStars(q.stars)} (${q.frequency}) | **Mastery:** ${mastery}\n\n`;
+                        md += `### ⚠️ The Problem / Trap\n${q.problem}\n\n`;
+                        md += `### 💡 Expected Senior-Level Answer\n${q.answer.replace(/<[^>]*>/g, '')}\n\n`;
+                        md += `### 💻 Implementation Example\n\`\`\`\n${q.example}\n\`\`\`\n\n`;
+                        md += `### 🪤 Follow-Up Trap\n${q.followup}\n\n`;
+                        md += `### 📝 My Personal Notes\n${userNote}\n\n`;
+                        md += `---\n\n`;
+                    });
+
+                    const blob = new Blob([md], { type: 'text/markdown' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `Architect_Prep_Master_Sheet_${new Date().toISOString().slice(0,10)}.md`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    showToast("Exported Markdown Study Sheet!");
+                };
+
+                // Helper UI Methods
+                const renderStars = (stars) => {
+                    return '★'.repeat(stars) + '☆'.repeat(5 - stars);
+                };
+
+                const resetFilters = () => {
+                    selectedTrack.value = 'all';
+                    selectedDomain.value = 'all';
+                    selectedStars.value = 'all';
+                    selectedMastery.value = 'all';
+                    searchQuery.value = '';
+                };
+
+                // Lifecycle Mounting Initialization
+                onMounted(() => {
+                    applyTheme();
+                    // Expand first 3 cards by default for smooth UX
+                    expandedCards.value[1] = true;
+                    expandedCards.value[2] = true;
+                    expandedCards.value[13] = true;
+                });
+
+                return {
+                    isDark,
+                    toggleDarkMode,
+                    selectedTrack,
+                    selectedDomain,
+                    selectedStars,
+                    selectedMastery,
+                    searchQuery,
+                    drillMode,
+                    showNotesModal,
+                    questions,
+                    domains,
+                    scenarioCount,
+                    trickyCount,
+                    filteredQuestions,
+                    expandedCards,
+                    revealedCards,
+                    scratchpads,
+                    copiedId,
+                    masteryState,
+                    notes,
+                    toast,
+                    toggleCard,
+                    expandAllCards,
+                    toggleDrillMode,
+                    revealCard,
+                    getMastery,
+                    setMastery,
+                    countByMastery,
+                    countByDomain,
+                    updateNote,
+                    savedNotesCount,
+                    activeNotesMap,
+                    getQuestionTitle,
+                    jumpToCard,
+                    pickRandomQuestion,
+                    copyCode,
+                    exportMarkdown,
+                    renderStars,
+                    resetFilters
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
